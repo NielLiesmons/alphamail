@@ -4,6 +4,7 @@
 	import { site, pillars } from '$lib/site';
 	import { t, locale } from '$lib/i18n';
 	import { langFromPath, localizedPath } from '$lib/i18n-path';
+	import AlphaLogo from '$lib/components/AlphaLogo.svelte';
 
 	const lang = $derived(langFromPath($page.url.pathname) || 'en');
 	const year = new Date().getFullYear();
@@ -30,7 +31,7 @@
 		<div class="panel">
 			<div class="col brand-col">
 				<a class="brand-row" href={localizedPath(lang, '/')} aria-label={site.name}>
-					<span class="mark" aria-hidden="true"></span>
+					<AlphaLogo size={36} />
 					<span class="word">{site.shortName}</span>
 				</a>
 				<a class="meta" href="mailto:{site.email}">{site.email}</a>
@@ -44,6 +45,7 @@
 					{#each productLinks as link}
 						<li><a href={link.href}>{link.label}</a></li>
 					{/each}
+					<li><a href={localizedPath(lang, '/pricing')}>{$t.navPricing}</a></li>
 				</ul>
 			</div>
 
@@ -78,45 +80,37 @@
 
 	.panel {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1.75rem 1.25rem;
-		padding: 1.5rem 0 0.5rem;
+		grid-template-columns: 1fr;
+		gap: 0;
+		text-align: left;
+		background: var(--surface);
+		border: 1px solid var(--hairline);
+		border-radius: var(--radius-hero);
+		overflow: hidden;
+	}
+
+	.col {
+		padding: 1rem 1.15rem;
+	}
+
+	.col + .col {
 		border-top: 1px solid var(--hairline);
 	}
 
-	@media (min-width: 768px) {
-		.panel {
-			grid-template-columns: 1.4fr 1fr 1fr 1fr;
-			gap: 2rem;
-			padding-top: 2rem;
-		}
-	}
-
 	.brand-col {
-		grid-column: 1 / -1;
-	}
-
-	@media (min-width: 768px) {
-		.brand-col {
-			grid-column: auto;
-		}
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.35rem;
 	}
 
 	.brand-row {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.55rem;
+		gap: 0.7rem;
 		text-decoration: none;
 		color: var(--ink);
-		margin-bottom: 0.65rem;
-	}
-
-	.mark {
-		width: 18px;
-		height: 18px;
-		border-radius: 5px;
-		background: var(--ink);
-		flex-shrink: 0;
+		margin-bottom: 0.35rem;
 	}
 
 	.word {
@@ -128,29 +122,33 @@
 	}
 
 	.meta {
-		display: block;
-		margin: 0.15rem 0;
-		font-size: 13px;
+		margin: 0;
+		font-size: 14px;
 		font-weight: 500;
+		line-height: 1.4;
 		color: var(--ink66);
 		text-decoration: none;
 	}
 
-	.meta.addr {
-		margin-top: 0.35rem;
+	a.meta:hover {
+		color: var(--ink);
+	}
+
+	.addr {
+		color: var(--ink33);
 	}
 
 	.note {
-		margin: 0.85rem 0 0;
+		margin: 0.55rem 0 0;
 		font-size: 12px;
 		color: var(--ink33);
 	}
 
 	.col-label {
-		margin: 0 0 0.55rem;
-		font-size: 12px;
-		font-weight: 650;
-		letter-spacing: 0.04em;
+		margin: 0 0 0.4rem;
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--ink33);
 	}
@@ -167,11 +165,27 @@
 	.col-list a {
 		font-size: 14px;
 		font-weight: 500;
+		line-height: 1.4;
 		color: var(--ink66);
 		text-decoration: none;
 	}
 
 	.col-list a:hover {
 		color: var(--ink);
+	}
+
+	@media (min-width: 768px) {
+		.panel {
+			grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+		}
+
+		.col {
+			padding: 1.1rem 1.25rem;
+		}
+
+		.col + .col {
+			border-top: none;
+			border-left: 1px solid var(--hairline);
+		}
 	}
 </style>

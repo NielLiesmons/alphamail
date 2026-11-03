@@ -25,7 +25,7 @@ alphamail.xyz {
 
 		@needs_en {
 			not path /en /en/* /fr /fr/*
-			not path /_app/* /favicon.svg /robots.txt /sitemap.xml /media/* /icons/*
+			not path /_app/* /favicon.svg /robots.txt /sitemap.xml /media/* /icons/* /images/*
 		}
 		redir @needs_en /en{uri} 307
 

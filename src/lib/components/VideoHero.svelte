@@ -1,7 +1,7 @@
 <script>
 	/**
-	 * Landing hero — Zapstore “Release with ease” preview under CTAs:
-	 * studio screenshot + bottom fade into page (no divider, no fake UI chrome).
+	 * Landing hero — Zapstore “Release with ease” preview under CTAs.
+	 * Shot lives under /media (Caddy-safe) with accent bloom + bottom fade.
 	 */
 	import PrimaryButton from './PrimaryButton.svelte';
 	import GlassButton from './GlassButton.svelte';
@@ -22,10 +22,10 @@
 	<div class="preview">
 		<img
 			class="shot"
-			src="/images/studio-screenshot.png"
+			src="/media/studio-screenshot.png"
 			alt=""
-			width="1600"
-			height="900"
+			width="1720"
+			height="1123"
 			decoding="async"
 			fetchpriority="high"
 		/>
@@ -72,21 +72,18 @@
 		min-width: 9.25rem;
 	}
 
-	/* Full-bleed preview — Zapstore Release pattern (clip + bottom fade, no top rule) */
 	.preview {
 		position: relative;
 		width: 100vw;
 		margin-left: calc(50% - 50vw);
 		height: clamp(220px, 42vw, 440px);
 		overflow: hidden;
-		pointer-events: none;
 	}
 
 	.shot {
 		display: block;
 		width: 100%;
 		height: auto;
-		/* Soft accent bloom under the shot — Zapstore-style colored shadow */
 		filter: drop-shadow(0 0 60px color-mix(in srgb, var(--accent) 18%, transparent))
 			drop-shadow(0 24px 80px color-mix(in srgb, var(--accent) 10%, transparent));
 	}

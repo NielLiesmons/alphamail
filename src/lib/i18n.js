@@ -20,6 +20,52 @@ const dict = {
 			'Mail, Drive, Chat et Projets dans un seul Space. Privé par défaut. Public quand vous voulez une vitrine.',
 		heroSecondary: 'Voir le produit',
 		heroCta: 'Créer un Space',
+		privateEyebrow: 'Privé',
+		privateTitle: 'Ce qui reste entre vous.',
+		privateSub: 'Mail, Drive et outils de travail — chiffrés, sur votre domaine.',
+		privateCards: [
+			{
+				label: 'Mail',
+				title: 'Chacun a toi@tondomaine',
+				description:
+					'De vraies boîtes, pas une adresse partagée. Les gens se connectent comme eux-mêmes.'
+			},
+			{
+				label: 'Drive',
+				title: 'Fichiers chiffrés, à vous',
+				description:
+					'Le Drive du Space est la source de vérité. Vous publiez seulement ce que vous choisissez.'
+			},
+			{
+				label: 'Travail',
+				title: 'Chat et Projets au même endroit',
+				description:
+					'Conversation et suivi à côté des fichiers — plus de fils perdus dans WhatsApp.'
+			}
+		],
+		publicEyebrow: 'Public',
+		publicTitle: 'Quand vous voulez une face.',
+		publicSub: 'Community ouvre une couche publique sans quitter le Space.',
+		publicCards: [
+			{
+				label: 'Lettres',
+				title: 'Publiez quand vous voulez',
+				description:
+					'Lettres et actus sous votre toit. Privé par défaut — public sur décision.'
+			},
+			{
+				label: 'Forum',
+				title: 'La conversation des membres',
+				description:
+					'Fils, voix et mémoire collective sur community.votredomaine.'
+			},
+			{
+				label: 'Vitrine',
+				title: 'Le visage du groupe',
+				description:
+					'Une présence claire pour le monde, branchée sur le même Space.'
+			}
+		],
 		pillarsTitle: 'Ce que vous avez',
 		pillarsSub: 'Quatre piliers. Ajoutez Community pour le côté public.',
 		learnMore: 'En savoir plus',
@@ -157,6 +203,52 @@ const dict = {
 			'Mail, Drive, Chat, and Projects in one Space. Private by default. Public when you want a face for the world.',
 		heroSecondary: 'See the product',
 		heroCta: 'Start a Space',
+		privateEyebrow: 'Private',
+		privateTitle: 'What stays between you.',
+		privateSub: 'Mail, Drive, and work tools — encrypted, on your domain.',
+		privateCards: [
+			{
+				label: 'Mail',
+				title: 'People get you@yourdomain',
+				description:
+					'Real mailboxes, not a shared dump. Everyone signs in as themselves.'
+			},
+			{
+				label: 'Drive',
+				title: 'Encrypted files that stay yours',
+				description:
+					'The Space Drive is source of truth. Publish only what you choose.'
+			},
+			{
+				label: 'Work',
+				title: 'Chat and Projects in the same place',
+				description:
+					'Conversation and tracking beside the files — fewer lost WhatsApp threads.'
+			}
+		],
+		publicEyebrow: 'Public',
+		publicTitle: 'When you want a face.',
+		publicSub: 'Community opens a public layer without leaving the Space.',
+		publicCards: [
+			{
+				label: 'Letters',
+				title: 'Publish when you choose',
+				description:
+					'Letters and updates under your roof. Private by default — public on purpose.'
+			},
+			{
+				label: 'Forum',
+				title: 'Member conversation',
+				description:
+					'Threads, voices, and shared memory on community.yourdomain.'
+			},
+			{
+				label: 'Presence',
+				title: 'The group’s face',
+				description:
+					'A clear presence for the world, wired to the same Space.'
+			}
+		],
 		pillarsTitle: 'What you get',
 		pillarsSub: 'Four pillars. Add Community when you need a public side.',
 		learnMore: 'Learn more',

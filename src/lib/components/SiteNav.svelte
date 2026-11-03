@@ -7,6 +7,7 @@
 	import { locale, theme, setLocale, setTheme } from '$lib/prefs';
 	import { langFromPath, localizedPath, stripLang } from '$lib/i18n-path';
 	import { site } from '$lib/site';
+	import AlphaLogo from '$lib/components/AlphaLogo.svelte';
 	import { ChevronDown } from '$lib/components/icons';
 
 	let open = $state(false);
@@ -20,7 +21,7 @@
 
 	const links = $derived([
 		{ href: localizedPath(lang, '/product'), label: $t.navProduct },
-		{ href: `${localizedPath(lang, '/')}#pricing`, label: $t.navPricing },
+		{ href: localizedPath(lang, '/pricing'), label: $t.navPricing },
 		{
 			href: site.communityUrl,
 			label: $t.navCommunity,
@@ -109,11 +110,14 @@
 	<div class="pill" class:open>
 		<div class="bar">
 			<a class="brand" href={homeHref} onclick={close} aria-label={site.shortName}>
-				<span class="mark" aria-hidden="true"></span>
+				<AlphaLogo size={26} className="nav-mark" />
 				<span class="word desktop-word">{site.shortName}</span>
 			</a>
 
-			<a class="word mobile-word" href={homeHref} onclick={close}>{site.shortName}</a>
+			<a class="mobile-brand" href={homeHref} onclick={close} aria-label={site.shortName}>
+				<AlphaLogo size={24} />
+				<span class="word">{site.shortName}</span>
+			</a>
 
 			<nav class="desktop-links" aria-label="Main">
 				{#each links as link}
@@ -367,14 +371,6 @@
 		color: var(--ink);
 	}
 
-	.mark {
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: currentColor;
-		flex-shrink: 0;
-	}
-
 	.word {
 		font-family: var(--font-sans);
 		font-weight: 550;
@@ -384,15 +380,22 @@
 		color: inherit;
 	}
 
-	.mobile-word {
+	.mobile-brand {
 		justify-self: center;
-		text-align: center;
-		color: inherit;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		text-decoration: none;
+		color: inherit;
 		-webkit-tap-highlight-color: transparent;
 	}
 
 	.desktop-word {
+		display: none;
+	}
+
+	/* Mobile: centered brand; desktop shows left brand */
+	.brand {
 		display: none;
 	}
 
@@ -678,10 +681,14 @@
 			max-height: var(--nav-h);
 		}
 
-		.mobile-word,
+		.mobile-brand,
 		.burger,
 		.mobile-shell {
 			display: none;
+		}
+
+		.brand {
+			display: inline-flex;
 		}
 
 		.desktop-word {

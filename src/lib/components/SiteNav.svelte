@@ -20,7 +20,12 @@
 
 	const links = $derived([
 		{ href: localizedPath(lang, '/product'), label: $t.navProduct },
-		{ href: localizedPath(lang, '/community'), label: $t.navCommunity },
+		{ href: `${localizedPath(lang, '/')}#pricing`, label: $t.navPricing },
+		{
+			href: site.communityUrl,
+			label: $t.navCommunity,
+			external: true
+		},
 		{ href: localizedPath(lang, '/contact'), label: $t.navContact }
 	]);
 
@@ -112,7 +117,13 @@
 
 			<nav class="desktop-links" aria-label="Main">
 				{#each links as link}
-					<a href={link.href} class="nav-link" class:selected={isActive(link.href)}>
+					<a
+						href={link.href}
+						class="nav-link"
+						class:selected={!link.external && isActive(link.href)}
+						target={link.external ? '_blank' : undefined}
+						rel={link.external ? 'noopener noreferrer' : undefined}
+					>
 						{link.label}
 					</a>
 				{/each}
@@ -209,7 +220,9 @@
 						<a
 							href={link.href}
 							class="nav-link mobile-link"
-							class:selected={isActive(link.href)}
+							class:selected={!link.external && isActive(link.href)}
+							target={link.external ? '_blank' : undefined}
+							rel={link.external ? 'noopener noreferrer' : undefined}
 							onclick={close}
 						>
 							{link.label}
@@ -363,10 +376,11 @@
 	}
 
 	.word {
-		font-family: var(--font-display);
-		font-weight: 650;
-		font-size: 1.4rem;
-		letter-spacing: -0.02em;
+		font-family: var(--font-sans);
+		font-weight: 550;
+		font-size: 0.78rem;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
 		color: inherit;
 	}
 

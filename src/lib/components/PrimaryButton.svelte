@@ -6,7 +6,9 @@
 		type = 'button',
 		onclick,
 		size = /** @type {BtnSize} */ ('md'),
-		disabled = false
+		disabled = false,
+		target = undefined,
+		rel = undefined
 	} = $props();
 
 	/** @type {HTMLAnchorElement | HTMLButtonElement | undefined} */
@@ -22,7 +24,7 @@
 </script>
 
 {#if href}
-	<a class="btn" class:sm={size === 'sm'} {href} bind:this={el} onmousemove={onMove}>
+	<a class="btn" class:sm={size === 'sm'} {href} {target} {rel} bind:this={el} onmousemove={onMove}>
 		<span class="label">
 			{@render children()}
 		</span>

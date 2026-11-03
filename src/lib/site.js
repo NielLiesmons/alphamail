@@ -2,6 +2,8 @@ export const site = {
 	name: 'Alpha Mail',
 	shortName: 'Alpha',
 	url: 'https://alphamail.xyz',
+	/** Separate forum/community webapp — open in a new tab from marketing */
+	communityUrl: 'https://community.alphamail.xyz',
 	email: 'hello@alphamail.xyz',
 	addressFr: 'Belgique · France',
 	addressEn: 'Belgium · France',

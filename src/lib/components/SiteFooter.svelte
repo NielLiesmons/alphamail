@@ -50,7 +50,11 @@
 			<div class="col">
 				<p class="col-label">{$t.footerColCommunity}</p>
 				<ul class="col-list">
-					<li><a href={localizedPath(lang, '/community')}>{$t.navCommunity}</a></li>
+					<li>
+						<a href={site.communityUrl} target="_blank" rel="noopener noreferrer"
+							>{$t.navCommunity}</a
+						>
+					</li>
 				</ul>
 			</div>
 
@@ -116,10 +120,11 @@
 	}
 
 	.word {
-		font-family: var(--font-display);
-		font-weight: 650;
-		font-size: 1.15rem;
-		letter-spacing: -0.02em;
+		font-family: var(--font-sans);
+		font-weight: 550;
+		font-size: 0.78rem;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
 	}
 
 	.meta {

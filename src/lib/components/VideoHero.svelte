@@ -1,7 +1,7 @@
 <script>
 	/**
-	 * Landing hero — Zapstore “Release with ease” pattern:
-	 * centered copy, then a full-bleed preview that fades into the page (no rounded card).
+	 * Landing hero — Zapstore “Release with ease” preview under CTAs:
+	 * studio screenshot + bottom fade into page (no divider, no fake UI chrome).
 	 */
 	import PrimaryButton from './PrimaryButton.svelte';
 	import GlassButton from './GlassButton.svelte';
@@ -11,7 +11,6 @@
 
 <section class="hero">
 	<div class="copy">
-		<p class="eyebrow">Alpha Mail</p>
 		<h1 class="display-hero">{$t.heroTitle}</h1>
 		<p class="text-desc">{$t.heroDesc}</p>
 		<div class="cta">
@@ -20,33 +19,17 @@
 		</div>
 	</div>
 
-	<div class="preview" aria-hidden="true">
-		<div class="preview-stage">
-			<div class="ui">
-				<aside class="ui-rail">
-					<span class="dot"></span>
-					<span class="line w60"></span>
-					<span class="line w40"></span>
-					<span class="line w55"></span>
-					<span class="line on w70"></span>
-					<span class="line w45"></span>
-				</aside>
-				<div class="ui-main">
-					<div class="ui-bar">
-						<span class="chip"></span>
-						<span class="chip short"></span>
-					</div>
-					<div class="ui-rows">
-						<span class="row"></span>
-						<span class="row mid"></span>
-						<span class="row short"></span>
-						<span class="row"></span>
-						<span class="row mid"></span>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="preview-fade"></div>
+	<div class="preview">
+		<img
+			class="shot"
+			src="/images/studio-screenshot.png"
+			alt=""
+			width="1600"
+			height="900"
+			decoding="async"
+			fetchpriority="high"
+		/>
+		<div class="fade" aria-hidden="true"></div>
 	</div>
 </section>
 
@@ -65,15 +48,7 @@
 		text-align: center;
 		width: 100%;
 		max-width: 40rem;
-		margin-bottom: 1.75rem;
-	}
-
-	.eyebrow {
-		margin: 0 0 0.85rem;
-		font-size: 1.05rem;
-		font-weight: 500;
-		color: var(--ink33);
-		letter-spacing: 0.01em;
+		margin-bottom: 1.5rem;
 	}
 
 	.copy .display-hero {
@@ -97,7 +72,7 @@
 		min-width: 9.25rem;
 	}
 
-	/* Full-bleed preview — clipped + bottom fade into --bg (Zapstore release) */
+	/* Full-bleed preview — Zapstore Release pattern (clip + bottom fade, no top rule) */
 	.preview {
 		position: relative;
 		width: 100vw;
@@ -107,166 +82,34 @@
 		pointer-events: none;
 	}
 
-	.preview-stage {
+	.shot {
+		display: block;
 		width: 100%;
-		height: 140%;
-		padding: 0 clamp(1rem, 4vw, 3rem);
-		box-sizing: border-box;
-		background:
-			radial-gradient(70% 55% at 18% 8%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
-			radial-gradient(55% 45% at 88% 22%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%),
-			linear-gradient(
-				180deg,
-				color-mix(in srgb, var(--ink) 5%, var(--bg)) 0%,
-				var(--bg) 100%
-			);
-		border-top: 1px solid var(--hairline);
-		display: flex;
-		justify-content: center;
-		align-items: flex-start;
-		padding-top: 1.25rem;
+		height: auto;
+		/* Soft accent bloom under the shot — Zapstore-style colored shadow */
+		filter: drop-shadow(0 0 60px color-mix(in srgb, var(--accent) 18%, transparent))
+			drop-shadow(0 24px 80px color-mix(in srgb, var(--accent) 10%, transparent));
 	}
 
-	.ui {
-		width: min(920px, 100%);
-		height: 100%;
-		display: flex;
-		border: 1px solid var(--hairline);
-		border-bottom: 0;
-		background: color-mix(in srgb, var(--surface) 92%, var(--bg));
-		overflow: hidden;
-	}
-
-	.ui-rail {
-		width: 168px;
-		flex-shrink: 0;
-		padding: 1.1rem 0.85rem;
-		border-right: 1px solid var(--hairline);
-		display: flex;
-		flex-direction: column;
-		gap: 0.55rem;
-		background: color-mix(in srgb, var(--ink) 2.5%, var(--surface));
-	}
-
-	.dot {
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: color-mix(in srgb, var(--ink) 14%, transparent);
-		margin-bottom: 0.35rem;
-	}
-
-	.line {
-		display: block;
-		height: 10px;
-		border-radius: 999px;
-		background: color-mix(in srgb, var(--ink) 8%, transparent);
-	}
-
-	.line.on {
-		background: color-mix(in srgb, var(--ink) 14%, transparent);
-	}
-
-	.w40 {
-		width: 40%;
-	}
-	.w45 {
-		width: 45%;
-	}
-	.w55 {
-		width: 55%;
-	}
-	.w60 {
-		width: 60%;
-	}
-	.w70 {
-		width: 70%;
-	}
-
-	.ui-main {
-		flex: 1;
-		min-width: 0;
-		padding: 1rem 1.15rem 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.ui-bar {
-		display: flex;
-		gap: 0.45rem;
-	}
-
-	.chip {
-		height: 22px;
-		width: 88px;
-		border-radius: 999px;
-		background: color-mix(in srgb, var(--ink) 7%, transparent);
-	}
-
-	.chip.short {
-		width: 56px;
-	}
-
-	.ui-rows {
-		display: flex;
-		flex-direction: column;
-		gap: 0.7rem;
-	}
-
-	.row {
-		display: block;
-		height: 52px;
-		border-radius: 12px;
-		background: color-mix(in srgb, var(--ink) 4.5%, transparent);
-		border: 1px solid color-mix(in srgb, var(--ink) 5%, transparent);
-	}
-
-	.row.mid {
-		width: 92%;
-	}
-
-	.row.short {
-		width: 78%;
-		height: 40px;
-	}
-
-	.preview-fade {
+	.fade {
 		position: absolute;
 		inset: auto 0 0 0;
-		height: min(180px, 55%);
+		height: min(160px, 50%);
 		background: linear-gradient(
 			to top,
 			var(--bg) 0%,
-			color-mix(in srgb, var(--bg) 85%, transparent) 28%,
-			color-mix(in srgb, var(--bg) 40%, transparent) 62%,
+			color-mix(in srgb, var(--bg) 80%, transparent) 20%,
+			color-mix(in srgb, var(--bg) 40%, transparent) 50%,
+			color-mix(in srgb, var(--bg) 15%, transparent) 75%,
 			transparent 100%
 		);
-	}
-
-	@media (max-width: 640px) {
-		.ui-rail {
-			width: 112px;
-			padding: 0.85rem 0.65rem;
-		}
-
-		.row {
-			height: 40px;
-		}
+		pointer-events: none;
 	}
 
 	@media (min-width: 768px) {
 		.copy {
 			max-width: 48rem;
-			margin-bottom: 2.25rem;
-		}
-
-		.eyebrow {
-			font-size: 1.125rem;
-		}
-
-		.preview-stage {
-			padding-top: 1.5rem;
+			margin-bottom: 2rem;
 		}
 	}
 
@@ -277,11 +120,7 @@
 
 		.copy {
 			max-width: 52rem;
-			margin-bottom: 2.75rem;
-		}
-
-		.eyebrow {
-			font-size: 1.25rem;
+			margin-bottom: 2.5rem;
 		}
 	}
 </style>

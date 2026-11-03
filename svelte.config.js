@@ -9,7 +9,8 @@ const config = {
 			strict: true
 		}),
 		prerender: {
-			entries: ['*']
+			// Community lives on the subdomain; keep marketing redirects crawlable.
+			entries: ['*', '/en/community', '/fr/community']
 		}
 	}
 };

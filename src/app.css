@@ -78,7 +78,7 @@
 	--hero-inset: 8px;
 	--nav-inset: 16px;
 	/* Fixed bar height — collapsed pill radius = half of this */
-	--nav-h: 52px;
+	--nav-h: 48px;
 	/* Hero corners concentric with collapsed nav pill: (nav-h/2) + inset gap */
 	--radius-hero: calc((var(--nav-h) / 2) + (var(--nav-inset) - var(--hero-inset)));
 	/* Expanded mobile menu: concentric with hero (hero radius − gap between insets) */
@@ -485,8 +485,6 @@ textarea.field-control {
 @media (min-width: 768px) {
 	:root {
 		--page-top: 8.75rem;
-		/* Same +4 step as mobile (48→52): desktop 52→56 — hero radius follows via calc */
-		--nav-h: 56px;
 	}
 }
 

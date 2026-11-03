@@ -6,6 +6,7 @@ export { locale, setLocale } from '$lib/prefs';
 const dict = {
 	fr: {
 		navProduct: 'Produit',
+		navPricing: 'Tarifs',
 		navCommunity: 'Community',
 		navContact: 'Contact',
 		navSettings: 'Réglages',
@@ -22,11 +23,80 @@ const dict = {
 		pillarsTitle: 'Ce que vous avez',
 		pillarsSub: 'Quatre piliers. Ajoutez Community pour le côté public.',
 		learnMore: 'En savoir plus',
+		pricingEyebrow: 'Tarifs',
+		pricingTitle: 'Simple, par Space.',
+		pricingSub: 'Mail et Drive inclus. Ajoutez Chat, Projets et Community quand vous en avez besoin.',
+		pricingTiers: [
+			{
+				id: 'core',
+				name: 'Core',
+				price: 'Gratuit',
+				priceMuted: true,
+				desc: 'Pour essayer un Space sur votre domaine.',
+				features: [
+					'Mail et Drive inclus',
+					'Jusqu’à 5 personnes',
+					'Votre domaine',
+					'Invitations par QR'
+				],
+				cta: 'Commencer',
+				primary: false
+			},
+			{
+				id: 'space',
+				name: 'Space',
+				price: '29 €',
+				suffix: '/ mois',
+				desc: 'Le Space complet pour votre groupe.',
+				features: [
+					'Tout Core',
+					'Chat et Projets',
+					'Personnes illimitées',
+					'Stockage étendu',
+					'Support humain'
+				],
+				cta: 'Obtenir un Space',
+				primary: true,
+				featured: true
+			},
+			{
+				id: 'community',
+				name: 'Community',
+				price: '49 €',
+				suffix: '/ mois',
+				desc: 'Space + couche publique pour vos membres.',
+				features: [
+					'Tout Space',
+					'Forum et lettres publics',
+					'Sous-domaine community',
+					'Modération et rôles',
+					'Vitrine du groupe'
+				],
+				cta: 'Parler avec nous',
+				primary: true
+			},
+			{
+				id: 'custom',
+				name: 'Sur mesure',
+				price: 'Custom',
+				priceMuted: true,
+				desc: 'Déploiements privés et multi-Space.',
+				features: [
+					'Tout Community',
+					'Plusieurs Spaces',
+					'SSO / admin org',
+					'SLA dédié',
+					'Hébergement adapté'
+				],
+				cta: 'Contact',
+				primary: false
+			}
+		],
 		communityTitle: 'Community',
 		communitySub:
 			'Lettres, fils, actus et voix des membres sous votre toit. Plus que des posts: la couche publique du Space.',
-		communityCta: 'Entrer dans Community',
-		communitySoon: 'Bientôt ici. Écrivez-nous pour rejoindre les premiers Spaces.',
+		communityCta: 'Ouvrir Community',
+		communitySoon: 'Community vit sur son propre sous-domaine — une app forum, pas une page marketing.',
 		howTitle: 'Un Space, votre domaine',
 		howSub:
 			'Des comptes pour de vraies personnes. Admin est un rôle, pas une boîte partagée. Vous invitez avec un QR.',
@@ -73,6 +143,7 @@ const dict = {
 	},
 	en: {
 		navProduct: 'Product',
+		navPricing: 'Pricing',
 		navCommunity: 'Community',
 		navContact: 'Contact',
 		navSettings: 'Settings',
@@ -89,11 +160,80 @@ const dict = {
 		pillarsTitle: 'What you get',
 		pillarsSub: 'Four pillars. Add Community when you need a public side.',
 		learnMore: 'Learn more',
+		pricingEyebrow: 'Pricing',
+		pricingTitle: 'Simple, per Space.',
+		pricingSub: 'Mail and Drive included. Add Chat, Projects, and Community when you need them.',
+		pricingTiers: [
+			{
+				id: 'core',
+				name: 'Core',
+				price: 'Free',
+				priceMuted: true,
+				desc: 'Try a Space on your own domain.',
+				features: [
+					'Mail and Drive included',
+					'Up to 5 people',
+					'Your domain',
+					'QR invites'
+				],
+				cta: 'Get started',
+				primary: false
+			},
+			{
+				id: 'space',
+				name: 'Space',
+				price: '€29',
+				suffix: '/ month',
+				desc: 'The full Space for your group.',
+				features: [
+					'Everything in Core',
+					'Chat and Projects',
+					'Unlimited people',
+					'Expanded storage',
+					'Human support'
+				],
+				cta: 'Get a Space',
+				primary: true,
+				featured: true
+			},
+			{
+				id: 'community',
+				name: 'Community',
+				price: '€49',
+				suffix: '/ month',
+				desc: 'Space plus a public layer for your members.',
+				features: [
+					'Everything in Space',
+					'Public forum and letters',
+					'community subdomain',
+					'Moderation and roles',
+					'Group face to the world'
+				],
+				cta: 'Talk to us',
+				primary: true
+			},
+			{
+				id: 'custom',
+				name: 'Custom',
+				price: 'Custom',
+				priceMuted: true,
+				desc: 'Private deployments and multi-Space orgs.',
+				features: [
+					'Everything in Community',
+					'Multiple Spaces',
+					'SSO / org admin',
+					'Dedicated SLA',
+					'Tailored hosting'
+				],
+				cta: 'Contact',
+				primary: false
+			}
+		],
 		communityTitle: 'Community',
 		communitySub:
 			'Letters, threads, updates, and member voices under your roof. More than posts: a living public layer for the Space.',
-		communityCta: 'Enter Community',
-		communitySoon: 'Coming here soon. Write us to join the first Spaces.',
+		communityCta: 'Open Community',
+		communitySoon: 'Community lives on its own subdomain — a forum app, not a marketing page.',
 		howTitle: 'One Space, your domain',
 		howSub:
 			'Accounts are real people. Admin is a role, not a shared inbox. Invite with a QR.',

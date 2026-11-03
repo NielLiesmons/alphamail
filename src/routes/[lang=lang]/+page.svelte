@@ -2,6 +2,7 @@
 	import VideoHero from '$lib/components/VideoHero.svelte';
 	import SectionTitle from '$lib/components/SectionTitle.svelte';
 	import ServiceCarousel from '$lib/components/ServiceCarousel.svelte';
+	import PricingSection from '$lib/components/PricingSection.svelte';
 	import PrimaryButton from '$lib/components/PrimaryButton.svelte';
 	import GlassButton from '$lib/components/GlassButton.svelte';
 	import { page } from '$app/stores';
@@ -36,12 +37,16 @@
 	<ServiceCarousel />
 </section>
 
+<PricingSection />
+
 <section class="section community">
 	<div class="container band">
 		<h2 class="display-section">{$t.communityTitle}</h2>
 		<p class="text-desc">{$t.communitySub}</p>
 		<div class="cta">
-			<PrimaryButton href={localizedPath(lang, '/community')}>{$t.communityCta}</PrimaryButton>
+			<PrimaryButton href={site.communityUrl} target="_blank" rel="noopener noreferrer"
+				>{$t.communityCta}</PrimaryButton
+			>
 		</div>
 	</div>
 </section>

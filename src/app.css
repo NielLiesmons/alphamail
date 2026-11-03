@@ -1,0 +1,509 @@
+/* Niel — Alpha design system (Bley shell, brand knobs)
+   See spec/guidelines/DESIGN_SYSTEM.md */
+
+/* Variable Inter so display weight 650 matches Zapstore (discrete 700 was too heavy) */
+@import url('https://rsms.me/inter/inter.css');
+
+:root {
+	/* Breakpoints (document in DS; use in @media) */
+	--bp-sm: 640px;
+	--bp-md: 768px;
+	--bp-lg: 1024px;
+	--bp-xl: 1600px;
+
+	/*
+	 * Brand knobs (Admin → Space → inject on <html>).
+	 * Same low-S pole model as Admin; accent hue whispers through.
+	 * CTAs stay ink-on-bg — never accent fills.
+	 */
+	--accent: #5B56FF;
+	--accent-2: #6b9e8f;
+	--accent-2: oklch(from var(--accent) calc(l * 0.9) calc(c * 0.88) calc(h + 152));
+	--accent-66: color-mix(in srgb, var(--accent) 66%, transparent);
+	--accent-2-66: color-mix(in srgb, var(--accent-2) 66%, transparent);
+
+	/*
+	 * Poles — Admin recipe (low saturation), light default for the public site.
+	 */
+	--ink-raw: hsl(from var(--accent) h 8% 8%);
+	--bg-raw: hsl(from var(--accent) h 4% 97%);
+
+	/* Active theme pair (light default) — dark flips poles only */
+	--bg: var(--bg-raw);
+	--ink: var(--ink-raw);
+	--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
+	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+	/*
+	 * Surfaces are asymmetric (not a pure invert):
+	 * Light → darken with --ink-raw; lift with white.
+	 * Dark  → darken with black; lift with white.
+	 * Page fields match --bg; elevated panels recess fields against the panel.
+	 */
+	--hairline: color-mix(in srgb, var(--ink-raw) 14%, transparent);
+	--surface: color-mix(in srgb, var(--ink-raw) 5%, var(--bg));
+	/* Frosted panels (nav) — page bg at reduced opacity + blur */
+	--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+	--glass-blur: 14px;
+	/* Elevated solid panels — dropdowns, modals, selected seg chips */
+	--popover: color-mix(in srgb, white 72%, var(--bg));
+	--modal-bg: var(--popover);
+	/* Page fields = page bg; modals/menus use --field-on-elevated */
+	--field-bg: var(--bg);
+	--field-on-elevated: color-mix(in srgb, var(--ink-raw) 11%, var(--popover));
+	/*
+	 * Site-theme chrome (pills, close, chat) — tracks --popover; survives .on-media
+	 * so light elevated chips stay readable on dark photo overlays.
+	 */
+	--ui-bg: var(--popover);
+	--ui-ink: var(--ink-raw);
+	--ui-ink66: color-mix(in srgb, var(--ink-raw) 66%, transparent);
+	--ui-hairline: color-mix(in srgb, var(--ink-raw) 14%, transparent);
+
+	/* Shared form / search controls */
+	--field-h: 44px;
+	--field-radius: 14px;
+	--field-border: color-mix(in srgb, var(--ink-raw) 16%, transparent);
+	--field-border-focus: color-mix(in srgb, var(--ink-raw) 48%, transparent);
+
+	--font-sans: 'InterVariable', 'Inter', system-ui, -apple-system, sans-serif;
+	--font-display: 'InterVariable', 'Inter', system-ui, -apple-system, sans-serif;
+
+	--pad-x: 16px;
+	--container-max: 100%;
+	--radius-8: 8px;
+	--radius-16: 16px;
+	--radius-24: 24px;
+	--radius-pill: 999px;
+	/* Hero 8px from screen; nav another 8px inward (= 16px from screen) */
+	--hero-inset: 8px;
+	--nav-inset: 16px;
+	/* Fixed bar height — collapsed pill radius = half of this */
+	--nav-h: 52px;
+	/* Hero corners concentric with collapsed nav pill: (nav-h/2) + inset gap */
+	--radius-hero: calc((var(--nav-h) / 2) + (var(--nav-inset) - var(--hero-inset)));
+	/* Expanded mobile menu: concentric with hero (hero radius − gap between insets) */
+	--nav-radius-open: calc(var(--radius-hero) - (var(--nav-inset) - var(--hero-inset)));
+	/* Clear the floating pill on inner pages */
+	--page-top: 8rem;
+	/* Scrim/shadow always from broken black pole — same in light & dark */
+	--scrim: color-mix(in srgb, var(--ink-raw) 48%, transparent);
+	--shadow: color-mix(in srgb, var(--ink-raw) 22%, transparent);
+	--shadow-strong: color-mix(in srgb, var(--ink-raw) 32%, transparent);
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--border-base: 1px;
+	/* Carousel side-card wash — light stays subtle so photos remain visible */
+	--carousel-veil: 0.22;
+	--carousel-veil-near: 0.12;
+	/*
+	 * Site theme frozen for controls inside .on-media heroes (photo poles flip
+	 * --bg/--ink; these stay on the real page theme so fields match the rest of the site).
+	 */
+	--theme-bg: var(--bg-raw);
+	--theme-ink: var(--ink-raw);
+	--theme-ink66: color-mix(in srgb, var(--ink-raw) 66%, transparent);
+	--theme-ink33: color-mix(in srgb, var(--ink-raw) 33%, transparent);
+	--theme-surface: color-mix(in srgb, var(--ink-raw) 5%, var(--bg-raw));
+	--theme-field-bg: var(--bg-raw);
+	--theme-field-border: color-mix(in srgb, var(--ink-raw) 16%, transparent);
+
+	color-scheme: light;
+}
+
+/* Dark surfaces: lift with white, recess fields with black (not a flip of light mixes) */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--bg: var(--ink-raw);
+		--ink: var(--bg-raw);
+		--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
+		--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+		--hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
+		--surface: color-mix(in srgb, white 5.5%, var(--bg));
+		--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+		--popover: color-mix(in srgb, white 9%, var(--bg));
+		--modal-bg: var(--popover);
+		--field-bg: var(--bg);
+		--field-on-elevated: color-mix(in srgb, black 26%, var(--popover));
+		--field-border: color-mix(in srgb, var(--bg-raw) 16%, transparent);
+		--field-border-focus: color-mix(in srgb, var(--bg-raw) 42%, transparent);
+		--ui-bg: var(--popover);
+		--ui-ink: var(--bg-raw);
+		--ui-ink66: color-mix(in srgb, var(--bg-raw) 66%, transparent);
+		--ui-hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
+		--carousel-veil: 0.52;
+		--carousel-veil-near: 0.32;
+		--theme-bg: var(--ink-raw);
+		--theme-ink: var(--bg-raw);
+		--theme-ink66: color-mix(in srgb, var(--bg-raw) 66%, transparent);
+		--theme-ink33: color-mix(in srgb, var(--bg-raw) 33%, transparent);
+		--theme-surface: color-mix(in srgb, white 5.5%, var(--ink-raw));
+		--theme-field-bg: var(--ink-raw);
+		--theme-field-border: color-mix(in srgb, var(--bg-raw) 16%, transparent);
+		color-scheme: dark;
+	}
+}
+
+:root[data-theme='dark'] {
+	--bg: var(--ink-raw);
+	--ink: var(--bg-raw);
+	--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
+	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+	--hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
+	--surface: color-mix(in srgb, white 5.5%, var(--bg));
+	--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+	--popover: color-mix(in srgb, white 9%, var(--bg));
+	--modal-bg: var(--popover);
+	--field-bg: var(--bg);
+	--field-on-elevated: color-mix(in srgb, black 26%, var(--popover));
+	--field-border: color-mix(in srgb, var(--bg-raw) 16%, transparent);
+	--field-border-focus: color-mix(in srgb, var(--bg-raw) 42%, transparent);
+	--ui-bg: var(--popover);
+	--ui-ink: var(--bg-raw);
+	--ui-ink66: color-mix(in srgb, var(--bg-raw) 66%, transparent);
+	--ui-hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
+	--carousel-veil: 0.52;
+	--carousel-veil-near: 0.32;
+	--theme-bg: var(--ink-raw);
+	--theme-ink: var(--bg-raw);
+	--theme-ink66: color-mix(in srgb, var(--bg-raw) 66%, transparent);
+	--theme-ink33: color-mix(in srgb, var(--bg-raw) 33%, transparent);
+	--theme-surface: color-mix(in srgb, white 5.5%, var(--ink-raw));
+	--theme-field-bg: var(--ink-raw);
+	--theme-field-border: color-mix(in srgb, var(--bg-raw) 16%, transparent);
+	color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+	--bg: var(--bg-raw);
+	--ink: var(--ink-raw);
+	--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
+	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+	--hairline: color-mix(in srgb, var(--ink-raw) 14%, transparent);
+	--surface: color-mix(in srgb, var(--ink-raw) 5%, var(--bg));
+	--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+	--popover: color-mix(in srgb, white 72%, var(--bg));
+	--modal-bg: var(--popover);
+	--field-bg: var(--bg);
+	--field-on-elevated: color-mix(in srgb, var(--ink-raw) 11%, var(--popover));
+	--field-border: color-mix(in srgb, var(--ink-raw) 16%, transparent);
+	--field-border-focus: color-mix(in srgb, var(--ink-raw) 48%, transparent);
+	--ui-bg: var(--popover);
+	--ui-ink: var(--ink-raw);
+	--ui-ink66: color-mix(in srgb, var(--ink-raw) 66%, transparent);
+	--ui-hairline: color-mix(in srgb, var(--ink-raw) 14%, transparent);
+	--carousel-veil: 0.22;
+	--carousel-veil-near: 0.12;
+	--theme-bg: var(--bg-raw);
+	--theme-ink: var(--ink-raw);
+	--theme-ink66: color-mix(in srgb, var(--ink-raw) 66%, transparent);
+	--theme-ink33: color-mix(in srgb, var(--ink-raw) 33%, transparent);
+	--theme-surface: color-mix(in srgb, var(--ink-raw) 5%, var(--bg-raw));
+	--theme-field-bg: var(--bg-raw);
+	--theme-field-border: color-mix(in srgb, var(--ink-raw) 16%, transparent);
+	color-scheme: light;
+}
+
+@media (min-width: 640px) {
+	:root {
+		--pad-x: 24px;
+	}
+}
+
+@media (min-width: 1024px) {
+	:root {
+		--pad-x: 32px;
+		--container-max: 960px;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	/* Smooth scroll only on real pointers — on touch it fights momentum and causes jumps */
+	-webkit-text-size-adjust: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	html {
+		scroll-behavior: smooth;
+	}
+}
+
+body {
+	margin: 0;
+	/* svh stays put when the mobile browser chrome shows/hides */
+	min-height: 100svh;
+	font-family: var(--font-sans);
+	font-size: 16px;
+	line-height: 1.55;
+	color: var(--ink);
+	background: var(--bg);
+	-webkit-font-smoothing: antialiased;
+	/* Kill the iOS/Android blue/gray tap flash on every press */
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	overflow-anchor: none;
+}
+
+/*
+ * Photo overlay chrome — always dark-mode poles (light type, black fades),
+ * even when the site theme is light. Put on hero frames, moment tiles, etc.
+ */
+.on-media {
+	--bg: var(--ink-raw);
+	--ink: var(--bg-raw);
+	--ink66: color-mix(in srgb, var(--bg-raw) 66%, transparent);
+	--ink33: color-mix(in srgb, var(--bg-raw) 33%, transparent);
+	--hairline: color-mix(in srgb, var(--bg-raw) 16%, transparent);
+	--surface: color-mix(in srgb, white 6%, var(--ink-raw));
+	/* Fields stay on --theme-* via .site-fields — not remapped here */
+}
+
+/*
+ * Forms / inputs inside photo heroes — site theme (light or dark), not overlay poles.
+ */
+.site-fields {
+	--bg: var(--theme-bg);
+	--ink: var(--theme-ink);
+	--ink66: var(--theme-ink66);
+	--ink33: var(--theme-ink33);
+	--surface: var(--theme-surface);
+	--field-bg: var(--theme-field-bg);
+	--field-border: var(--theme-field-border);
+	--hairline: var(--theme-field-border);
+	color: var(--theme-ink);
+}
+
+/*
+ * Elevated panels (modals, menus, filter sheets) should set:
+ *   --field-bg: var(--field-on-elevated);
+ * so inputs / seg tracks recess against the panel, not the page.
+ */
+.elevated-panel {
+	--field-bg: var(--field-on-elevated);
+}
+
+button,
+a,
+[role='button'],
+summary,
+label,
+input,
+select,
+textarea {
+	-webkit-tap-highlight-color: transparent;
+}
+
+img,
+video {
+	max-width: 100%;
+	display: block;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+button {
+	font-family: inherit;
+}
+
+p {
+	margin: 0;
+	color: var(--ink66);
+}
+
+h1,
+h2,
+h3 {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 650;
+	color: var(--ink);
+}
+
+.container {
+	width: min(100% - 2 * var(--pad-x), var(--container-max));
+	margin-inline: auto;
+}
+
+/*
+ * Shared inputs — one border, strengthen on focus (no outline ring).
+ * Use .field-control on text inputs / textareas; .field-shell for pill+button rows.
+ */
+.field-label {
+	display: block;
+	padding-left: 12px;
+	margin: 0 0 0.4rem;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--ink66);
+}
+
+.field-control {
+	display: block;
+	width: 100%;
+	height: var(--field-h);
+	padding: 0 1rem;
+	box-sizing: border-box;
+	font-family: var(--font-sans);
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.35;
+	color: var(--ink);
+	background: var(--field-bg);
+	border: 1px solid var(--field-border);
+	border-radius: var(--field-radius);
+	outline: none;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+textarea.field-control {
+	height: auto;
+	min-height: 9.5rem;
+	padding: 0.85rem 1rem;
+	resize: none;
+}
+
+.field-control::placeholder {
+	color: var(--ink33);
+	font-weight: 500;
+}
+
+.field-control:focus {
+	outline: none;
+}
+
+.field-shell {
+	display: flex;
+	align-items: center;
+	gap: 0.2rem;
+	height: var(--field-h);
+	padding: 4px;
+	box-sizing: border-box;
+	border-radius: var(--radius-pill);
+	border: 1px solid var(--field-border);
+	background: var(--field-bg);
+}
+
+.field-shell:focus-within {
+	outline: none;
+}
+
+.field-shell input {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+	padding: 0 0.75rem 0 0.9rem;
+	border: none;
+	background: transparent;
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-size: 14px;
+	font-weight: 500;
+	outline: none;
+	box-sizing: border-box;
+}
+
+.field-shell input::placeholder {
+	color: var(--ink33);
+	font-weight: 500;
+}
+
+/* Zapstore landing display scale — weight 650 (not 700) */
+.display-hero {
+	font-family: var(--font-display);
+	font-weight: 650;
+	letter-spacing: -0.025em;
+	line-height: 1.1;
+	font-size: clamp(36px, 7vw, 72px);
+	color: var(--ink);
+}
+
+.display-section {
+	font-family: var(--font-display);
+	font-weight: 650;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+	font-size: clamp(28px, 4vw, 48px);
+	color: var(--ink);
+}
+
+/* One description size site-wide */
+.text-desc {
+	font-family: var(--font-sans);
+	font-weight: 400;
+	line-height: 1.65;
+	font-size: 18px;
+	color: var(--ink66);
+}
+
+/* Landing sections */
+.section {
+	border-top: var(--border-base) solid var(--hairline);
+	padding-top: 2rem;
+	padding-bottom: 2.5rem;
+	text-align: center;
+}
+
+@media (min-width: 640px) {
+	.section {
+		padding-top: 3rem;
+		padding-bottom: 3rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.section {
+		padding-top: 4rem;
+		padding-bottom: 4rem;
+	}
+}
+
+/* Inner pages: clear the floating navbar */
+.section.page-chrome {
+	padding-top: var(--page-top);
+	border-top: none;
+}
+
+/* Shop / News: PageHero uses landing --hero-inset; no extra top clearance */
+.section.page-chrome.has-hero {
+	padding-top: 0;
+}
+
+@media (min-width: 640px) {
+	.section.page-chrome:not(.has-hero) {
+		padding-top: var(--page-top);
+	}
+}
+
+@media (min-width: 768px) {
+	:root {
+		--page-top: 8.75rem;
+		/* Same +4 step as mobile (48→52): desktop 52→56 — hero radius follows via calc */
+		--nav-h: 56px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.section.page-chrome:not(.has-hero) {
+		padding-top: var(--page-top);
+	}
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

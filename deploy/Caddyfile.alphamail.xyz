@@ -1,0 +1,35 @@
+# Snippet for the Alpha VPS Caddyfile — alphamail.xyz marketing site.
+# Install: merge into /etc/caddy/Caddyfile (or import), then:
+#   mkdir -p /var/www/alphamail && chown -R deploy:deploy /var/www/alphamail
+#   caddy validate --config /etc/caddy/Caddyfile && systemctl reload caddy
+#
+# DNS (at your registrar):
+#   alphamail.xyz     A    <VPS_IP>
+#   www.alphamail.xyz A    <VPS_IP>
+#   (or CNAME www → alphamail.xyz)
+
+www.alphamail.xyz {
+	redir https://alphamail.xyz{uri} permanent
+}
+
+alphamail.xyz {
+	encode gzip zstd
+	root * /var/www/alphamail
+
+	route {
+		# Apex → English home
+		redir / /en 308
+
+		@slash path_regexp slash ^(.+)/$
+		redir @slash {re.slash.1} 308
+
+		@needs_en {
+			not path /en /en/* /fr /fr/*
+			not path /_app/* /favicon.svg /robots.txt /sitemap.xml /media/* /icons/*
+		}
+		redir @needs_en /en{uri} 307
+
+		try_files {path} {path}.html {path}/index.html
+		file_server
+	}
+}

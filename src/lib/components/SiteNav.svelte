@@ -20,14 +20,13 @@
 	const lang = $derived(langFromPath($page.url.pathname) || $locale);
 
 	const links = $derived([
-		{ href: localizedPath(lang, '/product'), label: $t.navProduct },
-		{ href: localizedPath(lang, '/pricing'), label: $t.navPricing },
+		{ href: localizedPath(lang, '/contact'), label: $t.navTry },
 		{
 			href: site.communityUrl,
 			label: $t.navCommunity,
 			external: true
 		},
-		{ href: localizedPath(lang, '/contact'), label: $t.navContact }
+		{ href: localizedPath(lang, '/pricing'), label: $t.navPricing }
 	]);
 
 	const homeHref = $derived(localizedPath(lang, '/'));
@@ -110,12 +109,12 @@
 	<div class="pill" class:open>
 		<div class="bar">
 			<a class="brand" href={homeHref} onclick={close} aria-label={site.shortName}>
-				<AlphaLogo size={26} className="nav-mark" />
+				<AlphaLogo size={18} className="nav-mark" />
 				<span class="word desktop-word">{site.shortName}</span>
 			</a>
 
 			<a class="mobile-brand" href={homeHref} onclick={close} aria-label={site.shortName}>
-				<AlphaLogo size={24} />
+				<AlphaLogo size={18} />
 				<span class="word">{site.shortName}</span>
 			</a>
 

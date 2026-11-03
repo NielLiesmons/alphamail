@@ -1,27 +1,14 @@
 <script>
 	/**
-	 * Zapstore-style animated three-item feature stack:
-	 * desktop tabs (auto-advance) + mobile horizontal cards.
+	 * Zapstore-style three-item stack: tabs + simple rotating placeholder.
 	 */
 	import { onMount, onDestroy } from 'svelte';
 
 	/**
-	 * @typedef {{ title: string, description: string, label?: string }} FeatureCard
-	 * @type {{
-	 *   eyebrow?: string,
-	 *   title?: string,
-	 *   sub?: string,
-	 *   cards?: FeatureCard[],
-	 *   intervalMs?: number
-	 * }}
+	 * @typedef {{ title: string, description: string }} FeatureCard
+	 * @type {{ title?: string, sub?: string, cards?: FeatureCard[], intervalMs?: number }}
 	 */
-	let {
-		eyebrow = '',
-		title = '',
-		sub = '',
-		cards = [],
-		intervalMs = 9000
-	} = $props();
+	let { title = '', sub = '', cards = [], intervalMs = 9000 } = $props();
 
 	let activeIndex = $state(0);
 	/** @type {ReturnType<typeof setInterval> | null} */
@@ -77,9 +64,6 @@
 
 <section class="feat" bind:this={sectionEl}>
 	<header class="head">
-		{#if eyebrow}
-			<p class="eyebrow">{eyebrow}</p>
-		{/if}
 		{#if title}
 			<h2 class="display-section">{title}</h2>
 		{/if}
@@ -88,17 +72,11 @@
 		{/if}
 	</header>
 
-	<!-- Mobile: horizontal cards -->
 	<div class="mobile">
 		<div class="mobile-track">
 			{#each cards as card, i (card.title)}
-				<article class="mob-card" class:on={activeIndex === i}>
-					<div class="mob-visual" aria-hidden="true">
-						<span class="idx">{String(i + 1).padStart(2, '0')}</span>
-						{#if card.label}
-							<span class="chip">{card.label}</span>
-						{/if}
-					</div>
+				<article class="mob-card">
+					<div class="ph" aria-hidden="true"></div>
 					<div class="mob-body">
 						<h3 class="card-title">{card.title}</h3>
 						<p class="card-desc">{card.description}</p>
@@ -108,7 +86,6 @@
 		</div>
 	</div>
 
-	<!-- Desktop: tabs + stage -->
 	<div class="desktop">
 		<div class="tabs">
 			{#each cards as card, i (card.title)}
@@ -118,25 +95,15 @@
 					class:active={activeIndex === i}
 					onclick={() => selectTab(i)}
 				>
-					{#if card.label}
-						<span class="chip">{card.label}</span>
-					{/if}
 					<h3 class="card-title">{card.title}</h3>
 					<p class="card-desc">{card.description}</p>
 				</button>
 			{/each}
 		</div>
 
-		<div class="stage" aria-live="polite">
+		<div class="stage" aria-hidden="true">
 			{#each cards as card, i (card.title)}
-				<div class="panel" class:visible={activeIndex === i}>
-					<span class="idx big">{String(i + 1).padStart(2, '0')}</span>
-					{#if card.label}
-						<span class="chip">{card.label}</span>
-					{/if}
-					<h3 class="card-title">{card.title}</h3>
-					<p class="card-desc">{card.description}</p>
-				</div>
+				<div class="ph panel" class:visible={activeIndex === i}></div>
 			{/each}
 		</div>
 	</div>
@@ -150,26 +117,22 @@
 
 	.head {
 		text-align: center;
-		max-width: 36rem;
+		width: min(100% - 2 * var(--pad-x), var(--container-max));
 		margin: 0 auto 1.5rem;
-		padding-inline: var(--pad-x);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 0.65rem;
 	}
 
-	.eyebrow {
-		margin: 0;
-		font-size: 0.8rem;
-		font-weight: 550;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--ink33);
+	.head .display-section {
+		max-width: none;
+		text-wrap: balance;
 	}
 
 	.head .text-desc {
 		margin: 0;
+		max-width: 40rem;
 	}
 
 	.mobile {
@@ -194,64 +157,26 @@
 	.mob-card {
 		flex: 0 0 min(86vw, 320px);
 		scroll-snap-align: center;
-		border: 1px solid var(--hairline);
-		border-radius: 18px;
-		overflow: hidden;
-		background: var(--surface);
-	}
-
-	.mob-visual {
-		position: relative;
-		height: 140px;
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		padding: 1rem 1.15rem;
-		background:
-			radial-gradient(70% 90% at 15% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
-			linear-gradient(165deg, color-mix(in srgb, var(--ink) 6%, var(--surface)), var(--surface));
 	}
 
 	.mob-body {
-		padding: 1.1rem 1.15rem 1.25rem;
+		padding: 1rem 0.15rem 0;
+	}
+
+	.ph {
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		border-radius: 14px;
+		background: color-mix(in srgb, var(--ink) 6%, var(--surface));
+		border: 1px solid var(--hairline);
 	}
 
 	.desktop {
 		display: none;
 	}
 
-	.idx {
-		font-family: var(--font-display);
-		font-weight: 650;
-		font-size: 2.5rem;
-		letter-spacing: -0.04em;
-		line-height: 1;
-		color: color-mix(in srgb, var(--ink) 18%, transparent);
-	}
-
-	.idx.big {
-		font-size: clamp(4rem, 8vw, 6.5rem);
-		position: absolute;
-		right: 1.25rem;
-		bottom: 0.75rem;
-		pointer-events: none;
-	}
-
-	.chip {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.28rem 0.65rem;
-		border-radius: 999px;
-		font-size: 11px;
-		font-weight: 550;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--ink66);
-		background: color-mix(in srgb, var(--ink) 7%, transparent);
-	}
-
 	.card-title {
-		margin: 0.45rem 0 0.35rem;
+		margin: 0 0 0.35rem;
 		font-family: var(--font-sans);
 		font-size: 1.125rem;
 		font-weight: 650;
@@ -296,24 +221,23 @@
 			grid-template-columns: 1fr 1fr;
 			gap: 2.5rem;
 			align-items: stretch;
-			max-width: 1100px;
+			width: min(100% - 2 * var(--pad-x), var(--container-max));
 			margin: 0 auto;
-			padding-inline: var(--pad-x);
 		}
 
 		.tabs {
 			display: flex;
 			flex-direction: column;
-			gap: 0.35rem;
+			gap: 0.25rem;
 			justify-content: center;
 		}
 
 		.tab {
 			text-align: left;
 			width: 100%;
-			padding: 1.15rem 1.25rem;
+			padding: 1.1rem 1.15rem;
 			border: 0;
-			border-radius: 16px;
+			border-radius: 14px;
 			background: transparent;
 			cursor: pointer;
 			font: inherit;
@@ -321,54 +245,33 @@
 		}
 
 		.tab.active {
-			background: color-mix(in srgb, var(--ink) 5.5%, transparent);
+			background: color-mix(in srgb, var(--ink) 5%, transparent);
 		}
 
 		.stage {
 			position: relative;
-			min-height: 340px;
-			border: 1px solid var(--hairline);
-			border-radius: 22px;
-			overflow: hidden;
-			background:
-				radial-gradient(80% 70% at 10% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 55%),
-				var(--surface);
+			min-height: 320px;
 		}
 
 		.panel {
 			position: absolute;
 			inset: 0;
-			padding: 1.75rem 1.5rem;
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			justify-content: center;
-			gap: 0.35rem;
 			opacity: 0;
-			filter: blur(10px);
-			transform: scale(0.97);
+			filter: blur(8px);
+			transform: scale(0.98);
 			transition:
-				opacity 0.55s ease,
-				filter 0.55s ease,
-				transform 0.55s ease;
+				opacity 0.5s ease,
+				filter 0.5s ease,
+				transform 0.5s ease;
 			pointer-events: none;
+			aspect-ratio: auto;
+			height: 100%;
 		}
 
 		.panel.visible {
 			opacity: 1;
 			filter: blur(0);
 			transform: scale(1);
-			pointer-events: auto;
-		}
-
-		.panel .card-title {
-			font-size: 1.45rem;
-			max-width: 16rem;
-		}
-
-		.panel .card-desc {
-			max-width: 18rem;
-			font-size: 1rem;
 		}
 	}
 </style>

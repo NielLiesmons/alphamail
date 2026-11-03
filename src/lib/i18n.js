@@ -18,50 +18,42 @@ const dict = {
 		heroTitle: 'Un chez-soi pour votre groupe',
 		heroDesc:
 			'Mail, Drive, Chat et Projets dans un seul Space. Privé par défaut. Public quand vous voulez une vitrine.',
-		heroSecondary: 'Voir le produit',
-		heroCta: 'Créer un Space',
-		privateEyebrow: 'Privé',
+		heroCta: 'Essayer gratuitement',
+		navTry: 'Essayer gratuitement',
 		privateTitle: 'Ce qui reste entre vous.',
 		privateSub: 'Mail, Drive et outils de travail — chiffrés, sur votre domaine.',
 		privateCards: [
 			{
-				label: 'Mail',
-				title: 'Chacun a toi@tondomaine',
+				title: 'Mail comme fondation',
 				description:
-					'De vraies boîtes, pas une adresse partagée. Les gens se connectent comme eux-mêmes.'
+					'De vraies boîtes sur votre domaine. Les gens se connectent comme eux-mêmes, pas via une adresse partagée.'
 			},
 			{
-				label: 'Drive',
-				title: 'Fichiers chiffrés, à vous',
+				title: 'Fichiers, chiffrés',
 				description:
 					'Le Drive du Space est la source de vérité. Vous publiez seulement ce que vous choisissez.'
 			},
 			{
-				label: 'Travail',
-				title: 'Chat et Projets au même endroit',
+				title: 'Chat et Projets, au complet',
 				description:
-					'Conversation et suivi à côté des fichiers — plus de fils perdus dans WhatsApp.'
+					'Conversation et suivi à côté des fichiers — plus de fils perdus ailleurs.'
 			}
 		],
-		publicEyebrow: 'Public',
-		publicTitle: 'Quand vous voulez une face.',
-		publicSub: 'Community ouvre une couche publique sans quitter le Space.',
+		publicTitle: 'Quand vous voulez du public.',
+		publicSub: 'Community ouvre une couche tournée vers le public, sans quitter le Space.',
 		publicCards: [
 			{
-				label: 'Lettres',
-				title: 'Publiez quand vous voulez',
+				title: 'Lettres, quand vous voulez',
 				description:
 					'Lettres et actus sous votre toit. Privé par défaut — public sur décision.'
 			},
 			{
-				label: 'Forum',
-				title: 'La conversation des membres',
+				title: 'Forum pour les membres',
 				description:
 					'Fils, voix et mémoire collective sur community.votredomaine.'
 			},
 			{
-				label: 'Vitrine',
-				title: 'Le visage du groupe',
+				title: 'Présence publique du groupe',
 				description:
 					'Une présence claire pour le monde, branchée sur le même Space.'
 			}
@@ -74,8 +66,8 @@ const dict = {
 		pricingSub: 'Mail et Drive inclus. Ajoutez Chat, Projets et Community quand vous en avez besoin.',
 		pricingTiers: [
 			{
-				id: 'core',
-				name: 'Core',
+				id: 'free',
+				name: 'Free',
 				price: 'Gratuit',
 				priceMuted: true,
 				desc: 'Pour essayer un Space sur votre domaine.',
@@ -85,8 +77,8 @@ const dict = {
 					'Votre domaine',
 					'Invitations par QR'
 				],
-				cta: 'Commencer',
-				primary: false
+				cta: 'Essayer gratuitement',
+				primary: true
 			},
 			{
 				id: 'space',
@@ -95,8 +87,8 @@ const dict = {
 				suffix: '/ mois',
 				desc: 'Le Space complet pour votre groupe.',
 				features: [
-					'Tout Core',
-					'Chat et Projets',
+					'Tout Free',
+					'Chat, Projets et Community',
 					'Personnes illimitées',
 					'Stockage étendu',
 					'Support humain'
@@ -106,35 +98,19 @@ const dict = {
 				featured: true
 			},
 			{
-				id: 'community',
-				name: 'Community',
-				price: '49 €',
-				suffix: '/ mois',
-				desc: 'Space + couche publique pour vos membres.',
-				features: [
-					'Tout Space',
-					'Forum et lettres publics',
-					'Sous-domaine community',
-					'Modération et rôles',
-					'Vitrine du groupe'
-				],
-				cta: 'Parler avec nous',
-				primary: true
-			},
-			{
-				id: 'custom',
-				name: 'Sur mesure',
+				id: 'enterprise',
+				name: 'Enterprise',
 				price: 'Custom',
 				priceMuted: true,
-				desc: 'Déploiements privés et multi-Space.',
+				desc: 'Multi-Space, SSO et déploiements privés.',
 				features: [
-					'Tout Community',
+					'Tout Space',
 					'Plusieurs Spaces',
 					'SSO / admin org',
 					'SLA dédié',
 					'Hébergement adapté'
 				],
-				cta: 'Contact',
+				cta: 'Nous écrire',
 				primary: false
 			}
 		],
@@ -147,7 +123,8 @@ const dict = {
 		howSub:
 			'Des comptes pour de vraies personnes. Admin est un rôle, pas une boîte partagée. Vous invitez avec un QR.',
 		closeTitle: 'Un Space. Votre domaine. Vos gens.',
-		closeCta: 'Obtenir un Space',
+		closeSub: 'Commencez gratuitement. Ajoutez ce dont vous avez besoin ensuite.',
+		closeCta: 'Essayer gratuitement',
 		productTitle: 'Produit',
 		productSub: 'Mail et Drive toujours là. Le reste selon vos besoins.',
 		contactTitle: 'Obtenir un Space',
@@ -201,52 +178,44 @@ const dict = {
 		heroTitle: 'A home for your group',
 		heroDesc:
 			'Mail, Drive, Chat, and Projects in one Space. Private by default. Public when you want a face for the world.',
-		heroSecondary: 'See the product',
-		heroCta: 'Start a Space',
-		privateEyebrow: 'Private',
+		heroCta: 'Try for free',
+		navTry: 'Try for free',
 		privateTitle: 'What stays between you.',
 		privateSub: 'Mail, Drive, and work tools — encrypted, on your domain.',
 		privateCards: [
 			{
-				label: 'Mail',
-				title: 'People get you@yourdomain',
+				title: 'Mail as the foundation',
 				description:
-					'Real mailboxes, not a shared dump. Everyone signs in as themselves.'
+					'Real mailboxes on your domain. Everyone signs in as themselves — not a shared dump.'
 			},
 			{
-				label: 'Drive',
-				title: 'Encrypted files that stay yours',
+				title: 'Files, encrypted',
 				description:
 					'The Space Drive is source of truth. Publish only what you choose.'
 			},
 			{
-				label: 'Work',
-				title: 'Chat and Projects in the same place',
+				title: 'Chat and Projects, complete',
 				description:
-					'Conversation and tracking beside the files — fewer lost WhatsApp threads.'
+					'Conversation and tracking beside the files — fewer threads lost elsewhere.'
 			}
 		],
-		publicEyebrow: 'Public',
-		publicTitle: 'When you want a face.',
-		publicSub: 'Community opens a public layer without leaving the Space.',
+		publicTitle: 'When you want a public side.',
+		publicSub: 'Community opens a public-facing layer without leaving the Space.',
 		publicCards: [
 			{
-				label: 'Letters',
-				title: 'Publish when you choose',
+				title: 'Letters, when you choose',
 				description:
 					'Letters and updates under your roof. Private by default — public on purpose.'
 			},
 			{
-				label: 'Forum',
-				title: 'Member conversation',
+				title: 'Forum for members',
 				description:
 					'Threads, voices, and shared memory on community.yourdomain.'
 			},
 			{
-				label: 'Presence',
-				title: 'The group’s face',
+				title: 'Public presence for the group',
 				description:
-					'A clear presence for the world, wired to the same Space.'
+					'A clear public-facing presence, wired to the same Space.'
 			}
 		],
 		pillarsTitle: 'What you get',
@@ -257,8 +226,8 @@ const dict = {
 		pricingSub: 'Mail and Drive included. Add Chat, Projects, and Community when you need them.',
 		pricingTiers: [
 			{
-				id: 'core',
-				name: 'Core',
+				id: 'free',
+				name: 'Free',
 				price: 'Free',
 				priceMuted: true,
 				desc: 'Try a Space on your own domain.',
@@ -268,8 +237,8 @@ const dict = {
 					'Your domain',
 					'QR invites'
 				],
-				cta: 'Get started',
-				primary: false
+				cta: 'Try for free',
+				primary: true
 			},
 			{
 				id: 'space',
@@ -278,8 +247,8 @@ const dict = {
 				suffix: '/ month',
 				desc: 'The full Space for your group.',
 				features: [
-					'Everything in Core',
-					'Chat and Projects',
+					'Everything in Free',
+					'Chat, Projects, and Community',
 					'Unlimited people',
 					'Expanded storage',
 					'Human support'
@@ -289,35 +258,19 @@ const dict = {
 				featured: true
 			},
 			{
-				id: 'community',
-				name: 'Community',
-				price: '€49',
-				suffix: '/ month',
-				desc: 'Space plus a public layer for your members.',
-				features: [
-					'Everything in Space',
-					'Public forum and letters',
-					'community subdomain',
-					'Moderation and roles',
-					'Group face to the world'
-				],
-				cta: 'Talk to us',
-				primary: true
-			},
-			{
-				id: 'custom',
-				name: 'Custom',
+				id: 'enterprise',
+				name: 'Enterprise',
 				price: 'Custom',
 				priceMuted: true,
-				desc: 'Private deployments and multi-Space orgs.',
+				desc: 'Multi-Space, SSO, and private deployments.',
 				features: [
-					'Everything in Community',
+					'Everything in Space',
 					'Multiple Spaces',
 					'SSO / org admin',
 					'Dedicated SLA',
 					'Tailored hosting'
 				],
-				cta: 'Contact',
+				cta: 'Contact us',
 				primary: false
 			}
 		],
@@ -330,7 +283,8 @@ const dict = {
 		howSub:
 			'Accounts are real people. Admin is a role, not a shared inbox. Invite with a QR.',
 		closeTitle: 'One Space. Your domain. Your people.',
-		closeCta: 'Get a Space',
+		closeSub: 'Start free. Add what you need later.',
+		closeCta: 'Try for free',
 		productTitle: 'Product',
 		productSub: 'Mail and Drive always on. Everything else as you need it.',
 		contactTitle: 'Get a Space',

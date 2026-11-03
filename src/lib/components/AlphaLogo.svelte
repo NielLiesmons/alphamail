@@ -14,14 +14,13 @@
 	height={height}
 	decoding="async"
 	aria-hidden="true"
+	style="width: {width}px; height: {height}px"
 />
 
 <style>
 	.logo {
 		display: block;
 		flex-shrink: 0;
-		width: auto;
-		height: auto;
 		object-fit: contain;
 	}
 </style>

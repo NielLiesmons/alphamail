@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { site, pillars } from '$lib/site';
+	import { site } from '$lib/site';
 	import { t, locale } from '$lib/i18n';
 	import { langFromPath, localizedPath } from '$lib/i18n-path';
 	import AlphaLogo from '$lib/components/AlphaLogo.svelte';
@@ -17,13 +17,6 @@
 		await goto(contactHref, { noScroll: true, keepFocus: false });
 		window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 	}
-
-	const productLinks = $derived(
-		pillars.map((s) => ({
-			href: `${localizedPath(lang, '/product')}#${s.id}`,
-			label: $t.services[s.id]?.name ?? s.id
-		}))
-	);
 </script>
 
 <footer class="foot">
@@ -31,7 +24,7 @@
 		<div class="panel">
 			<div class="col brand-col">
 				<a class="brand-row" href={localizedPath(lang, '/')} aria-label={site.name}>
-					<AlphaLogo size={36} />
+					<AlphaLogo size={22} />
 					<span class="word">{site.shortName}</span>
 				</a>
 				<a class="meta" href="mailto:{site.email}">{site.email}</a>
@@ -42,10 +35,8 @@
 			<div class="col">
 				<p class="col-label">{$t.footerColProduct}</p>
 				<ul class="col-list">
-					{#each productLinks as link}
-						<li><a href={link.href}>{link.label}</a></li>
-					{/each}
 					<li><a href={localizedPath(lang, '/pricing')}>{$t.navPricing}</a></li>
+					<li><a href={contactHref}>{$t.navTry}</a></li>
 				</ul>
 			</div>
 
@@ -107,7 +98,7 @@
 	.brand-row {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.7rem;
+		gap: 0.65rem;
 		text-decoration: none;
 		color: var(--ink);
 		margin-bottom: 0.35rem;

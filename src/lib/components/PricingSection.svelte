@@ -8,7 +8,7 @@
 	const tiers = $derived($t.pricingTiers);
 </script>
 
-<section class="pricing section" id="pricing" aria-labelledby="pricing-title">
+<section class="pricing" id="pricing" aria-labelledby="pricing-title">
 	<header class="head">
 		<p class="eyebrow">{$t.pricingEyebrow}</p>
 		<h2 id="pricing-title" class="display-section">{$t.pricingTitle}</h2>
@@ -16,53 +16,49 @@
 	</header>
 
 	<div class="frame">
-		<div class="track" data-chrome-scroll>
-			{#each tiers as tier (tier.id)}
-				<article class="card" class:featured={tier.featured}>
-					<header class="card-head">
-						<h3 class="name">{tier.name}</h3>
-						<div class="price-row">
-							<span class="price" class:muted={tier.priceMuted}>{tier.price}</span>
-							{#if tier.suffix}
-								<span class="suffix">{tier.suffix}</span>
-							{/if}
-						</div>
-						<p class="desc">{tier.desc}</p>
-					</header>
-					<ul class="features">
-						{#each tier.features as feature}
-							<li>
-								<span class="check" aria-hidden="true">
-									<Check variant="outline" size={14} strokeWidth={1.4} color="var(--accent)" />
-								</span>
-								<span>{feature}</span>
-							</li>
-						{/each}
-					</ul>
-					<footer class="foot">
-						{#if tier.primary}
-							<PrimaryButton href={localizedPath($locale, '/contact')}>{tier.cta}</PrimaryButton>
-						{:else}
-							<GlassButton href={localizedPath($locale, '/contact')}>{tier.cta}</GlassButton>
+		{#each tiers as tier (tier.id)}
+			<article class="card" class:featured={tier.featured}>
+				<header class="card-head">
+					<h3 class="name">{tier.name}</h3>
+					<div class="price-row">
+						<span class="price" class:muted={tier.priceMuted}>{tier.price}</span>
+						{#if tier.suffix}
+							<span class="suffix">{tier.suffix}</span>
 						{/if}
-					</footer>
-				</article>
-			{/each}
-		</div>
+					</div>
+					<p class="desc">{tier.desc}</p>
+				</header>
+				<ul class="features">
+					{#each tier.features as feature}
+						<li>
+							<span class="check" aria-hidden="true">
+								<Check variant="outline" size={14} strokeWidth={1.4} color="var(--accent)" />
+							</span>
+							<span>{feature}</span>
+						</li>
+					{/each}
+				</ul>
+				<footer class="foot">
+					{#if tier.primary}
+						<PrimaryButton href={localizedPath($locale, '/contact')}>{tier.cta}</PrimaryButton>
+					{:else}
+						<GlassButton href={localizedPath($locale, '/contact')}>{tier.cta}</GlassButton>
+					{/if}
+				</footer>
+			</article>
+		{/each}
 	</div>
 </section>
 
 <style>
 	.pricing {
-		padding-top: 2.5rem;
-		padding-bottom: 2.5rem;
+		padding: 2.5rem 0;
 		text-align: center;
 	}
 
 	.head {
-		max-width: 36rem;
+		width: min(100% - 2 * var(--pad-x), var(--container-max));
 		margin: 0 auto 1.75rem;
-		padding-inline: var(--pad-x);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -71,47 +67,43 @@
 
 	.eyebrow {
 		margin: 0;
-		font-size: 1rem;
-		font-weight: 500;
-		letter-spacing: 0.04em;
+		font-size: 0.8rem;
+		font-weight: 550;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--ink33);
 	}
 
+	.head .display-section {
+		max-width: none;
+	}
+
 	.head .text-desc {
 		margin: 0;
+		max-width: 36rem;
 	}
 
 	.frame {
-		border-top: 1px solid var(--hairline);
-		border-bottom: 1px solid var(--hairline);
-	}
-
-	.track {
-		display: flex;
-		align-items: stretch;
-		overflow-x: auto;
-		scrollbar-width: none;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.track::-webkit-scrollbar {
-		display: none;
+		width: min(100% - 2 * var(--pad-x), var(--container-max));
+		margin-inline: auto;
+		display: grid;
+		grid-template-columns: 1fr;
+		border: 1px solid var(--hairline);
+		border-radius: 16px;
+		overflow: hidden;
+		text-align: left;
+		background: var(--bg);
 	}
 
 	.card {
-		flex: 0 0 min(300px, 85vw);
 		display: flex;
 		flex-direction: column;
-		text-align: left;
-		border-right: 1px solid var(--hairline);
-		box-sizing: border-box;
-		min-height: 100%;
+		min-width: 0;
 		background: transparent;
 	}
 
-	.card:last-child {
-		border-right: 0;
+	.card + .card {
+		border-top: 1px solid var(--hairline);
 	}
 
 	.card.featured {
@@ -119,7 +111,7 @@
 	}
 
 	.card-head {
-		padding: 1.15rem 1.35rem 0;
+		padding: 1.15rem 1.25rem 0;
 	}
 
 	.name {
@@ -167,7 +159,7 @@
 	.features {
 		list-style: none;
 		margin: 0;
-		padding: 1rem 1.35rem;
+		padding: 1rem 1.25rem;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
@@ -192,7 +184,7 @@
 	}
 
 	.foot {
-		padding: 0 1.35rem 1.35rem;
+		padding: 0 1.25rem 1.25rem;
 		margin-top: auto;
 	}
 
@@ -202,15 +194,14 @@
 		justify-content: center;
 	}
 
-	@media (min-width: 900px) {
-		.track {
-			overflow: visible;
+	@media (min-width: 768px) {
+		.frame {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 
-		.card {
-			flex: 1 1 0;
-			width: auto;
-			min-width: 0;
+		.card + .card {
+			border-top: 0;
+			border-left: 1px solid var(--hairline);
 		}
 
 		.name,

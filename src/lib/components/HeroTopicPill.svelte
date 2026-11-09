@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Cycling topic pill for the hero headline — icon + label inside glass pill.
+	 * Large cycling topic pill under the hero headline.
 	 */
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -59,12 +59,12 @@
 			type="button"
 			class="pill"
 			aria-current="true"
-			in:fly={{ y: reduceMotion ? 0 : 10, duration: reduceMotion ? 0 : 420 }}
+			in:fly={{ y: reduceMotion ? 0 : 12, duration: reduceMotion ? 0 : 420 }}
 			out:fade={{ duration: reduceMotion ? 0 : 220 }}
 			onclick={() => setActive(active + 1)}
 		>
 			{#if topic?.icon}
-				<img class="ico" src={topic.icon} alt="" width="28" height="28" draggable="false" />
+				<img class="ico" src={topic.icon} alt="" width="40" height="40" draggable="false" />
 			{/if}
 			<span class="label">{topic?.label}</span>
 		</button>
@@ -76,8 +76,8 @@
 		display: inline-grid;
 		vertical-align: middle;
 		place-items: center;
-		min-width: min(100%, 11.5rem);
-		min-height: 2.85rem;
+		min-width: min(100%, 15rem);
+		min-height: 3.65rem;
 		position: relative;
 	}
 
@@ -85,9 +85,9 @@
 		grid-area: 1 / 1;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.45rem;
-		height: 2.85rem;
-		padding: 0 0.95rem 0 0.45rem;
+		gap: 0.6rem;
+		height: 3.65rem;
+		padding: 0 1.25rem 0 0.55rem;
 		margin: 0;
 		border: 0;
 		border-radius: 9999px;
@@ -131,8 +131,8 @@
 	}
 
 	.ico {
-		width: 1.55rem;
-		height: 1.55rem;
+		width: 2.15rem;
+		height: 2.15rem;
 		object-fit: contain;
 		display: block;
 		flex-shrink: 0;
@@ -146,27 +146,27 @@
 		z-index: 2;
 		font-family: var(--font-display);
 		font-weight: 650;
-		font-size: clamp(1.05rem, 2.6vw, 1.45rem);
-		letter-spacing: -0.02em;
+		font-size: clamp(1.25rem, 3.2vw, 1.75rem);
+		letter-spacing: -0.025em;
 		line-height: 1;
 		padding-bottom: 1px;
 	}
 
 	@media (max-width: 767px) {
 		.pill-slot {
-			min-width: 9.5rem;
-			min-height: 2.55rem;
+			min-width: 12.5rem;
+			min-height: 3.25rem;
 		}
 
 		.pill {
-			height: 2.55rem;
-			padding: 0 0.8rem 0 0.38rem;
-			gap: 0.35rem;
+			height: 3.25rem;
+			padding: 0 1.05rem 0 0.48rem;
+			gap: 0.5rem;
 		}
 
 		.ico {
-			width: 1.35rem;
-			height: 1.35rem;
+			width: 1.85rem;
+			height: 1.85rem;
 		}
 	}
 </style>

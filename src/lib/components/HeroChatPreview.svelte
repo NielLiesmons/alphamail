@@ -1,8 +1,11 @@
 <script>
 	/**
-	 * Full-bleed chat mock — Admin-faithful bubbles, entity panels, composer.
+	 * Hero chat mock — composed from @alpha/ui ChatBubble / FeedEntityPanel / ChatComposer.
 	 */
 	import { fade } from 'svelte/transition';
+	import ChatBubble from '@alpha/ui/ChatBubble.svelte';
+	import ChatComposer from '@alpha/ui/ChatComposer.svelte';
+	import FeedEntityPanel from '@alpha/ui/FeedEntityPanel.svelte';
 
 	/**
 	 * @typedef {{
@@ -23,10 +26,6 @@
 
 	const scene = $derived(scenes[active] ?? scenes[0] ?? []);
 
-	function initial(name = '') {
-		return (name.trim()[0] || '?').toUpperCase();
-	}
-
 	function avatarStyle(hue = 250) {
 		return `background: oklch(0.62 0.14 ${hue} / 0.28); color: oklch(0.78 0.12 ${hue});`;
 	}
@@ -41,47 +40,39 @@
 		<div class="feed" in:fade={{ duration: 420, delay: 60 }} out:fade={{ duration: 240 }}>
 			{#each scene as msg, i (`${active}-${i}-${msg.kind}-${msg.text || msg.title || ''}`)}
 				{#if msg.kind === 'panel'}
-					<article class="entity" class:mail={msg.panel === 'mail'} style:animation-delay="{90 + i * 95}ms">
-						<header class="entity-head">
-							<div class="avatar sm" style={avatarStyle(msg.hue)}>{initial(msg.name)}</div>
-							<div class="entity-meta">
-								<div class="entity-row1">
-									<span class="entity-name">{msg.name}</span>
-									{#if msg.meta}
-										<span class="entity-sub">{msg.meta}</span>
-									{/if}
+					<div class="item panel" style:animation-delay="{90 + i * 95}ms">
+						<FeedEntityPanel
+							name={msg.name}
+							meta={msg.meta}
+							title={msg.title}
+							body={msg.body}
+							when={msg.when}
+						>
+							{#snippet avatar()}
+								<div class="avatar" style={avatarStyle(msg.hue)}>
+									{(msg.name || '?').trim()[0]?.toUpperCase()}
 								</div>
-								{#if msg.title}
-									<p class="entity-title">{msg.title}</p>
-								{/if}
-							</div>
-							{#if msg.when}
-								<span class="entity-when">{msg.when}</span>
-							{/if}
-						</header>
-						{#if msg.body}
-							<div class="entity-rule"></div>
-							<div class="entity-body">{msg.body}</div>
-						{/if}
-					</article>
+							{/snippet}
+						</FeedEntityPanel>
+					</div>
 				{:else}
-					<article
-						class="row"
-						class:mine={msg.kind === 'out'}
-						style:animation-delay="{110 + i * 110}ms"
-					>
-						{#if msg.kind === 'in'}
-							<div class="avatar" style={avatarStyle(msg.hue)}>{initial(msg.name)}</div>
-						{/if}
-						<div class="bubble" class:mine={msg.kind === 'out'}>
-							{#if msg.kind === 'in' && msg.name}
-								<div class="bubble-head">
-									<span class="who" style:color={nameColor(msg.hue)}>{msg.name}</span>
-								</div>
-							{/if}
-							<p class="text">{msg.text}</p>
-						</div>
-					</article>
+					<div class="item bubble" class:mine={msg.kind === 'out'} style:animation-delay="{110 + i * 110}ms">
+						<ChatBubble
+							mine={msg.kind === 'out'}
+							name={msg.name}
+							nameColor={nameColor(msg.hue)}
+							when={msg.when}
+						>
+							{#snippet avatar()}
+								{#if msg.kind === 'in'}
+									<div class="avatar" style={avatarStyle(msg.hue)}>
+										{(msg.name || '?').trim()[0]?.toUpperCase()}
+									</div>
+								{/if}
+							{/snippet}
+							{msg.text}
+						</ChatBubble>
+					</div>
 				{/if}
 			{/each}
 		</div>
@@ -89,27 +80,8 @@
 
 	<div class="composer-fade"></div>
 	<div class="composer-dock">
-		<div class="composer-pill">
-			<div class="composer-row">
-				<span class="side-btn plus" aria-hidden="true">
-					<svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-						<path
-							d="M9 3.5v11M3.5 9h11"
-							stroke="currentColor"
-							stroke-width="1.7"
-							stroke-linecap="round"
-						/>
-					</svg>
-				</span>
-				<span class="composer-ph">{composerPh}</span>
-				<span class="side-btn send" aria-hidden="true">
-					<svg width="14" height="15" viewBox="0 0 112 122" fill="currentColor">
-						<path
-							d="M56 0c18 18 28 42 28 68 0 18-6 34-16 48L56 122 44 116C34 102 28 86 28 68 28 42 38 18 56 0Z"
-						/>
-					</svg>
-				</span>
-			</div>
+		<div class="composer-shell">
+			<ChatComposer demo placeholder={composerPh} canSend />
 		</div>
 	</div>
 </div>
@@ -121,29 +93,42 @@
 		overflow: hidden;
 		pointer-events: none;
 		user-select: none;
+		/* Resolve @alpha/ui --fg* / --glass against site poles */
+		--fg: var(--ink);
+		--fg-83: color-mix(in srgb, var(--ink) 83%, transparent);
+		--fg-66: var(--ink66);
+		--fg-33: var(--ink33);
+		--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+		--glass-blur: 22px;
 	}
 
 	.feed {
 		position: absolute;
 		left: 0;
 		right: 0;
-		/* Reach up under the headline so bubbles show through the veil */
-		top: 12%;
+		top: 18%;
 		bottom: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
-		gap: 8px;
+		gap: 2px;
 		padding: 0 1rem calc(76px + env(safe-area-inset-bottom, 0px));
 		box-sizing: border-box;
 	}
 
-	.entity,
-	.row {
+	.item {
 		animation: rise 0.55s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) both;
 		width: min(100%, 34rem);
 		max-width: 100%;
 		align-self: center;
+	}
+
+	.item.bubble {
+		width: min(100%, 28rem);
+	}
+
+	.item.bubble.mine {
+		width: min(100%, 34rem);
 	}
 
 	@keyframes rise {
@@ -157,99 +142,6 @@
 		}
 	}
 
-	.entity {
-		border-radius: 14px;
-		background: color-mix(in srgb, var(--ink) 4.5%, transparent);
-		overflow: hidden;
-		margin-bottom: 2px;
-	}
-
-	.entity-head {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 12px 14px 10px;
-		min-width: 0;
-	}
-
-	.entity-meta {
-		flex: 1;
-		min-width: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 3px;
-	}
-
-	.entity-row1 {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		min-width: 0;
-	}
-
-	.entity-name {
-		font-size: 14px;
-		font-weight: 650;
-		color: var(--ink);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.entity-sub {
-		font-size: 12px;
-		font-weight: 450;
-		color: var(--ink33);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.entity-title {
-		margin: 0;
-		font-size: 12px;
-		font-weight: 450;
-		color: var(--ink33);
-		line-height: 1.25;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.entity-when {
-		flex-shrink: 0;
-		font-size: 11px;
-		font-weight: 500;
-		color: var(--ink33);
-	}
-
-	.entity-rule {
-		height: 1px;
-		background: color-mix(in srgb, var(--ink) 8%, transparent);
-	}
-
-	.entity-body {
-		padding: 12px 14px 14px;
-		font-size: 14px;
-		font-weight: 500;
-		line-height: 1.45;
-		color: var(--ink);
-		text-align: left;
-	}
-
-	.row {
-		display: flex;
-		align-items: flex-end;
-		gap: 8px;
-		width: min(100%, 28rem);
-	}
-
-	.row.mine {
-		flex-direction: row-reverse;
-		justify-content: flex-start;
-		width: min(100%, 34rem);
-	}
-
 	.avatar {
 		width: 34px;
 		height: 34px;
@@ -261,52 +153,10 @@
 		flex-shrink: 0;
 	}
 
-	.avatar.sm {
+	.item.panel .avatar {
 		width: 36px;
 		height: 36px;
-	}
-
-	.bubble {
-		max-width: 100%;
-		padding: 6px 12px 7px;
-		border-radius: 16px 16px 16px 4px;
-		background: color-mix(in srgb, var(--ink) 12%, transparent);
-		text-align: left;
-	}
-
-	.bubble.mine {
-		border-radius: 16px 16px 4px 16px;
-		background: var(
-			--gradient-accent-1,
-			linear-gradient(145deg, color-mix(in srgb, var(--accent) 88%, white), var(--accent))
-		);
-		color: #fff;
-		padding-bottom: 5px;
-	}
-
-	.bubble-head {
-		display: flex;
-		align-items: baseline;
-		gap: 6px;
-		margin-bottom: 1px;
-	}
-
-	.who {
-		font-size: 12px;
-		font-weight: 700;
-		line-height: 1.3;
-	}
-
-	.text {
-		margin: 0;
-		font-size: 15px;
-		font-weight: 500;
-		line-height: 1.4;
-		color: inherit;
-	}
-
-	.bubble:not(.mine) .text {
-		color: var(--ink);
+		font-size: 14px;
 	}
 
 	.composer-fade {
@@ -335,88 +185,9 @@
 		box-sizing: border-box;
 	}
 
-	.composer-pill {
-		position: relative;
-		isolation: isolate;
-		display: flex;
-		flex-direction: column;
-		min-height: 47px;
-		border-radius: 9999px;
-		border: 0;
-		overflow: hidden;
-		background: color-mix(in srgb, var(--glass, var(--bg)) 72%, transparent);
-		backdrop-filter: blur(var(--glass-blur, 22px));
-		-webkit-backdrop-filter: blur(var(--glass-blur, 22px));
+	.composer-shell {
 		max-width: 40rem;
 		margin-inline: auto;
-	}
-
-	.composer-pill::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		border-radius: inherit;
-		padding: 1px;
-		pointer-events: none;
-		z-index: 1;
-		background: linear-gradient(
-			135deg,
-			color-mix(in srgb, var(--ink) 12%, transparent) 0%,
-			color-mix(in srgb, var(--ink) 3%, transparent) 45%,
-			color-mix(in srgb, var(--ink) 3%, transparent) 55%,
-			color-mix(in srgb, var(--ink) 9%, transparent) 100%
-		);
-		-webkit-mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		-webkit-mask-composite: xor;
-		mask-composite: exclude;
-	}
-
-	.composer-row {
-		display: flex;
-		align-items: center;
-		gap: 7px;
-		min-height: calc(47px - 14px);
-		padding: 7px;
-		box-sizing: border-box;
-		position: relative;
-		z-index: 2;
-	}
-
-	.side-btn {
-		width: 33px;
-		height: 33px;
-		flex-shrink: 0;
-		display: grid;
-		place-items: center;
-		border-radius: 9999px;
-	}
-
-	.side-btn.plus {
-		background: color-mix(in srgb, var(--ink) 12%, transparent);
-		color: var(--ink66);
-	}
-
-	.side-btn.send {
-		background: var(
-			--gradient-accent-1,
-			linear-gradient(145deg, color-mix(in srgb, var(--accent) 88%, white), var(--accent))
-		);
-		color: #fff;
-	}
-
-	.composer-ph {
-		flex: 1;
-		min-width: 0;
-		padding: 0 4px;
-		color: var(--ink33);
-		font-size: 15px;
-		font-weight: 500;
-		text-align: left;
 	}
 
 	@media (min-width: 768px) {

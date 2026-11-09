@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Full-height screen hero — headline over a live chat mock (Bley frame shape).
+	 * Hero panel — Bley frame heights; Collaborate On + cycling topic pill over chat mock.
 	 */
 	import HeroTopicPill from './HeroTopicPill.svelte';
 	import HeroChatPreview from './HeroChatPreview.svelte';
@@ -16,17 +16,15 @@
 	<div class="frame">
 		<HeroChatPreview {scenes} {active} composerPh={$t.heroComposerPh} />
 
-		<!-- Progressive blur/fade from the top so feed shows through the headline -->
 		<div class="veil" aria-hidden="true"></div>
 
 		<div class="copy">
 			<h1 class="headline">
 				<span class="sr-only">{$t.heroTitleSr}</span>
-				<span class="line" aria-hidden="true">
-					<span class="lead">{$t.heroLead}</span>
-					<HeroTopicPill {topics} bind:active />
+				<span class="lead" aria-hidden="true">
+					<span class="lead-a">{$t.heroLeadA}</span><span class="lead-b">{$t.heroLeadB}</span>
 				</span>
-				<span class="sub" aria-hidden="true">{$t.heroSub}</span>
+				<HeroTopicPill {topics} bind:active />
 			</h1>
 		</div>
 	</div>
@@ -46,10 +44,10 @@
 		isolation: isolate;
 		z-index: 1;
 		width: 100%;
-		/* Nearly full viewport; capped on very large screens */
-		height: calc(100svh - (2 * var(--hero-inset)));
-		min-height: 560px;
-		max-height: 920px;
+		/* Bley: stable svh band with fixed desktop sizes — not full-screen */
+		height: 82svh;
+		min-height: 520px;
+		max-height: 760px;
 		border-radius: var(--radius-hero);
 		overflow: hidden;
 		background: color-mix(in srgb, var(--ink) 3.5%, var(--bg));
@@ -61,31 +59,29 @@
 	.veil {
 		position: absolute;
 		inset: 0 0 auto;
-		height: min(58%, 32rem);
+		height: min(62%, 28rem);
 		z-index: 2;
 		pointer-events: none;
-		/* Strong blur at top → clear toward the conversation */
-		backdrop-filter: blur(18px);
-		-webkit-backdrop-filter: blur(18px);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
 		mask-image: linear-gradient(
 			to bottom,
 			#000 0%,
-			rgba(0, 0, 0, 0.92) 22%,
-			rgba(0, 0, 0, 0.45) 55%,
+			rgba(0, 0, 0, 0.9) 28%,
+			rgba(0, 0, 0, 0.4) 62%,
 			transparent 100%
 		);
 		-webkit-mask-image: linear-gradient(
 			to bottom,
 			#000 0%,
-			rgba(0, 0, 0, 0.92) 22%,
-			rgba(0, 0, 0, 0.45) 55%,
+			rgba(0, 0, 0, 0.9) 28%,
+			rgba(0, 0, 0, 0.4) 62%,
 			transparent 100%
 		);
 		background: linear-gradient(
 			to bottom,
-			color-mix(in srgb, var(--bg) 55%, transparent) 0%,
-			color-mix(in srgb, var(--bg) 28%, transparent) 38%,
-			color-mix(in srgb, var(--bg) 8%, transparent) 68%,
+			color-mix(in srgb, var(--bg) 58%, transparent) 0%,
+			color-mix(in srgb, var(--bg) 26%, transparent) 42%,
 			transparent 100%
 		);
 	}
@@ -94,11 +90,13 @@
 		position: absolute;
 		left: 0;
 		right: 0;
-		top: 0;
+		/* Sit lower in the panel (not stuck under the nav) */
+		top: 34%;
 		z-index: 3;
-		padding: calc(var(--nav-inset) + var(--nav-h) + 0.85rem) var(--pad-x) 1rem;
+		padding: 0 var(--pad-x);
 		text-align: center;
 		pointer-events: none;
+		transform: translateY(-42%);
 	}
 
 	.copy :global(.pill) {
@@ -110,26 +108,37 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.35rem;
+		gap: 0.85rem;
 	}
 
-	.line {
-		display: flex;
+	.lead {
+		display: inline-flex;
 		flex-wrap: wrap;
-		align-items: center;
 		justify-content: center;
-		gap: 0.45rem 0.55rem;
-	}
-
-	.lead,
-	.sub {
+		gap: 0.28em;
 		font-family: var(--font-display);
 		font-weight: 650;
-		letter-spacing: -0.025em;
-		line-height: 1.08;
-		font-size: clamp(30px, 6.2vw, 56px);
-		color: var(--ink);
+		letter-spacing: -0.03em;
+		line-height: 1.05;
+		font-size: clamp(34px, 6.4vw, 58px);
 		text-wrap: balance;
+	}
+
+	.lead-a,
+	.lead-b {
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		-webkit-text-fill-color: transparent;
+	}
+
+	/* Zapstore hero title recipe — graydient + blurple-light */
+	.lead-a {
+		background-image: var(--gradient-gray);
+	}
+
+	.lead-b {
+		background-image: var(--gradient-blurple-light);
 	}
 
 	.sr-only {
@@ -146,7 +155,7 @@
 
 	@media (min-width: 768px) {
 		.copy {
-			padding-top: calc(var(--nav-inset) + var(--nav-h) + 1.25rem);
+			top: 36%;
 		}
 	}
 
@@ -159,17 +168,20 @@
 
 		.frame {
 			width: min(100%, var(--container-max));
-			height: min(860px, calc(100svh - 2 * var(--hero-inset)));
-			min-height: 640px;
-			max-height: 900px;
+			height: 700px;
+			min-height: 700px;
+			max-height: none;
+		}
+
+		.copy {
+			top: 38%;
 		}
 	}
 
 	@media (min-width: 1600px) {
 		.frame {
-			height: 820px;
-			min-height: 820px;
-			max-height: 820px;
+			height: 740px;
+			min-height: 740px;
 		}
 	}
 </style>

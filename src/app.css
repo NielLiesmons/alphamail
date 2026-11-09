@@ -24,6 +24,13 @@
 	--accent-2-66: color-mix(in srgb, var(--accent-2) 66%, transparent);
 	--gradient-accent-1: radial-gradient(circle at top left, #5c5fff 0%, #4542ff 100%);
 	--gradient-accent-1-hover: radial-gradient(circle at top left, #4245ff 0%, #2c29ff 100%);
+	/* Zapstore hero title gradients — light uses ink→purple so text stays legible */
+	--gradient-gray: radial-gradient(
+		circle at top left,
+		var(--ink-raw) 0%,
+		color-mix(in srgb, #5c5fff 48%, var(--ink-raw)) 100%
+	);
+	--gradient-blurple-light: radial-gradient(circle at top left, #8b88ff 0%, #5c5fff 100%);
 
 	/*
 	 * Poles — Admin recipe (low saturation), light default for the public site.
@@ -147,6 +154,8 @@
 		--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
 		--fg: var(--ink);
 		--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+		--gradient-gray: radial-gradient(circle at top left, #ffffff 0%, #dbdbff 100%);
+		--gradient-blurple-light: radial-gradient(circle at top left, #cdccff 0%, #5c5fff 100%);
 		--button-primary-fg: var(--ink);
 		--hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
 		--surface: color-mix(in srgb, white 5.5%, var(--bg));
@@ -188,6 +197,8 @@
 	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
 	--fg: var(--ink);
 	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--gradient-gray: radial-gradient(circle at top left, #ffffff 0%, #dbdbff 100%);
+	--gradient-blurple-light: radial-gradient(circle at top left, #cdccff 0%, #5c5fff 100%);
 	--button-primary-fg: var(--ink);
 	--hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
 	--surface: color-mix(in srgb, white 5.5%, var(--bg));
@@ -228,6 +239,12 @@
 	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
 	--fg: var(--ink);
 	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--gradient-gray: radial-gradient(
+		circle at top left,
+		var(--ink-raw) 0%,
+		color-mix(in srgb, #5c5fff 48%, var(--ink-raw)) 100%
+	);
+	--gradient-blurple-light: radial-gradient(circle at top left, #8b88ff 0%, #5c5fff 100%);
 	--button-primary-fg: var(--ink);
 	--hairline: color-mix(in srgb, var(--ink-raw) 14%, transparent);
 	--surface: color-mix(in srgb, var(--ink-raw) 5%, var(--bg));

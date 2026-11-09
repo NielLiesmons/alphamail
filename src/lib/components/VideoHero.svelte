@@ -61,30 +61,31 @@
 	.veil {
 		position: absolute;
 		inset: 0 0 auto;
-		height: min(52%, 28rem);
+		height: min(58%, 32rem);
 		z-index: 2;
 		pointer-events: none;
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
+		/* Strong blur at top → clear toward the conversation */
+		backdrop-filter: blur(18px);
+		-webkit-backdrop-filter: blur(18px);
 		mask-image: linear-gradient(
 			to bottom,
 			#000 0%,
-			#000 28%,
-			rgba(0, 0, 0, 0.55) 58%,
+			rgba(0, 0, 0, 0.92) 22%,
+			rgba(0, 0, 0, 0.45) 55%,
 			transparent 100%
 		);
 		-webkit-mask-image: linear-gradient(
 			to bottom,
 			#000 0%,
-			#000 28%,
-			rgba(0, 0, 0, 0.55) 58%,
+			rgba(0, 0, 0, 0.92) 22%,
+			rgba(0, 0, 0, 0.45) 55%,
 			transparent 100%
 		);
 		background: linear-gradient(
 			to bottom,
-			color-mix(in srgb, var(--bg) 72%, transparent) 0%,
-			color-mix(in srgb, var(--bg) 38%, transparent) 42%,
-			color-mix(in srgb, var(--bg) 12%, transparent) 72%,
+			color-mix(in srgb, var(--bg) 55%, transparent) 0%,
+			color-mix(in srgb, var(--bg) 28%, transparent) 38%,
+			color-mix(in srgb, var(--bg) 8%, transparent) 68%,
 			transparent 100%
 		);
 	}

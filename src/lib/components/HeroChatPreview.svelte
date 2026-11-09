@@ -125,12 +125,16 @@
 
 	.feed {
 		position: absolute;
-		inset: 0;
+		left: 0;
+		right: 0;
+		/* Reach up under the headline so bubbles show through the veil */
+		top: 12%;
+		bottom: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
 		gap: 8px;
-		padding: 7.5rem 1rem calc(76px + env(safe-area-inset-bottom, 0px));
+		padding: 0 1rem calc(76px + env(safe-area-inset-bottom, 0px));
 		box-sizing: border-box;
 	}
 

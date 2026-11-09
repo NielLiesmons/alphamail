@@ -122,7 +122,6 @@
 		position: relative;
 		width: 100%;
 		overflow: hidden;
-		opacity: 0;
 		mask-image: linear-gradient(
 			90deg,
 			transparent 0%,
@@ -137,11 +136,6 @@
 			#000 86%,
 			transparent 100%
 		);
-	}
-
-	.carousel.ready {
-		opacity: 1;
-		transition: opacity 0.35s ease;
 	}
 
 	.track {

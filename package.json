@@ -9,7 +9,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@alpha/ui": "file:../alpha-ui"
+		"@alpha/ui": "file:./vendor/alpha-ui"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.8",

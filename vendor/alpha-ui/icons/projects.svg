@@ -1,0 +1,4 @@
+<!-- Pointy-top rounded hexagon (from Chateau ProjectBox) -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13.299 1.75L20.227 5.75Q21.526 6.5 21.526 8L21.526 16Q21.526 17.5 20.227 18.25L13.299 22.25Q12 23 10.701 22.25L3.773 18.25Q2.474 17.5 2.474 16L2.474 8Q2.474 6.5 3.773 5.75L10.701 1.75Q12 1 13.299 1.75Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>

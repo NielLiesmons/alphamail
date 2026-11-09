@@ -1,0 +1,29 @@
+<script>
+	/** @type {{ size?: number, className?: string }} */
+	let { size = 28, className = '' } = $props();
+</script>
+
+<span class="icon {className}" style:width="{size}px" style:height="{Math.round((size * 16) / 28)}px">
+	<svg viewBox="0 0 28 16" width={size} height={(size * 16) / 28} fill="none" aria-hidden="true">
+		<path
+			d="M27.917 13.5732C27.917 15.4212 25.9607 16.5891 24.3682 15.6923L14.667 10.2255L14.667 13.5732C14.667 15.4212 12.7107 16.5891 11.1182 15.6923L1.22754 10.1181C0.856889 9.91379 0.547289 9.60821 0.331055 9.23529C0.114783 8.86225 -3.80453e-08 8.43512 0 7.99994C1.61558e-05 7.56478 0.114799 7.13759 0.331055 6.76458C0.547221 6.39184 0.857084 6.08703 1.22754 5.88275L11.1182 0.30853C12.7107 -0.589043 14.667 0.579332 14.667 2.42572L14.667 5.7763L24.3682 0.308531C25.9607 -0.589042 27.917 0.579333 27.917 2.42572V13.5732Z"
+			fill="currentColor"
+		/>
+	</svg>
+</span>
+
+<style>
+	.icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		line-height: 0;
+		color: inherit;
+	}
+	.icon :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+</style>

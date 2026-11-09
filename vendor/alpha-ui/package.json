@@ -1,0 +1,54 @@
+{
+	"name": "@alpha/ui",
+	"private": true,
+	"version": "0.2.0",
+	"description": "Shared Alpha design system: tokens, icons, shell chrome, sheets",
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json",
+		"./tokens.css": "./tokens/tokens.css",
+		"./tokens/tokens.css": "./tokens/tokens.css",
+		"./icons/*": "./icons/*",
+		"./chrome-scroll-fade.js": "./src/lib/chrome-scroll-fade.js",
+		"./drag-dismiss.js": "./src/lib/drag-dismiss.js",
+		"./star-path.js": "./src/lib/star-path.js",
+		"./Modal.svelte": "./src/lib/Modal.svelte",
+		"./CreateSheet.svelte": "./src/lib/CreateSheet.svelte",
+		"./FloatPanel.svelte": "./src/lib/FloatPanel.svelte",
+		"./DropdownMenu.svelte": "./src/lib/DropdownMenu.svelte",
+		"./Spinner.svelte": "./src/lib/Spinner.svelte",
+		"./PullToRefresh.svelte": "./src/lib/PullToRefresh.svelte",
+		"./UiShell.svelte": "./src/lib/UiShell.svelte",
+		"./AppNav.svelte": "./src/lib/AppNav.svelte",
+		"./DetailChrome.svelte": "./src/lib/DetailChrome.svelte",
+		"./ChromeMobileBar.svelte": "./src/lib/ChromeMobileBar.svelte",
+		"./ChromeActionButton.svelte": "./src/lib/ChromeActionButton.svelte",
+		"./Button.svelte": "./src/lib/Button.svelte",
+		"./PrimaryButton.svelte": "./src/lib/PrimaryButton.svelte",
+		"./GlassButton.svelte": "./src/lib/GlassButton.svelte",
+		"./ListTitleChrome.svelte": "./src/lib/ListTitleChrome.svelte",
+		"./NavIcon.svelte": "./src/lib/NavIcon.svelte",
+		"./icons/BaseIcon.svelte": "./src/lib/icons/BaseIcon.svelte",
+		"./icons/Pen.svelte": "./src/lib/icons/Pen.svelte",
+		"./icons/Trash.svelte": "./src/lib/icons/Trash.svelte",
+		"./icons/Next.svelte": "./src/lib/icons/Next.svelte",
+		"./icons/Previous.svelte": "./src/lib/icons/Previous.svelte",
+		"./icons/Heart.svelte": "./src/lib/icons/Heart.svelte",
+		"./icons/Download.svelte": "./src/lib/icons/Download.svelte",
+		"./icons/Playlist.svelte": "./src/lib/icons/Playlist.svelte",
+		"./icons/Play.svelte": "./src/lib/icons/Play.svelte",
+		"./icons/Pause.svelte": "./src/lib/icons/Pause.svelte"
+	},
+	"files": [
+		"icons",
+		"tokens",
+		"src",
+		"README.md"
+	],
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"scripts": {
+		"check": "node -e \"require('fs').accessSync('tokens/tokens.css'); require('fs').accessSync('icons/drive.svg'); require('fs').accessSync('src/lib/UiShell.svelte')\""
+	}
+}

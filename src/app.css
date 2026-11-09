@@ -22,6 +22,8 @@
 	--accent-2: oklch(from var(--accent) calc(l * 0.9) calc(c * 0.88) calc(h + 152));
 	--accent-66: color-mix(in srgb, var(--accent) 66%, transparent);
 	--accent-2-66: color-mix(in srgb, var(--accent-2) 66%, transparent);
+	--gradient-accent-1: radial-gradient(circle at top left, #5c5fff 0%, #4542ff 100%);
+	--gradient-accent-1-hover: radial-gradient(circle at top left, #4245ff 0%, #2c29ff 100%);
 
 	/*
 	 * Poles — Admin recipe (low saturation), light default for the public site.

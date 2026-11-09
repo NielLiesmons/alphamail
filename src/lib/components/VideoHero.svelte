@@ -1,64 +1,107 @@
 <script>
 	/**
-	 * Animated landing hero — topic carousel + "Entered the Chat" + live chat mock.
+	 * Full-height screen hero — headline over a live chat mock (Bley frame shape).
 	 */
-	import PrimaryButton from './PrimaryButton.svelte';
-	import HeroTopicCarousel from './HeroTopicCarousel.svelte';
+	import HeroTopicPill from './HeroTopicPill.svelte';
 	import HeroChatPreview from './HeroChatPreview.svelte';
-	import { t, locale } from '$lib/i18n';
-	import { localizedPath } from '$lib/i18n-path';
+	import { t } from '$lib/i18n';
 
 	let active = $state(0);
 
-	const words = $derived($t.heroWords ?? []);
+	const topics = $derived($t.heroTopics ?? []);
 	const scenes = $derived($t.heroScenes ?? []);
 </script>
 
 <section class="hero">
-	<div class="inner">
+	<div class="frame">
+		<HeroChatPreview {scenes} {active} composerPh={$t.heroComposerPh} />
+
+		<!-- Progressive blur/fade from the top so feed shows through the headline -->
+		<div class="veil" aria-hidden="true"></div>
+
 		<div class="copy">
 			<h1 class="headline">
 				<span class="sr-only">{$t.heroTitleSr}</span>
-				<span class="carousel-line" aria-hidden="true">
-					<HeroTopicCarousel {words} bind:active />
+				<span class="line" aria-hidden="true">
+					<span class="lead">{$t.heroLead}</span>
+					<HeroTopicPill {topics} bind:active />
 				</span>
-				<span class="entered">{$t.heroEntered}</span>
+				<span class="sub" aria-hidden="true">{$t.heroSub}</span>
 			</h1>
-			{#if $t.heroDesc}
-				<p class="text-desc">{$t.heroDesc}</p>
-			{/if}
-			<div class="cta">
-				<PrimaryButton href={localizedPath($locale, '/contact')}>{$t.heroCta}</PrimaryButton>
-			</div>
-		</div>
-
-		<div class="stage">
-			<div class="bridge" aria-hidden="true"></div>
-			<HeroChatPreview {scenes} {active} composerPh={$t.heroComposerPh} />
 		</div>
 	</div>
 </section>
 
 <style>
 	.hero {
-		padding: calc(var(--nav-inset) + var(--nav-h) + 2.4rem) 0 0;
+		padding: var(--hero-inset);
+		padding-bottom: 1.15rem;
+		display: flex;
+		justify-content: center;
 		box-sizing: border-box;
 	}
 
-	.inner {
-		width: min(100% - 2 * var(--pad-x), var(--container-max));
-		margin-inline: auto;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+	.frame {
+		position: relative;
+		isolation: isolate;
+		z-index: 1;
+		width: 100%;
+		/* Nearly full viewport; capped on very large screens */
+		height: calc(100svh - (2 * var(--hero-inset)));
+		min-height: 560px;
+		max-height: 920px;
+		border-radius: var(--radius-hero);
+		overflow: hidden;
+		background: color-mix(in srgb, var(--ink) 3.5%, var(--bg));
+		box-shadow:
+			0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent),
+			0 24px 64px color-mix(in srgb, var(--ink-raw, #000) 18%, transparent);
+	}
+
+	.veil {
+		position: absolute;
+		inset: 0 0 auto;
+		height: min(52%, 28rem);
+		z-index: 2;
+		pointer-events: none;
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+		mask-image: linear-gradient(
+			to bottom,
+			#000 0%,
+			#000 28%,
+			rgba(0, 0, 0, 0.55) 58%,
+			transparent 100%
+		);
+		-webkit-mask-image: linear-gradient(
+			to bottom,
+			#000 0%,
+			#000 28%,
+			rgba(0, 0, 0, 0.55) 58%,
+			transparent 100%
+		);
+		background: linear-gradient(
+			to bottom,
+			color-mix(in srgb, var(--bg) 72%, transparent) 0%,
+			color-mix(in srgb, var(--bg) 38%, transparent) 42%,
+			color-mix(in srgb, var(--bg) 12%, transparent) 72%,
+			transparent 100%
+		);
 	}
 
 	.copy {
-		position: relative;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
 		z-index: 3;
+		padding: calc(var(--nav-inset) + var(--nav-h) + 0.85rem) var(--pad-x) 1rem;
 		text-align: center;
-		width: 100%;
-		max-width: 48rem;
+		pointer-events: none;
+	}
+
+	.copy :global(.pill) {
+		pointer-events: auto;
 	}
 
 	.headline {
@@ -66,21 +109,24 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.15rem;
+		gap: 0.35rem;
 	}
 
-	.carousel-line {
-		display: block;
-		width: 100%;
+	.line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.45rem 0.55rem;
 	}
 
-	.entered {
-		display: block;
+	.lead,
+	.sub {
 		font-family: var(--font-display);
 		font-weight: 650;
 		letter-spacing: -0.025em;
 		line-height: 1.08;
-		font-size: clamp(34px, 6.6vw, 68px);
+		font-size: clamp(30px, 6.2vw, 56px);
 		color: var(--ink);
 		text-wrap: balance;
 	}
@@ -97,61 +143,32 @@
 		border: 0;
 	}
 
-	.copy .text-desc {
-		margin: 0.95rem auto 1.35rem;
-		max-width: 30rem;
-	}
-
-	.cta {
-		display: flex;
-		justify-content: center;
-	}
-
-	.stage {
-		position: relative;
-		z-index: 1;
-		width: 100%;
-		margin-top: -0.35rem;
-	}
-
-	/* Soft dissolve from headline into the chat mock */
-	.bridge {
-		position: absolute;
-		left: 50%;
-		top: -1.25rem;
-		transform: translateX(-50%);
-		width: min(100%, 40rem);
-		height: 4.5rem;
-		z-index: 2;
-		pointer-events: none;
-		background: linear-gradient(
-			to bottom,
-			var(--bg) 0%,
-			color-mix(in srgb, var(--bg) 78%, transparent) 38%,
-			color-mix(in srgb, var(--bg) 28%, transparent) 72%,
-			transparent 100%
-		);
-	}
-
-	@media (max-width: 767px) {
-		.entered {
-			font-size: clamp(30px, 9vw, 44px);
-		}
-	}
-
 	@media (min-width: 768px) {
-		.hero {
-			padding-top: calc(var(--nav-inset) + var(--nav-h) + 3.1rem);
-		}
-
-		.stage {
-			margin-top: -0.15rem;
+		.copy {
+			padding-top: calc(var(--nav-inset) + var(--nav-h) + 1.25rem);
 		}
 	}
 
 	@media (min-width: 1024px) {
 		.hero {
-			padding-top: calc(var(--nav-inset) + var(--nav-h) + 3.75rem);
+			padding-top: var(--hero-inset);
+			padding-inline: var(--pad-x);
+			padding-bottom: 1.5rem;
+		}
+
+		.frame {
+			width: min(100%, var(--container-max));
+			height: min(860px, calc(100svh - 2 * var(--hero-inset)));
+			min-height: 640px;
+			max-height: 900px;
+		}
+	}
+
+	@media (min-width: 1600px) {
+		.frame {
+			height: 820px;
+			min-height: 820px;
+			max-height: 820px;
 		}
 	}
 </style>

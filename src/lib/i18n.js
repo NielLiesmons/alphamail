@@ -16,14 +16,28 @@ const dict = {
 		themeDark: 'Sombre',
 		themeSystem: 'Système',
 		heroTitle: "Des Spaces d'équipe ouverts",
-		heroTitleSr: 'Mail, Tasks, AI threads et Files Entered the Chat',
-		heroEntered: 'Entered the Chat',
-		heroWords: ['Mail', 'Tasks', 'AI threads', 'Files'],
-		heroDesc: 'Commentez en privé derrière le mail public. Tout remonte dans le même fil.',
-		heroComposerPh: 'Écrire dans le Space…',
+		heroTitleSr: 'Collaborez sur Inbox, Tasks, AI Threads et Files dans le chat d’équipe',
+		heroLead: 'Collab on',
+		heroSub: 'in the team chat',
+		heroTopics: [
+			{ id: 'inbox', label: 'Inbox', icon: '/media/hero/inbox.png' },
+			{ id: 'tasks', label: 'Tasks', icon: '/media/hero/tasks.png' },
+			{ id: 'ai', label: 'AI Threads', icon: '/media/hero/ai-threads.png' },
+			{ id: 'files', label: 'Files', icon: '/media/hero/files.png' }
+		],
+		heroComposerPh: 'Message',
 		heroScenes: [
 			[
-				{ kind: 'context', text: 'Mail · Re: Acompte salle' },
+				{
+					kind: 'panel',
+					panel: 'mail',
+					name: 'Claire Martin',
+					hue: 265,
+					meta: 'venue.co',
+					title: 'To: Ops · Re: Acompte salle',
+					body: 'Bonjour, pouvez-vous confirmer le virement de l’acompte avant vendredi ? Merci.',
+					when: '09:14'
+				},
 				{
 					kind: 'in',
 					name: 'Maya',
@@ -34,7 +48,16 @@ const dict = {
 				{ kind: 'in', name: 'Jules', hue: 195, text: 'Ok. Je prépare la réponse.' }
 			],
 			[
-				{ kind: 'context', text: 'Task · Publier la page tarifs' },
+				{
+					kind: 'panel',
+					panel: 'task',
+					name: 'Alex',
+					hue: 145,
+					meta: 'Tasks',
+					title: 'Publier la page tarifs',
+					body: 'Blocked on hero copy. Due tomorrow.',
+					when: 'Today'
+				},
 				{
 					kind: 'in',
 					name: 'Alex',
@@ -45,30 +68,48 @@ const dict = {
 				{ kind: 'in', name: 'Sam', hue: 35, text: 'Repris. Demain matin.' }
 			],
 			[
-				{ kind: 'context', text: 'AI · Résumer la boîte' },
 				{
-					kind: 'in',
+					kind: 'panel',
+					panel: 'ai',
 					name: 'Alpha',
 					hue: 285,
-					text: '3 fils demandent une réponse aujourd’hui.'
+					meta: 'AI Threads',
+					title: 'Résumer la boîte',
+					body: '3 fils demandent une réponse aujourd’hui. Priorité: salle, facture, partenariat.',
+					when: 'Now'
 				},
-				{ kind: 'out', text: 'Rédige les réponses pour la salle.' },
 				{
 					kind: 'in',
 					name: 'Alpha',
 					hue: 285,
-					text: 'Deux brouillons prêts. À valider avant envoi.'
+					text: 'Je peux rédiger les réponses pour la salle.'
+				},
+				{ kind: 'out', text: 'Oui. Deux brouillons, je valide avant envoi.' },
+				{
+					kind: 'in',
+					name: 'Alpha',
+					hue: 285,
+					text: 'Prêts. Relis le ton sur le 2e.'
 				}
 			],
 			[
-				{ kind: 'context', text: 'Drive · brand-kit.zip' },
+				{
+					kind: 'panel',
+					panel: 'file',
+					name: 'Lea',
+					hue: 210,
+					meta: 'Drive',
+					title: 'Shared/Brand · brand-kit.zip',
+					body: 'Latest logos + SVG mark. Folder pinned for the team.',
+					when: '12:02'
+				},
 				{
 					kind: 'in',
 					name: 'Lea',
 					hue: 210,
 					text: 'Derniers logos dans Shared/Brand.'
 				},
-				{ kind: 'out', text: 'Tu peux aussi dropper le SVG ?' },
+				{ kind: 'out', text: 'Parfait. Tu peux aussi dropper le SVG ?' },
 				{ kind: 'in', name: 'Lea', hue: 210, text: 'Ajouté. Dossier épinglé.' }
 			]
 		],
@@ -230,14 +271,28 @@ const dict = {
 		themeDark: 'Dark',
 		themeSystem: 'System',
 		heroTitle: 'Open-ended team Spaces',
-		heroTitleSr: 'Mail, Tasks, AI threads, and Files Entered the Chat',
-		heroEntered: 'Entered the Chat',
-		heroWords: ['Mail', 'Tasks', 'AI threads', 'Files'],
-		heroDesc: 'Private comments behind public mail. Everything lands in the same feed.',
-		heroComposerPh: 'Message the Space…',
+		heroTitleSr: 'Collab on Inbox, Tasks, AI Threads, and Files in the team chat',
+		heroLead: 'Collab on',
+		heroSub: 'in the team chat',
+		heroTopics: [
+			{ id: 'inbox', label: 'Inbox', icon: '/media/hero/inbox.png' },
+			{ id: 'tasks', label: 'Tasks', icon: '/media/hero/tasks.png' },
+			{ id: 'ai', label: 'AI Threads', icon: '/media/hero/ai-threads.png' },
+			{ id: 'files', label: 'Files', icon: '/media/hero/files.png' }
+		],
+		heroComposerPh: 'Message',
 		heroScenes: [
 			[
-				{ kind: 'context', text: 'Mail · Re: Venue deposit' },
+				{
+					kind: 'panel',
+					panel: 'mail',
+					name: 'Claire Martin',
+					hue: 265,
+					meta: 'venue.co',
+					title: 'To: Ops · Re: Venue deposit',
+					body: 'Hi — can you confirm the deposit transfer before Friday? Thanks so much.',
+					when: '09:14'
+				},
 				{
 					kind: 'in',
 					name: 'Maya',
@@ -248,7 +303,16 @@ const dict = {
 				{ kind: 'in', name: 'Jules', hue: 195, text: 'On it. Drafting a reply.' }
 			],
 			[
-				{ kind: 'context', text: 'Task · Ship pricing page' },
+				{
+					kind: 'panel',
+					panel: 'task',
+					name: 'Alex',
+					hue: 145,
+					meta: 'Tasks',
+					title: 'Ship pricing page',
+					body: 'Blocked on hero copy. Due tomorrow.',
+					when: 'Today'
+				},
 				{
 					kind: 'in',
 					name: 'Alex',
@@ -259,23 +323,41 @@ const dict = {
 				{ kind: 'in', name: 'Sam', hue: 35, text: 'Picked up. ETA tomorrow.' }
 			],
 			[
-				{ kind: 'context', text: 'AI · Summarize inbox' },
 				{
-					kind: 'in',
+					kind: 'panel',
+					panel: 'ai',
 					name: 'Alpha',
 					hue: 285,
-					text: '3 threads need a reply today.'
+					meta: 'AI Threads',
+					title: 'Summarize inbox',
+					body: '3 threads need a reply today. Priority: venue, invoice, partnership.',
+					when: 'Now'
 				},
-				{ kind: 'out', text: 'Draft replies for the venue ones.' },
 				{
 					kind: 'in',
 					name: 'Alpha',
 					hue: 285,
-					text: 'Two drafts ready. Review before send?'
+					text: 'I can draft replies for the venue ones.'
+				},
+				{ kind: 'out', text: 'Do it. Two drafts — I’ll review before send.' },
+				{
+					kind: 'in',
+					name: 'Alpha',
+					hue: 285,
+					text: 'Ready. Check the tone on the second.'
 				}
 			],
 			[
-				{ kind: 'context', text: 'Drive · brand-kit.zip' },
+				{
+					kind: 'panel',
+					panel: 'file',
+					name: 'Lea',
+					hue: 210,
+					meta: 'Drive',
+					title: 'Shared/Brand · brand-kit.zip',
+					body: 'Latest logos + SVG mark. Folder pinned for the team.',
+					when: '12:02'
+				},
 				{
 					kind: 'in',
 					name: 'Lea',

@@ -113,10 +113,7 @@
 				<span class="word desktop-word">{site.shortName}</span>
 			</a>
 
-			<a class="mobile-brand" href={homeHref} onclick={close} aria-label={site.shortName}>
-				<AlphaLogo size={18} />
-				<span class="word">{site.shortName}</span>
-			</a>
+			<a class="word mobile-word" href={homeHref} onclick={close}>{site.shortName}</a>
 
 			<nav class="desktop-links" aria-label="Main">
 				{#each links as link}
@@ -356,7 +353,7 @@
 		min-height: var(--nav-h);
 		max-height: var(--nav-h);
 		/* Match desktop logo inset: a bit more pad on the mark side */
-		padding: 0 6px 0 10px;
+		padding: 0 8px 0 12px;
 		box-sizing: border-box;
 		flex-shrink: 0;
 	}
@@ -379,22 +376,15 @@
 		color: inherit;
 	}
 
-	.mobile-brand {
+	.mobile-word {
 		justify-self: center;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		text-decoration: none;
+		text-align: center;
 		color: inherit;
+		text-decoration: none;
 		-webkit-tap-highlight-color: transparent;
 	}
 
 	.desktop-word {
-		display: none;
-	}
-
-	/* Mobile: centered brand; desktop shows left brand */
-	.brand {
 		display: none;
 	}
 
@@ -670,24 +660,17 @@
 			display: flex;
 			justify-content: space-between;
 			gap: 1rem;
-			/*
-			  Right pad a bit more than left so the settings chip sits clear of the
-			  taller pill’s end-cap (concentric with the container’s right curve).
-			*/
-			padding: 0 18px 0 10px;
+			/* Match left inset — settings chip already clears the end-cap */
+			padding: 0 12px;
 			height: var(--nav-h);
 			min-height: var(--nav-h);
 			max-height: var(--nav-h);
 		}
 
-		.mobile-brand,
+		.mobile-word,
 		.burger,
 		.mobile-shell {
 			display: none;
-		}
-
-		.brand {
-			display: inline-flex;
 		}
 
 		.desktop-word {
@@ -697,11 +680,16 @@
 		.desktop-links {
 			display: flex;
 			align-items: center;
-			gap: 0.2rem;
+			/* Links sit flush; space only before settings */
+			gap: 0;
 		}
 
 		.desktop-links > .nav-link {
 			padding: 0.4rem 0.85rem;
+		}
+
+		.desktop-links > .settings {
+			margin-left: 0.55rem;
 		}
 
 		.desktop-links > .nav-link.selected {

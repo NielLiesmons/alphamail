@@ -107,7 +107,7 @@
 	--hero-inset: 8px;
 	--nav-inset: 16px;
 	/* Fixed bar height — collapsed pill radius = half of this */
-	--nav-h: 48px;
+	--nav-h: 52px;
 	/* Hero corners concentric with collapsed nav pill: (nav-h/2) + inset gap */
 	--radius-hero: calc((var(--nav-h) / 2) + (var(--nav-inset) - var(--hero-inset)));
 	/* Expanded mobile menu: concentric with hero (hero radius − gap between insets) */

@@ -15,18 +15,72 @@ const dict = {
 		themeLight: 'Clair',
 		themeDark: 'Sombre',
 		themeSystem: 'Système',
-		heroTitle: 'Un chez-soi pour votre groupe',
-		heroDesc:
-			'Mail, Drive, Chat et Projets dans un seul Space. Privé par défaut. Public quand vous voulez une vitrine.',
+		heroTitle: "Des Spaces d'équipe ouverts",
+		heroTitleSr: 'Mail, Tasks, AI threads et Files Entered the Chat',
+		heroEntered: 'Entered the Chat',
+		heroWords: ['Mail', 'Tasks', 'AI threads', 'Files'],
+		heroDesc: 'Commentez en privé derrière le mail public. Tout remonte dans le même fil.',
+		heroComposerPh: 'Écrire dans le Space…',
+		heroScenes: [
+			[
+				{ kind: 'context', text: 'Mail · Re: Acompte salle' },
+				{
+					kind: 'in',
+					name: 'Maya',
+					hue: 265,
+					text: 'On couvre l’acompte depuis ops ?'
+				},
+				{ kind: 'out', text: 'Oui. Je réponds et j’ajoute Jules.' },
+				{ kind: 'in', name: 'Jules', hue: 195, text: 'Ok. Je prépare la réponse.' }
+			],
+			[
+				{ kind: 'context', text: 'Task · Publier la page tarifs' },
+				{
+					kind: 'in',
+					name: 'Alex',
+					hue: 145,
+					text: 'Bloqué sur le copy du hero.'
+				},
+				{ kind: 'out', text: 'Brouillon dans Notes, je te tague.' },
+				{ kind: 'in', name: 'Sam', hue: 35, text: 'Repris. Demain matin.' }
+			],
+			[
+				{ kind: 'context', text: 'AI · Résumer la boîte' },
+				{
+					kind: 'in',
+					name: 'Alpha',
+					hue: 285,
+					text: '3 fils demandent une réponse aujourd’hui.'
+				},
+				{ kind: 'out', text: 'Rédige les réponses pour la salle.' },
+				{
+					kind: 'in',
+					name: 'Alpha',
+					hue: 285,
+					text: 'Deux brouillons prêts. À valider avant envoi.'
+				}
+			],
+			[
+				{ kind: 'context', text: 'Drive · brand-kit.zip' },
+				{
+					kind: 'in',
+					name: 'Lea',
+					hue: 210,
+					text: 'Derniers logos dans Shared/Brand.'
+				},
+				{ kind: 'out', text: 'Tu peux aussi dropper le SVG ?' },
+				{ kind: 'in', name: 'Lea', hue: 210, text: 'Ajouté. Dossier épinglé.' }
+			]
+		],
 		heroCta: 'Essayer gratuitement',
 		navTry: 'Essayer gratuitement',
 		privateTitle: 'Ce qui reste entre vous.',
-		privateSub: 'Mail, Drive et outils de travail — chiffrés, sur votre domaine.',
+		privateSub: 'Mail dehors. Collaboration dedans, chiffrée, sur votre domaine.',
 		privateCards: [
 			{
 				title: 'Mail comme fondation',
 				description:
-					'De vraies boîtes sur votre domaine. Les gens se connectent comme eux-mêmes, pas via une adresse partagée.'
+					'De vraies boîtes sur votre domaine. Commentez en privé avant d’envoyer, comme une vraie équipe.'
 			},
 			{
 				title: 'Fichiers, chiffrés',
@@ -34,9 +88,9 @@ const dict = {
 					'Le Drive du Space est la source de vérité. Vous publiez seulement ce que vous choisissez.'
 			},
 			{
-				title: 'Chat et Projets, au complet',
+				title: 'Un fil pour tout le travail',
 				description:
-					'Conversation et suivi à côté des fichiers — plus de fils perdus ailleurs.'
+					'Commentaires sur mails, tâches et notes dans le même chat. Projets et fichiers au même endroit.'
 			}
 		],
 		publicTitle: 'Quand vous voulez du public.',
@@ -122,7 +176,7 @@ const dict = {
 		howTitle: 'Un Space, votre domaine',
 		howSub:
 			'Des comptes pour de vraies personnes. Admin est un rôle, pas une boîte partagée. Vous invitez avec un QR.',
-		closeTitle: 'Un Space. Votre domaine. Vos gens.',
+		closeTitle: 'Un Space ouvert. Votre domaine. Vos gens.',
 		closeSub: 'Commencez gratuitement. Ajoutez ce dont vous avez besoin ensuite.',
 		closeCta: 'Essayer gratuitement',
 		productTitle: 'Produit',
@@ -154,13 +208,13 @@ const dict = {
 			},
 			chat: {
 				name: 'Chat',
-				desc: 'La conversation vit avec les fichiers et les tâches, pas à côté.',
-				long: 'Chat de groupe et commentaires sur les objets du Space. L’historique reste sur le Drive. Moins de fils WhatsApp perdus.'
+				desc: 'Commentaires sur mails, tâches et notes dans le même fil.',
+				long: 'Chat de groupe et commentaires sur les objets du Space. Tout remonte dans le fil. L’historique reste sur le Drive.'
 			},
 			projects: {
 				name: 'Projets',
-				desc: 'Projets, tâches et notes pour ceux qui aiment Linear ou ClickUp, dans le même Space.',
-				long: 'Projets, tâches, notes et planning sans un second abonnement. Pour les équipes et associations qui veulent du suivi sans le zoo d’outils.'
+				desc: 'Projets, tâches et notes dans le même Space que le mail et les fichiers.',
+				long: 'Projets, tâches, notes et planning sans un second abonnement. Ouvert pour y brancher d’autres types de contenu plus tard.'
 			}
 		}
 	},
@@ -175,18 +229,72 @@ const dict = {
 		themeLight: 'Light',
 		themeDark: 'Dark',
 		themeSystem: 'System',
-		heroTitle: 'A home for your group',
-		heroDesc:
-			'Mail, Drive, Chat, and Projects in one Space. Private by default. Public when you want a face for the world.',
+		heroTitle: 'Open-ended team Spaces',
+		heroTitleSr: 'Mail, Tasks, AI threads, and Files Entered the Chat',
+		heroEntered: 'Entered the Chat',
+		heroWords: ['Mail', 'Tasks', 'AI threads', 'Files'],
+		heroDesc: 'Private comments behind public mail. Everything lands in the same feed.',
+		heroComposerPh: 'Message the Space…',
+		heroScenes: [
+			[
+				{ kind: 'context', text: 'Mail · Re: Venue deposit' },
+				{
+					kind: 'in',
+					name: 'Maya',
+					hue: 265,
+					text: 'Can we cover the deposit from ops?'
+				},
+				{ kind: 'out', text: "Yes. I'll reply and loop Jules in." },
+				{ kind: 'in', name: 'Jules', hue: 195, text: 'On it. Drafting a reply.' }
+			],
+			[
+				{ kind: 'context', text: 'Task · Ship pricing page' },
+				{
+					kind: 'in',
+					name: 'Alex',
+					hue: 145,
+					text: 'Blocked on copy for the hero.'
+				},
+				{ kind: 'out', text: "Draft's in Notes. Tagging you." },
+				{ kind: 'in', name: 'Sam', hue: 35, text: 'Picked up. ETA tomorrow.' }
+			],
+			[
+				{ kind: 'context', text: 'AI · Summarize inbox' },
+				{
+					kind: 'in',
+					name: 'Alpha',
+					hue: 285,
+					text: '3 threads need a reply today.'
+				},
+				{ kind: 'out', text: 'Draft replies for the venue ones.' },
+				{
+					kind: 'in',
+					name: 'Alpha',
+					hue: 285,
+					text: 'Two drafts ready. Review before send?'
+				}
+			],
+			[
+				{ kind: 'context', text: 'Drive · brand-kit.zip' },
+				{
+					kind: 'in',
+					name: 'Lea',
+					hue: 210,
+					text: 'Latest logos are in Shared/Brand.'
+				},
+				{ kind: 'out', text: 'Can you drop the SVG mark too?' },
+				{ kind: 'in', name: 'Lea', hue: 210, text: 'Added. Folder pinned.' }
+			]
+		],
 		heroCta: 'Try for free',
 		navTry: 'Try for free',
 		privateTitle: 'What stays between you.',
-		privateSub: 'Mail, Drive, and work tools — encrypted, on your domain.',
+		privateSub: 'Mail on the outside. Collaboration inside, encrypted, on your domain.',
 		privateCards: [
 			{
 				title: 'Mail as the foundation',
 				description:
-					'Real mailboxes on your domain. Everyone signs in as themselves — not a shared dump.'
+					'Real mailboxes on your domain. Comment privately before you send, like a real team.'
 			},
 			{
 				title: 'Files, encrypted',
@@ -194,9 +302,9 @@ const dict = {
 					'The Space Drive is source of truth. Publish only what you choose.'
 			},
 			{
-				title: 'Chat and Projects, complete',
+				title: 'One feed for the work',
 				description:
-					'Conversation and tracking beside the files — fewer threads lost elsewhere.'
+					'Comments on mail, tasks, and notes land in the same chat. Projects and files stay beside them.'
 			}
 		],
 		publicTitle: 'When you want a public side.',
@@ -282,7 +390,7 @@ const dict = {
 		howTitle: 'One Space, your domain',
 		howSub:
 			'Accounts are real people. Admin is a role, not a shared inbox. Invite with a QR.',
-		closeTitle: 'One Space. Your domain. Your people.',
+		closeTitle: 'An open Space. Your domain. Your people.',
 		closeSub: 'Start free. Add what you need later.',
 		closeCta: 'Try for free',
 		productTitle: 'Product',
@@ -313,13 +421,13 @@ const dict = {
 			},
 			chat: {
 				name: 'Chat',
-				desc: 'Conversation that lives with files and tasks, not in a side app.',
-				long: 'Group chat and comments on Space objects. History stays on Drive. Fewer lost WhatsApp threads.'
+				desc: 'Comments on mail, tasks, and notes in the same feed.',
+				long: 'Group chat and comments on Space objects. Everything lands in the feed. History stays on Drive.'
 			},
 			projects: {
 				name: 'Projects',
-				desc: 'Projects, tasks, and notes for the Linear / ClickUp crowd, inside the same Space.',
-				long: 'Projects, tasks, notes, and planning without a second subscription. For teams and associations that want tracking without the tool zoo.'
+				desc: 'Projects, tasks, and notes in the same Space as mail and files.',
+				long: 'Projects, tasks, notes, and planning without a second subscription. Open-ended so teams can grow past the defaults later.'
 			}
 		}
 	}

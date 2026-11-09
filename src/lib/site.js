@@ -8,9 +8,9 @@ export const site = {
 	addressFr: 'Belgique · France',
 	addressEn: 'Belgium · France',
 	descriptionFr:
-		'Alpha Mail — un Space pour votre groupe. Mail, Drive, Chat et Projets. Privé par défaut, public quand vous voulez.',
+		'Alpha Mail — Mail, Tasks, AI threads et Files Entered the Chat. Commentez en privé derrière le mail public, dans un seul Space.',
 	descriptionEn:
-		'Alpha Mail — a Space for your group. Mail, Drive, Chat, and Projects. Private by default, public when you choose.',
+		'Alpha Mail — Mail, Tasks, AI threads, and Files Entered the Chat. Private comments behind public mail, in one Space.',
 	ogImage: 'https://alphamail.xyz/media/og.jpg'
 };
 

@@ -14,9 +14,10 @@
 	/*
 	 * Brand knobs (Admin → Space → inject on <html>).
 	 * Same low-S pole model as Admin; accent hue whispers through.
-	 * CTAs stay ink-on-bg — never accent fills.
+	 * Primary CTAs use Admin glass fill + --glass-shine stroke (see @alpha/ui Button).
 	 */
 	--accent: #5B56FF;
+	--accent-1: var(--accent);
 	--accent-2: #6b9e8f;
 	--accent-2: oklch(from var(--accent) calc(l * 0.9) calc(c * 0.88) calc(h + 152));
 	--accent-66: color-mix(in srgb, var(--accent) 66%, transparent);
@@ -44,6 +45,32 @@
 	/* Frosted panels (nav) — page bg at reduced opacity + blur */
 	--glass: color-mix(in srgb, var(--bg) 88%, transparent);
 	--glass-blur: 14px;
+	/* fg aliases so shared @alpha/ui Button tokens resolve on the site */
+	--fg: var(--ink);
+	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--button-primary-bg: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--accent-1) 8%, var(--fg-8)) 0%,
+		color-mix(in srgb, var(--accent-1) 4%, var(--fg-8)) 100%
+	);
+	--button-primary-bg-hover: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--accent-1) 12%, var(--fg-8)) 0%,
+		color-mix(in srgb, var(--accent-1) 6%, var(--fg-8)) 100%
+	);
+	--button-primary-fg: var(--ink);
+	--button-hover-scale: 1.03;
+	--button-active-scale: 0.97;
+	--button-shine-size: 100px;
+	--button-shine-blur: 20px;
+	/* Soft specular stroke — match Admin CTA / top-bar glass */
+	--glass-shine: linear-gradient(
+		135deg,
+		color-mix(in srgb, #fff 68%, transparent) 0%,
+		color-mix(in srgb, var(--ink) 10%, transparent) 38%,
+		color-mix(in srgb, var(--ink) 8%, transparent) 55%,
+		color-mix(in srgb, var(--ink) 22%, transparent) 100%
+	);
 	/* Elevated solid panels — dropdowns, modals, selected seg chips */
 	--popover: color-mix(in srgb, white 72%, var(--bg));
 	--modal-bg: var(--popover);
@@ -116,9 +143,19 @@
 		--ink: var(--bg-raw);
 		--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
 		--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+		--fg: var(--ink);
+		--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+		--button-primary-fg: var(--ink);
 		--hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
 		--surface: color-mix(in srgb, white 5.5%, var(--bg));
 		--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+		--glass-shine: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--ink) 42%, transparent) 0%,
+			color-mix(in srgb, var(--ink) 12%, transparent) 38%,
+			color-mix(in srgb, var(--ink) 8%, transparent) 55%,
+			color-mix(in srgb, var(--ink) 28%, transparent) 100%
+		);
 		--popover: color-mix(in srgb, white 9%, var(--bg));
 		--modal-bg: var(--popover);
 		--field-bg: var(--bg);
@@ -147,9 +184,19 @@
 	--ink: var(--bg-raw);
 	--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
 	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+	--fg: var(--ink);
+	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--button-primary-fg: var(--ink);
 	--hairline: color-mix(in srgb, var(--bg-raw) 14%, transparent);
 	--surface: color-mix(in srgb, white 5.5%, var(--bg));
 	--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+	--glass-shine: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--ink) 42%, transparent) 0%,
+		color-mix(in srgb, var(--ink) 12%, transparent) 38%,
+		color-mix(in srgb, var(--ink) 8%, transparent) 55%,
+		color-mix(in srgb, var(--ink) 28%, transparent) 100%
+	);
 	--popover: color-mix(in srgb, white 9%, var(--bg));
 	--modal-bg: var(--popover);
 	--field-bg: var(--bg);
@@ -177,9 +224,19 @@
 	--ink: var(--ink-raw);
 	--ink66: color-mix(in srgb, var(--ink) 66%, transparent);
 	--ink33: color-mix(in srgb, var(--ink) 33%, transparent);
+	--fg: var(--ink);
+	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--button-primary-fg: var(--ink);
 	--hairline: color-mix(in srgb, var(--ink-raw) 14%, transparent);
 	--surface: color-mix(in srgb, var(--ink-raw) 5%, var(--bg));
 	--glass: color-mix(in srgb, var(--bg) 88%, transparent);
+	--glass-shine: linear-gradient(
+		135deg,
+		color-mix(in srgb, #fff 68%, transparent) 0%,
+		color-mix(in srgb, var(--ink) 10%, transparent) 38%,
+		color-mix(in srgb, var(--ink) 8%, transparent) 55%,
+		color-mix(in srgb, var(--ink) 22%, transparent) 100%
+	);
 	--popover: color-mix(in srgb, white 72%, var(--bg));
 	--modal-bg: var(--popover);
 	--field-bg: var(--bg);

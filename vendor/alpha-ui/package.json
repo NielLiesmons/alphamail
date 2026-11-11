@@ -40,7 +40,8 @@
 		"./icons/Download.svelte": "./src/lib/icons/Download.svelte",
 		"./icons/Playlist.svelte": "./src/lib/icons/Playlist.svelte",
 		"./icons/Play.svelte": "./src/lib/icons/Play.svelte",
-		"./icons/Pause.svelte": "./src/lib/icons/Pause.svelte"
+		"./icons/Pause.svelte": "./src/lib/icons/Pause.svelte",
+		"./icons/Menu.svelte": "./src/lib/icons/Menu.svelte"
 	},
 	"files": [
 		"icons",

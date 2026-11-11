@@ -245,6 +245,15 @@
 				stroke-linejoin="round"
 			/>
 		</svg>
+	{:else if name === 'menu'}
+		<!-- alpha-ui/icons/menu.svg — short bar on the left; mirror in CSS for the right-edge sites -->
+		<svg viewBox="0 0 9 9" fill="none" aria-hidden="true">
+			<path
+				d="M0.5 0.5H8.5M0.5 4.5H8.5M0.5 8.5H5.5"
+				stroke="currentColor"
+				stroke-linecap="round"
+			/>
+		</svg>
 	{:else if name === 'shop'}
 		<svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
 			<path

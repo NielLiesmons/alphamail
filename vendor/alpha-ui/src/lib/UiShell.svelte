@@ -1232,21 +1232,28 @@
 			display: flex;
 			align-items: stretch;
 			gap: 0;
-			overflow: hidden;
-			padding: 6px 4px;
-			width: 100%;
-			box-sizing: border-box;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+			padding: 6px 8px;
+			scroll-padding-inline: 40%;
+		}
+
+		.pill-track::-webkit-scrollbar {
+			display: none;
 		}
 
 		.pill-item {
-			flex: 1 1 0;
-			min-width: 0;
+			scroll-snap-align: center;
+			flex: 0 0 auto;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			gap: 2px;
-			padding: 6px 4px;
+			min-width: 64px;
+			padding: 6px 10px;
 			border: 0;
 			border-radius: 999px;
 			background: transparent;

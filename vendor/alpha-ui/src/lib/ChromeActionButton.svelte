@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Shared top-bar glass action button (Admin + Player).
-	 * Same 28→44 glass round chrome; `more` uses a larger ⋮ glyph inside.
+	 * Same 28→44 glass round chrome; `more` uses a larger ⋯ glyph inside.
 	 * @type {{
 	 *   variant?: 'more' | 'icon',
 	 *   label?: string,
@@ -33,9 +33,9 @@
 		{@render children()}
 	{:else if variant === 'more'}
 		<svg width="26" height="26" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-			<circle cx="9" cy="3.75" r="1.65" fill="currentColor" />
+			<circle cx="3.75" cy="9" r="1.65" fill="currentColor" />
 			<circle cx="9" cy="9" r="1.65" fill="currentColor" />
-			<circle cx="9" cy="14.25" r="1.65" fill="currentColor" />
+			<circle cx="14.25" cy="9" r="1.65" fill="currentColor" />
 		</svg>
 	{/if}
 </button>
@@ -78,7 +78,7 @@
 		height: 16px;
 	}
 
-	/* Larger ⋮ inside the same glass hit target (Admin overflow language). */
+	/* Larger ⋯ inside the same glass hit target (Admin overflow language). */
 	.chrome-btn.more-btn :global(svg) {
 		width: 20px;
 		height: 20px;

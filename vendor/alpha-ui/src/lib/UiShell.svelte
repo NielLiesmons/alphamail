@@ -4,7 +4,6 @@
 	 * Apps pass sections and own domain logic; this owns chrome presentation.
 	 */
 	import { attachChromeScrollFade } from './chrome-scroll-fade.js';
-	import MenuToggle from './icons/MenuToggle.svelte';
 	import NavIcon from './NavIcon.svelte';
 	import PullToRefresh from './PullToRefresh.svelte';
 
@@ -348,9 +347,8 @@
 	});
 
 	/*
-	 * Touch swipe → expanding menu panel (same expand as the toggle).
-	 * Open: left-edge swipe right only (keeps scroll / PTR clean).
-	 * Close: swipe left on scrim or content while the panel is open.
+	 * Touch swipe → slide page right to reveal menu drawer.
+	 * Open: left-edge swipe right. Close: swipe left on the peeked page.
 	 */
 	$effect(() => {
 		const root = shellEl;
@@ -358,9 +356,16 @@
 
 		const EDGE = 28;
 		const CLAIM = 10;
-		const SPAN = 200;
 		const OPEN_AT = 0.28;
 		const CLOSE_AT = 0.28;
+
+		function drawerSpan() {
+			const raw = getComputedStyle(root).getPropertyValue('--mobile-drawer').trim();
+			if (raw.endsWith('vw')) return (parseFloat(raw) / 100) * window.innerWidth;
+			if (raw.endsWith('px')) return parseFloat(raw);
+			const n = parseFloat(raw);
+			return Number.isFinite(n) && n > 0 ? n : window.innerWidth * 0.67;
+		}
 
 		let startX = 0;
 		let startY = 0;
@@ -384,7 +389,7 @@
 			) {
 				return;
 			}
-			/* Panel chrome / nav links own their taps — don't start a drag there. */
+			/* Drawer chrome owns its taps. */
 			if (t instanceof Element && t.closest('.sidebar')) return;
 
 			const touch = e.touches[0];
@@ -401,7 +406,6 @@
 				tracking = true;
 				return;
 			}
-			/* Open only from the left edge — mid-page right-swipes fought scroll on phones. */
 			if (touch.clientX <= EDGE) {
 				mode = 'open';
 				tracking = true;
@@ -414,9 +418,9 @@
 			const touch = e.touches[0];
 			const dx = touch.clientX - startX;
 			const dy = touch.clientY - startY;
+			const span = drawerSpan();
 			if (!claimed) {
 				if (Math.abs(dx) < CLAIM && Math.abs(dy) < CLAIM) return;
-				/* Vertical wins — abandon (let scroll / PTR run). */
 				if (Math.abs(dy) > Math.abs(dx) * 0.85) {
 					tracking = false;
 					mode = null;
@@ -438,9 +442,9 @@
 			}
 			e.preventDefault();
 			if (mode === 'open') {
-				menuDrag = Math.max(0, Math.min(1, dx / SPAN));
+				menuDrag = Math.max(0, Math.min(1, dx / span));
 			} else {
-				menuDrag = Math.max(0, Math.min(1, 1 + dx / SPAN));
+				menuDrag = Math.max(0, Math.min(1, 1 + dx / span));
 			}
 		}
 
@@ -470,11 +474,10 @@
 			});
 		}
 
-		/** Swallow the click that follows a finished drag on the toggle. */
 		function onClickCapture(e) {
 			if (!suppressToggleClick) return;
 			const t = e.target;
-			if (t instanceof Element && t.closest('.mobile-nav-toggle')) {
+			if (t instanceof Element && t.closest('.mobile-title-pill')) {
 				e.preventDefault();
 				e.stopPropagation();
 			}
@@ -510,18 +513,6 @@
 >
 	{#if banners}
 		{@render banners()}
-	{/if}
-
-	{#if isMobileViewport}
-		<button
-			type="button"
-			class="nav-menu-scrim"
-			class:on={mobileNavOpen || menuProgress > 0.02}
-			style="opacity: {Math.min(1, menuProgress)}"
-			aria-label="Close menu"
-			tabindex={mobileNavOpen ? 0 : -1}
-			onclick={() => closeMobileNav()}
-		></button>
 	{/if}
 
 	{#snippet sidebarBody()}
@@ -627,15 +618,26 @@
 		{/if}
 	{/snippet}
 
-	{#if !isMobileViewport}
-		<aside class="sidebar" id="alpha-shell-sidebar">
-			<div class="sidebar-inner">
-				{@render sidebarBody()}
-			</div>
-		</aside>
-	{/if}
+	<aside class="sidebar" id="alpha-shell-sidebar">
+		<div
+			class="sidebar-inner"
+			aria-hidden={isMobileViewport && menuProgress < 0.02 ? true : undefined}
+		>
+			{@render sidebarBody()}
+		</div>
+	</aside>
 
 	<div class="workspace-wrap">
+		{#if isMobileViewport}
+			<button
+				type="button"
+				class="nav-peek"
+				class:on={mobileNavOpen || menuProgress > 0.02}
+				aria-label="Close menu"
+				tabindex={mobileNavOpen ? 0 : -1}
+				onclick={() => closeMobileNav()}
+			></button>
+		{/if}
 		<div class="workspace">
 			<section
 				class="list-col"
@@ -649,39 +651,24 @@
 					style="--chrome-scroll-fade: {listFade}"
 				>
 					{#if isMobileViewport}
-						<!-- In-flow slot so the menu sits on the same chrome row as filter/plus -->
-						<div class="mobile-nav-slot">
-							<aside
-								class="sidebar sidebar-mobile"
-								class:as-popover={menuProgress > 0.12}
-								id="alpha-shell-sidebar"
-							>
-								<button
-									type="button"
-									class="mobile-nav-toggle"
-									aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
-									aria-expanded={mobileNavOpen}
-									aria-controls="alpha-shell-sidebar"
-									onclick={toggleMobileNav}
-								>
-									<MenuToggle
-										open={menuProgress > 0.5}
-										align="left"
-										size={16}
-										className="chrome-ico"
-									/>
-								</button>
-								<div
-									class="sidebar-inner"
-									aria-hidden={menuProgress < 0.02 ? true : undefined}
-								>
-									{@render sidebarBody()}
-								</div>
-							</aside>
-						</div>
+						<button
+							type="button"
+							class="mobile-title-pill"
+							aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
+							aria-expanded={mobileNavOpen}
+							aria-controls="alpha-shell-sidebar"
+							onclick={toggleMobileNav}
+						>
+							<span class="pill-ico" aria-hidden="true">
+								<NavIcon name={activeItem.icon || 'dot'} size={18} />
+							</span>
+							<span class="pill-label">{resolvedTitle}</span>
+						</button>
 					{/if}
 					{#if listTitleSlot}
-						{@render listTitleSlot()}
+						<div class="list-title-slot" class:mobile-pill-owns-title={isMobileViewport}>
+							{@render listTitleSlot()}
+						</div>
 					{:else}
 						<div
 							class="list-title-row desktop-only-title"
@@ -690,15 +677,17 @@
 						>
 							<h1 class="list-title">{resolvedTitle}</h1>
 						</div>
-						<div class="mobile-page-title">
-							<span
-								class="mobile-title-stack"
-								class:titles-syncing={syncing}
-								aria-busy={syncing || undefined}
-							>
-								<h1 class="mobile-page-name">{resolvedTitle}</h1>
-							</span>
-						</div>
+						{#if !isMobileViewport}
+							<div class="mobile-page-title">
+								<span
+									class="mobile-title-stack"
+									class:titles-syncing={syncing}
+									aria-busy={syncing || undefined}
+								>
+									<h1 class="mobile-page-name">{resolvedTitle}</h1>
+								</span>
+							</div>
+						{/if}
 					{/if}
 					<div class="list-actions">
 						{#if listActionsSlot}
@@ -831,9 +820,15 @@
 		overflow: hidden;
 	}
 
-	.mobile-nav-toggle,
-	.nav-menu-scrim {
+	.mobile-title-pill,
+	.nav-peek,
+	.mobile-nav-slot {
 		display: none;
+	}
+
+	/* Wrapper must not alter desktop title flex layout */
+	.list-title-slot {
+		display: contents;
 	}
 
 	.side-top {
@@ -863,16 +858,20 @@
 	.search {
 		flex: 1;
 		min-width: 0;
-		height: 32px;
+		height: 28px;
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		padding: 0 10px;
-		border: 1px solid var(--white16);
-		border-radius: 12px;
-		background: transparent;
-		color: var(--white33);
+		border: 1px solid transparent;
+		border-radius: 10px;
+		background:
+			linear-gradient(var(--glass), var(--glass)) padding-box,
+			var(--glass-shine) border-box;
+		color: var(--fg-66);
 		box-sizing: border-box;
+		backdrop-filter: blur(var(--glass-blur));
+		-webkit-backdrop-filter: blur(var(--glass-blur));
 	}
 
 	.search-icon {
@@ -885,14 +884,14 @@
 		height: 100%;
 		border: 0;
 		background: transparent;
-		color: var(--white);
+		color: var(--fg);
 		font: inherit;
 		font-size: 13px;
 		outline: none;
 	}
 
 	.search input::placeholder {
-		color: var(--white33);
+		color: var(--fg-33);
 	}
 
 	.create-wrap,
@@ -901,23 +900,29 @@
 		flex-shrink: 0;
 	}
 
+	/* Match desktop list-top chrome-btn (rounded square) */
 	.top-plus {
-		width: 32px;
-		height: 32px;
+		width: 28px;
+		height: 28px;
 		display: grid;
 		place-items: center;
-		border: 0;
-		border-radius: 12px;
-		background: var(--nav-plus-bg);
-		color: var(--nav-plus-fg);
+		border: 1px solid transparent;
+		border-radius: 10px;
+		background:
+			linear-gradient(var(--glass), var(--glass)) padding-box,
+			var(--glass-shine) border-box;
+		color: var(--fg-66);
 		cursor: pointer;
 		padding: 0;
 		box-sizing: border-box;
+		backdrop-filter: blur(var(--glass-blur));
+		-webkit-backdrop-filter: blur(var(--glass-blur));
+		transition: transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 	}
 
 	.top-plus:hover {
-		color: var(--white);
-		background: var(--white8);
+		color: var(--fg);
+		transform: scale(1.06);
 	}
 
 	.menu-scrim {
@@ -1454,10 +1459,12 @@
 		.shell {
 			--chrome-fade: var(--shell);
 			--menu-progress: 0;
+			/* Page peeks ~33% when drawer open; sidebar fills the rest */
+			--mobile-drawer: 67vw;
 			--feed-pad-top: calc(52px + env(safe-area-inset-top, 0px));
 			--feed-pad-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
 			position: relative;
-			flex-direction: column;
+			flex-direction: row;
 			padding-bottom: 0;
 			background: var(--shell);
 			touch-action: pan-y;
@@ -1467,142 +1474,35 @@
 			--feed-pad-top: calc(56px + env(safe-area-inset-top, 0px));
 		}
 
-		/* Modal-style scrim behind the expanding menu panel */
-		.nav-menu-scrim {
-			display: block;
-			position: fixed;
-			inset: 0;
-			z-index: 85;
-			margin: 0;
-			padding: 0;
-			border: 0;
-			background: var(--scrim);
-			cursor: pointer;
-			pointer-events: none;
-			opacity: 0;
-			transition: opacity 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
-		}
-
-		.nav-menu-scrim.on {
-			pointer-events: auto;
-		}
-
-		.shell.nav-dragging .nav-menu-scrim {
-			transition: none;
-		}
-
-		/* Same chrome row as filter/plus — in-flow 44×44 spacer; panel is fixed over it */
-		.mobile-nav-slot {
-			width: 44px;
-			height: 44px;
-			flex-shrink: 0;
-		}
-
-		/*
-		 * Expanding menu: same chrome-btn as filter when closed.
-		 * Radius stays 22px (circle at 44×44). Open = only width/height + popover surface.
-		 * Fixed so the open panel isn’t clipped by workspace overflow.
-		 */
-		.sidebar.sidebar-mobile {
-			position: fixed;
-			top: calc(6px + env(safe-area-inset-top, 0px));
-			left: 14px;
-			z-index: 90;
+		/* Drawer sits under the sliding page */
+		.sidebar {
 			display: flex;
-			flex-direction: column;
-			width: 44px;
-			height: auto;
-			max-height: 44px;
-			padding: 0;
-			gap: 0;
-			/* 22px = circle while 44×44; stays put on expand (rounded rect) */
-			border-radius: 22px;
-			border: 1px solid transparent;
-			background:
-				linear-gradient(var(--glass), var(--glass)) padding-box,
-				var(--glass-shine) border-box;
-			color: var(--fg-66);
-			overflow: hidden;
-			box-shadow: none;
-			backdrop-filter: blur(var(--glass-blur));
-			-webkit-backdrop-filter: blur(var(--glass-blur));
-			box-sizing: border-box;
-			pointer-events: auto;
-			transition:
-				width 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				max-height 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				background 0.2s ease,
-				border-color 0.2s ease,
-				box-shadow 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
-		}
-
-		.shell.nav-open .sidebar.sidebar-mobile,
-		.shell.nav-dragging .sidebar.sidebar-mobile {
-			width: min(300px, calc(100vw - 28px));
-			max-height: calc(
-				100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
-			);
-		}
-
-		/* Popover panel surface (matches FloatPanel / .alpha-popover) */
-		.sidebar.sidebar-mobile.as-popover {
-			background: var(--float-panel-bg);
-			border-color: color-mix(in srgb, var(--fg) 10%, transparent);
-			box-shadow: 0 10px 36px color-mix(in srgb, var(--fg-raw, #000) 22%, transparent);
-			backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
-			-webkit-backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
-			color: var(--fg);
-		}
-
-		.shell.nav-dragging .sidebar.sidebar-mobile {
-			width: calc(44px + (min(300px, 100vw - 28px) - 44px) * var(--menu-progress));
-			max-height: calc(
-				44px + (100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 44px) *
-					var(--menu-progress)
-			);
-			transition: none;
-		}
-
-		.mobile-nav-toggle {
-			display: grid;
-			place-items: center;
 			position: absolute;
-			top: 0;
 			left: 0;
-			z-index: 2;
-			width: 44px;
-			height: 44px;
-			margin: 0;
-			padding: 0;
-			border: 0;
-			border-radius: 22px;
-			background: transparent;
-			color: inherit;
-			cursor: pointer;
-			-webkit-tap-highlight-color: transparent;
-		}
-
-		.mobile-nav-toggle :global(.chrome-ico) {
-			width: 22px;
-			height: 22px;
-		}
-
-		.sidebar.sidebar-mobile .sidebar-inner {
-			opacity: var(--menu-progress);
+			top: 0;
+			bottom: 0;
+			width: var(--mobile-drawer);
+			z-index: 1;
+			padding: calc(10px + env(safe-area-inset-top, 0px)) 14px
+				calc(12px + env(safe-area-inset-bottom, 0px));
+			background: var(--shell);
 			pointer-events: none;
-			padding: 44px 12px 12px;
-			min-height: 0;
-			flex: 1;
-			overflow: auto;
-			-webkit-overflow-scrolling: touch;
-			transition: opacity 0.2s ease;
 		}
 
-		.shell.nav-open .sidebar.sidebar-mobile .sidebar-inner {
+		.shell.nav-open .sidebar,
+		.shell.nav-dragging .sidebar {
 			pointer-events: auto;
 		}
 
-		.shell.nav-dragging .sidebar.sidebar-mobile .sidebar-inner {
+		.sidebar .sidebar-inner {
+			opacity: calc(0.35 + 0.65 * var(--menu-progress));
+			transform: translate3d(calc(-8px * (1 - var(--menu-progress))), 0, 0);
+			transition:
+				opacity 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				transform 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+		}
+
+		.shell.nav-dragging .sidebar .sidebar-inner {
 			transition: none;
 		}
 
@@ -1617,10 +1517,52 @@
 			display: flex;
 			overflow: hidden;
 			background: var(--shell);
+			transform: translate3d(calc(var(--mobile-drawer) * var(--menu-progress)), 0, 0)
+				scale(calc(1 - 0.045 * var(--menu-progress)));
+			transform-origin: left center;
+			border-radius: calc(20px * var(--menu-progress));
+			margin-block: calc(12px * var(--menu-progress));
+			height: calc(100% - (24px * var(--menu-progress)));
+			box-shadow: 0 0 0 0 transparent;
+			transition:
+				transform 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				border-radius 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				margin-block 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				height 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				box-shadow 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+			will-change: transform;
+		}
+
+		.shell.nav-dragging .workspace-wrap {
+			transition: none;
+		}
+
+		.shell.nav-open .workspace-wrap,
+		.shell.nav-dragging .workspace-wrap {
+			box-shadow: -8px 0 28px color-mix(in srgb, var(--fg-raw, #000) 22%, transparent);
+		}
+
+		/* Tap the slid page to dismiss the menu */
+		.nav-peek {
+			display: block;
+			position: absolute;
+			inset: 0;
+			z-index: 70;
+			margin: 0;
+			padding: 0;
+			border: 0;
+			border-radius: inherit;
+			background: transparent;
+			cursor: pointer;
+			pointer-events: none;
+		}
+
+		.nav-peek.on {
+			pointer-events: auto;
 		}
 
 		.workspace {
-			border-radius: 0;
+			border-radius: inherit;
 			border: 0;
 			background: var(--shell);
 			width: 100%;
@@ -1635,7 +1577,6 @@
 			border-right: 0;
 			background: var(--shell);
 			transform-origin: left center;
-			/* Paired with DetailColumn: underlay parks left while detail covers */
 			transform: translate3d(calc(-30% * var(--detail-progress, 0)), 0, 0)
 				scale(calc(1 - 0.08 * var(--detail-progress, 0)));
 			border-radius: calc(14px * var(--detail-progress, 0));
@@ -1645,7 +1586,6 @@
 			will-change: transform;
 		}
 
-		/* iOS-like: list slides left + dims while detail enters from the right */
 		.list-col::before {
 			content: '';
 			position: absolute;
@@ -1682,21 +1622,75 @@
 			);
 		}
 
-		/* Title is absolutely centered — keep filter/plus on the right */
 		.list-top > .list-actions {
 			position: relative;
 			z-index: 2;
 			margin-left: auto;
 		}
 
-		/* Hide menu chrome while a detail covers the list (back button owns the slot) */
-		.shell.detail-covering .mobile-nav-slot,
-		.shell.detail-covering .sidebar-mobile,
-		.shell.detail-covering .nav-menu-scrim {
+		/* Section icon + title pill — opens the slide-over menu */
+		.mobile-title-pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			max-width: min(52vw, 220px);
+			height: 44px;
+			margin: 0;
+			padding: 0 14px 0 12px;
+			border: 1px solid transparent;
+			border-radius: 9999px;
+			background:
+				linear-gradient(var(--glass), var(--glass)) padding-box,
+				var(--glass-shine) border-box;
+			color: var(--fg-66);
+			cursor: pointer;
+			box-sizing: border-box;
+			flex-shrink: 1;
+			min-width: 0;
+			backdrop-filter: blur(var(--glass-blur));
+			-webkit-backdrop-filter: blur(var(--glass-blur));
+			-webkit-tap-highlight-color: transparent;
+			transition: transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+		}
+
+		.mobile-title-pill:hover {
+			transform: scale(1.02);
+		}
+
+		.mobile-title-pill:active {
+			transform: scale(0.97);
+		}
+
+		.pill-ico {
+			display: grid;
+			place-items: center;
+			flex-shrink: 0;
+			width: 18px;
+			height: 18px;
+			color: inherit;
+		}
+
+		.pill-label {
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			font-family: 'Inter', var(--font), system-ui, sans-serif;
+			font-size: 15px;
+			font-weight: 600;
+			letter-spacing: -0.01em;
+			line-height: 1.1;
+			color: var(--fg-66);
+		}
+
+		.list-title-slot.mobile-pill-owns-title :global(.mobile-page-title) {
+			display: none !important;
+		}
+
+		.shell.detail-covering .mobile-title-pill {
 			opacity: 0;
 			visibility: hidden;
 			pointer-events: none;
-			transition: none;
 		}
 
 		/* Soft veil at bottom (safe-area only — no pill) */

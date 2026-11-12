@@ -122,7 +122,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			bind:this={panelEl}
-			class="panel alpha-popover"
+			class="float-panel alpha-popover"
 			role="dialog"
 			style:top="{pos.top}px"
 			style:left="{pos.left}px"
@@ -154,7 +154,9 @@
 		pointer-events: auto;
 	}
 
-	.panel {
+	/* Not named `.panel` — app.css `.panel` is a solid surface card and would
+	   override the shared `.alpha-popover` glass at equal specificity. */
+	.float-panel {
 		position: absolute;
 		pointer-events: auto;
 		display: flex;

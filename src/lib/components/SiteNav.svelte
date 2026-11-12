@@ -210,7 +210,7 @@
 				aria-label={open ? 'Close menu' : 'Open menu'}
 				onclick={toggle}
 			>
-				<MenuToggle open={open} align="right" size={18} />
+				<MenuToggle open={open} align="left" short="mid" size={20} />
 			</button>
 		</div>
 

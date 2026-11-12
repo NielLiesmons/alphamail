@@ -107,6 +107,8 @@
 	let navArmedPath = '';
 	/** Only close the menu when the section href actually changes. */
 	let lastNavHref = '';
+	/** Detail pane covering the list — hide the menu chrome so back stays usable. */
+	let detailCovering = $state(false);
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
@@ -118,6 +120,31 @@
 		sync();
 		mq.addEventListener('change', sync);
 		return () => mq.removeEventListener('change', sync);
+	});
+
+	/* Watch detail open/progress so the fixed menu circle never sits on the back button. */
+	$effect(() => {
+		const ws = listColEl?.parentElement;
+		if (!ws || typeof window === 'undefined') return;
+
+		const sync = () => {
+			const detail = ws.querySelector('.detail');
+			const open = Boolean(detail?.classList.contains('open'));
+			const raw = getComputedStyle(ws).getPropertyValue('--detail-progress').trim();
+			const p = raw ? Number.parseFloat(raw) : open ? 1 : 0;
+			const covering = open || (Number.isFinite(p) && p > 0.02);
+			detailCovering = covering;
+			if (covering && mobileNavOpen) closeMobileNav({ history: false });
+		};
+
+		sync();
+		const mo = new MutationObserver(sync);
+		mo.observe(ws, {
+			attributes: true,
+			subtree: true,
+			attributeFilter: ['class', 'style']
+		});
+		return () => mo.disconnect();
 	});
 
 	/** @param {string} href */
@@ -476,6 +503,7 @@
 	class="shell {feedPadClass}"
 	class:nav-open={mobileNavOpen}
 	class:nav-dragging={menuDrag != null}
+	class:detail-covering={detailCovering}
 	class:list-chat={listSize === 'chat'}
 	bind:this={shellEl}
 	style="--menu-progress: {menuProgress}"
@@ -506,7 +534,7 @@
 				aria-controls="alpha-shell-sidebar"
 				onclick={toggleMobileNav}
 			>
-				<MenuToggle open={menuProgress > 0.5} align="left" size={18} />
+				<MenuToggle open={menuProgress > 0.5} align="left" size={16} className="chrome-ico" />
 			</button>
 		{/if}
 		<div
@@ -1604,8 +1632,7 @@
 
 		.list-top {
 			height: calc(88px + env(safe-area-inset-top, 0px));
-			/* Leave room for the fixed expanding menu circle on the left */
-			padding: calc(6px + env(safe-area-inset-top, 0px)) 14px 34px 66px;
+			padding: calc(6px + env(safe-area-inset-top, 0px)) 14px 34px 14px;
 			align-items: center;
 			background: transparent;
 			gap: 8px;
@@ -1622,9 +1649,20 @@
 			);
 		}
 
+		/* Title is absolutely centered — keep filter/plus on the right */
 		.list-top > .list-actions {
 			position: relative;
 			z-index: 2;
+			margin-left: auto;
+		}
+
+		/* Fixed menu chrome sits above the list; hide it while a detail covers the list */
+		.shell.detail-covering .sidebar,
+		.shell.detail-covering .nav-menu-scrim {
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+			transition: none;
 		}
 
 		/* Soft veil at bottom (safe-area only — no pill) */

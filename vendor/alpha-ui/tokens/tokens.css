@@ -264,7 +264,7 @@
 	color-scheme: light;
 }
 
-/* Mobile page surface is --shell — panels/scrim follow it */
+/* Mobile page surface is --shell — glass follows it; scrim stays at desktop strength */
 @media (max-width: 767px) {
 	:root,
 	:root[data-theme='dark'] {
@@ -278,7 +278,8 @@
 		/* Float panels sit on shell — slightly stronger frost than desktop workspace */
 		--float-panel-bg: color-mix(in srgb, #ffffff 11%, transparent);
 		--float-trigger-on: color-mix(in srgb, #ffffff 11%, transparent);
-		--scrim: color-mix(in srgb, var(--shell) 88%, transparent);
+		/* Same as desktop dark — do not darken modals on mobile */
+		--scrim: color-mix(in srgb, var(--bg) 72%, transparent);
 	}
 
 	:root[data-theme='light'] {
@@ -287,6 +288,6 @@
 		--glass-panel: color-mix(in srgb, var(--shell) 66%, transparent);
 		--float-panel-bg: color-mix(in srgb, #000000 7%, transparent);
 		--float-trigger-on: color-mix(in srgb, #000000 7%, transparent);
-		--scrim: color-mix(in srgb, var(--fg) 52%, transparent);
+		--scrim: color-mix(in srgb, var(--fg) 42%, transparent);
 	}
 }

@@ -1,8 +1,8 @@
 <script>
 	/**
-	 * Animated menu glyph: two full bars + one shorter bar ↔ cross.
-	 * `align="left"` — short bar on the left (Admin).
-	 * `align="right"` — short bar on the right (Bley / AlphaMail / niel).
+	 * Animated menu glyph matched to the list filter chrome icon
+	 * (16×16 viewBox, stroke 1.5, y=4/8/12) — two full bars + one shorter,
+	 * left- or right-aligned, morphing to a cross when open.
 	 * @type {{
 	 *   open?: boolean,
 	 *   align?: 'left' | 'right',
@@ -10,89 +10,62 @@
 	 *   className?: string
 	 * }}
 	 */
-	let { open = false, align = 'left', size = 18, className = '' } = $props();
+	let { open = false, align = 'left', size = 16, className = '' } = $props();
 </script>
 
-<span
+<svg
 	class="menu-toggle {className}"
 	class:open
 	class:align-right={align === 'right'}
-	style:width="{size}px"
-	style:height="{size}px"
+	width={size}
+	height={size}
+	viewBox="0 0 16 16"
+	fill="none"
 	aria-hidden="true"
 >
-	<span class="bar top"></span>
-	<span class="bar mid"></span>
-	<span class="bar bot"></span>
-</span>
+	<!-- Mirror filter icon: inset 2.5, stroke 1.5, 4px vertical rhythm -->
+	<path class="bar top" d="M2.5 4h11" pathLength="11" />
+	<path class="bar mid" d="M2.5 8h11" pathLength="11" />
+	<!-- Short bar: 7 units (same as filter mid), left or right -->
+	<path
+		class="bar bot"
+		d="M2.5 12h11"
+		pathLength="11"
+		stroke-dasharray={open ? '11 0' : '7 4'}
+		stroke-dashoffset={align === 'right' && !open ? -4 : 0}
+	/>
+</svg>
 
 <style>
 	.menu-toggle {
-		position: relative;
-		display: inline-block;
+		display: block;
 		flex-shrink: 0;
 		color: inherit;
+		overflow: visible;
 	}
 
 	.bar {
-		position: absolute;
-		left: 0;
-		right: 0;
-		height: 1.5px;
-		border-radius: 1px;
-		background: currentColor;
+		stroke: currentColor;
+		stroke-width: 1.5;
+		stroke-linecap: round;
+		transform-box: fill-box;
 		transform-origin: center;
 		transition:
 			transform 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
 			opacity 0.2s ease,
-			width 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-			left 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-			right 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-			top 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
-	}
-
-	.top {
-		top: calc(50% - 5.5px);
-	}
-
-	.mid {
-		top: 50%;
-		margin-top: -0.75px;
-	}
-
-	.bot {
-		top: calc(50% + 4px);
-		/* Short bar — left-aligned by default */
-		right: auto;
-		width: 62%;
-	}
-
-	.align-right .bot {
-		left: auto;
-		right: 0;
-		width: 62%;
+			stroke-dasharray 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+			stroke-dashoffset 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 	}
 
 	.open .top {
-		top: 50%;
-		margin-top: -0.75px;
-		transform: rotate(45deg);
-		width: 100%;
-		left: 0;
-		right: 0;
+		transform: translateY(4px) rotate(45deg);
 	}
 
 	.open .mid {
 		opacity: 0;
-		transform: scaleX(0.4);
 	}
 
 	.open .bot {
-		top: 50%;
-		margin-top: -0.75px;
-		transform: rotate(-45deg);
-		width: 100%;
-		left: 0;
-		right: 0;
+		transform: translateY(-4px) rotate(-45deg);
 	}
 </style>

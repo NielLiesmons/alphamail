@@ -10,13 +10,22 @@
 
 	/**
 	 * @typedef {{
+	 *   id: string,
+	 *   label: string,
+	 *   active?: boolean
+	 * }} ShellSectionChild
+	 */
+
+	/**
+	 * @typedef {{
 	 *   href: string,
 	 *   label: string,
 	 *   icon: string,
 	 *   id?: string,
 	 *   countKey?: string,
 	 *   createKind?: string,
-	 *   active?: boolean
+	 *   active?: boolean,
+	 *   children?: ShellSectionChild[]
 	 * }} ShellSection
 	 */
 
@@ -37,6 +46,7 @@
 	 *   createMenuItems?: { kind: string, label: string }[],
 	 *   createKind?: string | undefined,
 	 *   onNavigate?: (href: string) => void,
+	 *   onNavChild?: (parentHref: string, childId: string) => void,
 	 *   onCreate?: (kind: string) => void,
 	 *   onNavPlus?: (kind: string | undefined) => void,
 	 *   onFilterChange?: (id: string) => void,
@@ -74,6 +84,7 @@
 		/** When false, only listActionsSlot is shown (Admin mail/planning chrome). */
 		defaultListActions = true,
 		onNavigate = () => {},
+		onNavChild = () => {},
 		onCreate = () => {},
 		onNavPlus = () => {},
 		onFilterChange = () => {},
@@ -95,6 +106,8 @@
 	let listColEl = $state();
 	/** @type {HTMLElement | undefined} */
 	let shellEl = $state();
+	/** @type {HTMLElement | undefined} */
+	let workspaceWrapEl = $state();
 	let listFade = $state(0);
 	let search = $state('');
 	let searchOpen = $state(false);
@@ -109,6 +122,8 @@
 	let isMobileViewport = $state(false);
 	/** Ignore our own pushState/back while syncing the Android-back trap. */
 	let ignoreNavPop = false;
+	/** True while history.back() is closing the menu — popstate must not reopen it. */
+	let navClosePending = false;
 	/** Last path we armed — popstate with a path change is section back, not nav. */
 	let navArmedPath = '';
 	/** Only close the menu when the section href actually changes. */
@@ -218,12 +233,14 @@
 			history.state?.alphaNav &&
 			isMobileShell()
 		) {
+			navClosePending = true;
 			ignoreNavPop = true;
 			history.back();
-			queueMicrotask(() => {
+			mobileNavOpen = false;
+			/* Popstate may arrive after the microtask — keep ignore until it runs. */
+			requestAnimationFrame(() => {
 				ignoreNavPop = false;
 			});
-			mobileNavOpen = false;
 			return;
 		}
 		mobileNavOpen = false;
@@ -316,6 +333,13 @@
 
 		/** @param {PopStateEvent} _e */
 		function onPop(_e) {
+			/* Honor in-flight dismiss even when ignoreNavPop is still set. */
+			if (navClosePending) {
+				navClosePending = false;
+				mobileNavOpen = false;
+				menuDrag = null;
+				return;
+			}
 			if (ignoreNavPop) return;
 			if (!isMobileShell()) {
 				mobileNavOpen = false;
@@ -354,20 +378,23 @@
 	});
 
 	/*
-	 * Touch swipe → slide page right to reveal menu drawer.
-	 * Open: left-edge swipe right. Close: swipe left on the peeked page.
+	 * Touch swipe on the slid page → open/close the menu.
+	 * Listen on the wrap (capture) so nav-peek / feed / PTR children still bubble here.
+	 * Avoid shell-level touch-action: pan-y — it lets the browser cancel horizontal claims.
 	 */
 	$effect(() => {
-		const root = shellEl;
+		const root = workspaceWrapEl;
 		if (!root || typeof window === 'undefined') return;
 
-		const EDGE = 28;
 		const CLAIM = 10;
-		const OPEN_AT = 0.28;
+		const OPEN_AT = 0.2;
 		const CLOSE_AT = 0.28;
 
 		function drawerSpan() {
-			const raw = getComputedStyle(root).getPropertyValue('--mobile-drawer').trim();
+			const shell = shellEl;
+			const raw = shell
+				? getComputedStyle(shell).getPropertyValue('--mobile-drawer').trim()
+				: '67vw';
 			if (raw.endsWith('vw')) return (parseFloat(raw) / 100) * window.innerWidth;
 			if (raw.endsWith('px')) return parseFloat(raw);
 			const n = parseFloat(raw);
@@ -396,26 +423,15 @@
 			) {
 				return;
 			}
-			/* Drawer chrome owns its taps. */
-			if (t instanceof Element && t.closest('.sidebar')) return;
 
 			const touch = e.touches[0];
 			startX = touch.clientX;
 			startY = touch.clientY;
-			startOpen = mobileNavOpen;
+			startOpen = mobileNavOpen || menuProgress > 0.5;
 			claimed = false;
-			tracking = false;
-			mode = null;
-			menuDrag = null;
-
-			if (mobileNavOpen) {
-				mode = 'close';
-				tracking = true;
-				return;
-			}
-			/* Open from anywhere on the main page — claim only after clear horizontal intent. */
-			mode = 'open';
 			tracking = true;
+			mode = startOpen ? 'close' : 'open';
+			menuDrag = null;
 		}
 
 		/** @param {TouchEvent} e */
@@ -426,9 +442,9 @@
 			const dy = touch.clientY - startY;
 			const span = drawerSpan();
 			if (!claimed) {
-				const claim = mode === 'open' && startX <= EDGE ? CLAIM * 0.7 : CLAIM * 1.2;
-				if (Math.abs(dx) < claim && Math.abs(dy) < claim) return;
-				if (Math.abs(dy) > Math.abs(dx) * 0.75) {
+				if (Math.abs(dx) < CLAIM && Math.abs(dy) < CLAIM) return;
+				/* Vertical wins — abandon (scroll / PTR). */
+				if (Math.abs(dy) >= Math.abs(dx)) {
 					tracking = false;
 					mode = null;
 					menuDrag = null;
@@ -484,7 +500,7 @@
 		function onClickCapture(e) {
 			if (!suppressToggleClick) return;
 			const t = e.target;
-			if (t instanceof Element && t.closest('.mobile-title-pill')) {
+			if (t instanceof Element && t.closest('.mobile-title-pill, .nav-peek')) {
 				e.preventDefault();
 				e.stopPropagation();
 			}
@@ -617,52 +633,73 @@
 			{#each filteredNav as item (item.href)}
 				{@const count = item.countKey ? counts[item.countKey] : null}
 				{@const rowActive = active(item.href)}
+				{@const kids = item.children || []}
+				{@const expanded = rowActive && kids.length > 0}
 				{@const png = rowActive ? navPngUrl(item.icon) : null}
-				<div
-					class="nav-row"
-					class:active={rowActive}
-					class:creatable={Boolean(item.createKind)}
-				>
-					<button
-						type="button"
-						class="nav-item"
+				<div class="nav-block">
+					<div
+						class="nav-row"
 						class:active={rowActive}
-						onclick={() => go(item.href)}
+						class:creatable={Boolean(item.createKind)}
 					>
-						<span class="icon-wrap" class:png={Boolean(png)} class:empty={rowActive && !png}>
-							{#if rowActive}
-								{#if png}
-									<img class="nav-png" src={png} alt="" width="22" height="22" />
+						<button
+							type="button"
+							class="nav-item"
+							class:active={rowActive}
+							onclick={() => go(item.href)}
+						>
+							<span class="icon-wrap" class:png={Boolean(png)} class:empty={rowActive && !png}>
+								{#if rowActive}
+									{#if png}
+										<img class="nav-png" src={png} alt="" width="22" height="22" />
+									{/if}
+								{:else}
+									<NavIcon name={item.icon} size={18} />
 								{/if}
-							{:else}
-								<NavIcon name={item.icon} size={18} />
-							{/if}
-						</span>
-						<span class="nav-label">{item.label}</span>
-					</button>
-					{#if item.createKind || count != null}
-						<span class="row-end">
-							{#if count != null}
-								<span class="count">{count}</span>
-							{/if}
-							{#if item.createKind}
+							</span>
+							<span class="nav-label">{item.label}</span>
+						</button>
+						{#if item.createKind || count != null}
+							<span class="row-end">
+								{#if count != null}
+									<span class="count">{count}</span>
+								{/if}
+								{#if item.createKind}
+									<button
+										type="button"
+										class="row-plus"
+										aria-label={`New ${item.createKind}`}
+										onclick={() => onNavPlus(item.createKind)}
+									>
+										<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+											<path
+												d="M6 1.5v9M1.5 6h9"
+												stroke="currentColor"
+												stroke-width="1.6"
+												stroke-linecap="round"
+											/>
+										</svg>
+									</button>
+								{/if}
+							</span>
+						{/if}
+					</div>
+					{#if expanded}
+						<div class="nav-sub" role="group" aria-label={item.label}>
+							{#each kids as child (child.id)}
 								<button
 									type="button"
-									class="row-plus"
-									aria-label={`New ${item.createKind}`}
-									onclick={() => onNavPlus(item.createKind)}
+									class="nav-sub-item"
+									class:active={Boolean(child.active)}
+									onclick={() => {
+										onNavChild(item.href, child.id);
+										closeMobileNav({ history: false });
+									}}
 								>
-									<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-										<path
-											d="M6 1.5v9M1.5 6h9"
-											stroke="currentColor"
-											stroke-width="1.6"
-											stroke-linecap="round"
-										/>
-									</svg>
+									{child.label}
 								</button>
-							{/if}
-						</span>
+							{/each}
+						</div>
 					{/if}
 				</div>
 			{/each}
@@ -683,15 +720,18 @@
 		</div>
 	</aside>
 
-	<div class="workspace-wrap">
+	<div class="workspace-wrap" bind:this={workspaceWrapEl}>
 		{#if isMobileViewport}
 			<button
 				type="button"
 				class="nav-peek"
-				class:on={mobileNavOpen || menuProgress > 0.02}
+				class:on={menuProgress > 0.02}
 				aria-label="Close menu"
-				tabindex={mobileNavOpen ? 0 : -1}
-				onclick={() => closeMobileNav()}
+				tabindex={menuProgress > 0.02 ? 0 : -1}
+				onclick={() => {
+					if (menuProgress <= 0.02) return;
+					closeMobileNav();
+				}}
 			></button>
 		{/if}
 		<div class="workspace">
@@ -708,32 +748,49 @@
 				>
 					{#if isMobileViewport}
 						{@const pillPng = navPngUrl(activeItem.icon)}
+						{@const pillCompact = menuProgress > 0.55}
 						<button
 							type="button"
 							class="mobile-title-pill"
+							class:compact={pillCompact}
 							aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
 							aria-expanded={mobileNavOpen}
 							aria-controls="alpha-shell-sidebar"
 							onclick={toggleMobileNav}
 						>
 							<span class="pill-chev" aria-hidden="true">
-								<!-- Back chevron (points to the menu / previous) -->
-								<svg width="12" height="18" viewBox="0 0 12 18" fill="none">
-									<path
-										d="M8.5 2.5 3 9l5.5 6.5"
-										stroke="currentColor"
-										stroke-width="1.7"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									/>
-								</svg>
+								{#if pillCompact}
+									<!-- Shared chrome chevron, mirrored → (round dismiss control) -->
+									<svg width="22" height="22" viewBox="0 0 18 18" fill="none">
+										<path
+											d="M6.5 3.5 12 9l-5.5 5.5"
+											stroke="currentColor"
+											stroke-width="1.7"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										/>
+									</svg>
+								{:else}
+									<!-- Same back chevron as ChromeMobileBar / ListTitleChrome -->
+									<svg width="22" height="22" viewBox="0 0 18 18" fill="none">
+										<path
+											d="M11.5 3.5 6 9l5.5 5.5"
+											stroke="currentColor"
+											stroke-width="1.7"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										/>
+									</svg>
+								{/if}
 							</span>
-							{#if pillPng}
+							{#if !pillCompact && pillPng}
 								<span class="pill-ico png" aria-hidden="true">
 									<img class="nav-png" src={pillPng} alt="" width="22" height="22" />
 								</span>
 							{/if}
-							<span class="pill-label">{resolvedTitle}</span>
+							{#if !pillCompact}
+								<span class="pill-label">{resolvedTitle}</span>
+							{/if}
 						</button>
 					{/if}
 					{#if listTitleSlot}
@@ -1571,7 +1628,6 @@
 			flex-direction: row;
 			padding-bottom: 0;
 			background: var(--shell);
-			touch-action: pan-y;
 		}
 
 		.shell.tasks-pad {
@@ -1621,6 +1677,8 @@
 			display: flex;
 			overflow: hidden;
 			background: var(--shell);
+			/* Allow horizontal menu swipe + vertical scroll; claim in JS after intent. */
+			touch-action: manipulation;
 			transform: translate3d(calc(var(--mobile-drawer) * var(--menu-progress)), 0, 0)
 				scale(calc(1 - 0.045 * var(--menu-progress)));
 			transform-origin: left center;
@@ -1630,8 +1688,8 @@
 			/* Subtle stroke so scaled/rounded page edge reads clearly */
 			box-shadow:
 				0 0 0 calc(1px * var(--menu-progress))
-					color-mix(in srgb, var(--fg) calc(14% * var(--menu-progress)), transparent),
-				-8px 0 28px color-mix(in srgb, var(--fg-raw, #000) calc(18% * var(--menu-progress)), transparent);
+					color-mix(in srgb, var(--fg) calc(10% * var(--menu-progress)), transparent),
+				-6px 0 22px color-mix(in srgb, var(--fg-raw, #000) calc(12% * var(--menu-progress)), transparent);
 			transition:
 				transform 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
 				border-radius 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
@@ -1641,15 +1699,15 @@
 			will-change: transform;
 		}
 
-		/* Scrim on the slid page: lightens in dark mode, darkens in light (--fg flips) */
+		/* Quiet veil on the slid page — soft in both light and dark */
 		.workspace-wrap::after {
 			content: '';
 			position: absolute;
 			inset: 0;
 			z-index: 60;
 			border-radius: inherit;
-			background: color-mix(in srgb, var(--fg) 22%, transparent);
-			opacity: calc(0.55 * var(--menu-progress));
+			background: color-mix(in srgb, var(--fg) 9%, transparent);
+			opacity: calc(0.32 * var(--menu-progress));
 			pointer-events: none;
 			transition: opacity 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 		}
@@ -1659,19 +1717,27 @@
 			transition: none;
 		}
 
-		/* Tap the slid page to dismiss the menu */
+		/*
+		 * Tap the slid page body to dismiss. Starts below list chrome so the
+		 * compact title pill (sibling stacking under transform) stays tappable.
+		 */
 		.nav-peek {
 			display: block;
 			position: absolute;
-			inset: 0;
+			top: calc(56px + env(safe-area-inset-top, 0px));
+			right: 0;
+			bottom: 0;
+			left: 0;
 			z-index: 70;
 			margin: 0;
 			padding: 0;
 			border: 0;
-			border-radius: inherit;
+			border-radius: 0 0 inherit inherit;
 			background: transparent;
 			cursor: pointer;
 			pointer-events: none;
+			touch-action: manipulation;
+			-webkit-tap-highlight-color: transparent;
 		}
 
 		.nav-peek.on {
@@ -1745,11 +1811,13 @@
 			margin-left: auto;
 		}
 
-		/* Section icon + title pill — opens the slide-over menu */
+		/* Section icon + title pill — opens the slide-over menu; collapses to round › when open */
 		.mobile-title-pill {
+			position: relative;
+			z-index: 2;
 			display: inline-flex;
 			align-items: center;
-			gap: 6px;
+			gap: 10px;
 			max-width: min(58vw, 240px);
 			height: 44px;
 			margin: 0;
@@ -1767,7 +1835,22 @@
 			backdrop-filter: blur(var(--glass-blur));
 			-webkit-backdrop-filter: blur(var(--glass-blur));
 			-webkit-tap-highlight-color: transparent;
-			transition: transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+			transition:
+				transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				width 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				max-width 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				padding 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				gap 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+		}
+
+		.mobile-title-pill.compact {
+			width: 44px;
+			max-width: 44px;
+			min-width: 44px;
+			padding: 0;
+			gap: 0;
+			justify-content: center;
+			flex-shrink: 0;
 		}
 
 		.mobile-title-pill:hover {
@@ -1778,13 +1861,18 @@
 			transform: scale(0.97);
 		}
 
+		/* Same 18×18 half-square chevron as ListTitleChrome / ChromeMobileBar */
 		.pill-chev {
 			display: grid;
 			place-items: center;
 			flex-shrink: 0;
-			width: 12px;
-			height: 18px;
+			width: 22px;
+			height: 22px;
 			color: var(--fg-33);
+		}
+
+		.mobile-title-pill.compact .pill-chev {
+			color: var(--fg-66);
 		}
 
 		.pill-ico {
@@ -1793,6 +1881,7 @@
 			flex-shrink: 0;
 			width: 22px;
 			height: 22px;
+			margin-left: 2px;
 			color: inherit;
 		}
 

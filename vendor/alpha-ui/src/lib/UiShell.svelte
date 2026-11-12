@@ -1377,9 +1377,10 @@
 		overflow: hidden;
 	}
 
+	/* Chat uses the same 2nd-column width as Notes / Mail / Tasks / … */
 	.list-col.chat {
-		flex-basis: var(--list-chat, var(--list));
-		width: var(--list-chat, var(--list));
+		flex-basis: var(--list);
+		width: var(--list);
 	}
 
 	.list-col.wide {
@@ -1913,7 +1914,7 @@
 			pointer-events: none;
 		}
 
-		/* Soft veil at bottom (safe-area only — no pill) */
+		/* Soft veil at bottom (safe-area only — no pill). Chat owns its composer fade. */
 		.list-bottom-fade {
 			display: block;
 			position: absolute;
@@ -1928,6 +1929,11 @@
 				color-mix(in srgb, var(--chrome-fade) 80%, transparent) 50%,
 				transparent 100%
 			);
+		}
+
+		.shell.list-chat .list-bottom-fade,
+		.list-col.chat .list-bottom-fade {
+			display: none;
 		}
 
 		.desktop-only-title {

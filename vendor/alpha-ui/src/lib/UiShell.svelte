@@ -377,6 +377,10 @@
 		return () => window.removeEventListener('popstate', onPop);
 	});
 
+	const menuProgress = $derived(
+		menuDrag != null ? menuDrag : mobileNavOpen ? 1 : 0
+	);
+
 	/*
 	 * Touch swipe on the slid page → open/close the menu.
 	 * Listen on the wrap (capture) so nav-peek / feed / PTR children still bubble here.
@@ -519,10 +523,6 @@
 			root.removeEventListener('click', onClickCapture, true);
 		};
 	});
-
-	const menuProgress = $derived(
-		menuDrag != null ? menuDrag : mobileNavOpen ? 1 : 0
-	);
 </script>
 
 <div

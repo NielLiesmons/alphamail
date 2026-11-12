@@ -4,6 +4,7 @@
 	 * Apps pass sections and own domain logic; this owns chrome presentation.
 	 */
 	import { attachChromeScrollFade } from './chrome-scroll-fade.js';
+	import { navPngUrl } from './nav-png.js';
 	import NavIcon from './NavIcon.svelte';
 	import PullToRefresh from './PullToRefresh.svelte';
 
@@ -41,6 +42,7 @@
 	 *   onFilterChange?: (id: string) => void,
 	 *   onRefresh?: (() => Promise<void> | void) | null,
 	 *   isSectionActive?: ((href: string) => boolean) | null,
+	 *   accountLabel?: string,
 	 *   sidebarLead?: import('svelte').Snippet,
 	 *   sidebarTrail?: import('svelte').Snippet,
 	 *   defaultListActions?: boolean,
@@ -77,6 +79,8 @@
 		onFilterChange = () => {},
 		onRefresh = null,
 		isSectionActive = null,
+		/** Display name next to the profile pic in the menu header. */
+		accountLabel = '',
 		sidebarLead,
 		sidebarTrail,
 		listTitleSlot,
@@ -93,8 +97,11 @@
 	let shellEl = $state();
 	let listFade = $state(0);
 	let search = $state('');
+	let searchOpen = $state(false);
 	let createMenuOpen = $state(false);
 	let filterOpen = $state(false);
+	/** @type {HTMLInputElement | undefined} */
+	let searchInputEl = $state();
 	/** Mobile expanding nav panel. Desktop sidebar stays in-flow. */
 	let mobileNavOpen = $state(false);
 	/** 0..1 while dragging the menu open/closed; null when idle. */
@@ -406,10 +413,9 @@
 				tracking = true;
 				return;
 			}
-			if (touch.clientX <= EDGE) {
-				mode = 'open';
-				tracking = true;
-			}
+			/* Open from anywhere on the main page — claim only after clear horizontal intent. */
+			mode = 'open';
+			tracking = true;
 		}
 
 		/** @param {TouchEvent} e */
@@ -420,8 +426,9 @@
 			const dy = touch.clientY - startY;
 			const span = drawerSpan();
 			if (!claimed) {
-				if (Math.abs(dx) < CLAIM && Math.abs(dy) < CLAIM) return;
-				if (Math.abs(dy) > Math.abs(dx) * 0.85) {
+				const claim = mode === 'open' && startX <= EDGE ? CLAIM * 0.7 : CLAIM * 1.2;
+				if (Math.abs(dx) < claim && Math.abs(dy) < claim) return;
+				if (Math.abs(dy) > Math.abs(dx) * 0.75) {
 					tracking = false;
 					mode = null;
 					menuDrag = null;
@@ -517,11 +524,8 @@
 
 	{#snippet sidebarBody()}
 		<header class="side-top">
-			{#if sidebarLead}
-				{@render sidebarLead()}
-			{/if}
-			{#if searchEnabled}
-				<label class="search">
+			{#if searchOpen && searchEnabled}
+				<label class="search search-expanded">
 					<span class="sr-only">Search</span>
 					<svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 						<path
@@ -531,38 +535,81 @@
 							stroke-linecap="round"
 						/>
 					</svg>
-					<input type="search" placeholder="Search" bind:value={search} autocomplete="off" />
+					<input
+						bind:this={searchInputEl}
+						type="search"
+						placeholder="Search"
+						bind:value={search}
+						autocomplete="off"
+						onkeydown={(e) => {
+							if (e.key === 'Escape') {
+								search = '';
+								searchOpen = false;
+							}
+						}}
+						onblur={() => {
+							if (!search.trim()) searchOpen = false;
+						}}
+					/>
 				</label>
 			{:else}
+				{#if sidebarLead}
+					{@render sidebarLead()}
+				{/if}
+				{#if accountLabel}
+					<span class="account-name">{accountLabel}</span>
+				{:else}
+					<span class="side-spacer"></span>
+				{/if}
 				<span class="side-spacer"></span>
-			{/if}
-			{#if createMenuItems.length}
-				<div class="create-wrap">
+				{#if searchEnabled}
 					<button
 						type="button"
-						class="top-plus"
-						aria-label="Create"
-						aria-expanded={createMenuOpen}
-						onclick={() => (createMenuOpen = !createMenuOpen)}
+						class="top-search"
+						aria-label="Search"
+						onclick={() => {
+							searchOpen = true;
+							queueMicrotask(() => searchInputEl?.focus());
+						}}
 					>
-						<svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-							<path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+						<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+							<path
+								d="M7 12.5A5.5 5.5 0 1 0 7 1.5a5.5 5.5 0 0 0 0 11Zm0 0L14 14.5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+							/>
 						</svg>
 					</button>
-					{#if createMenuOpen}
+				{/if}
+				{#if createMenuItems.length}
+					<div class="create-wrap">
 						<button
 							type="button"
-							class="menu-scrim"
-							aria-label="Close"
-							onclick={() => (createMenuOpen = false)}
-						></button>
-						<div class="create-menu" role="menu">
-							{#each createMenuItems as item (item.kind)}
-								<button type="button" role="menuitem" onclick={() => create(item.kind)}>{item.label}</button>
-							{/each}
-						</div>
-					{/if}
-				</div>
+							class="top-plus"
+							aria-label="Create"
+							aria-expanded={createMenuOpen}
+							onclick={() => (createMenuOpen = !createMenuOpen)}
+						>
+							<svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+								<path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+							</svg>
+						</button>
+						{#if createMenuOpen}
+							<button
+								type="button"
+								class="menu-scrim"
+								aria-label="Close"
+								onclick={() => (createMenuOpen = false)}
+							></button>
+							<div class="create-menu" role="menu">
+								{#each createMenuItems as item (item.kind)}
+									<button type="button" role="menuitem" onclick={() => create(item.kind)}>{item.label}</button>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/if}
 			{/if}
 		</header>
 
@@ -570,6 +617,7 @@
 			{#each filteredNav as item (item.href)}
 				{@const count = item.countKey ? counts[item.countKey] : null}
 				{@const rowActive = active(item.href)}
+				{@const png = rowActive ? navPngUrl(item.icon) : null}
 				<div
 					class="nav-row"
 					class:active={rowActive}
@@ -581,7 +629,15 @@
 						class:active={rowActive}
 						onclick={() => go(item.href)}
 					>
-						<span class="icon-wrap"><NavIcon name={item.icon} size={18} /></span>
+						<span class="icon-wrap" class:png={Boolean(png)} class:empty={rowActive && !png}>
+							{#if rowActive}
+								{#if png}
+									<img class="nav-png" src={png} alt="" width="22" height="22" />
+								{/if}
+							{:else}
+								<NavIcon name={item.icon} size={18} />
+							{/if}
+						</span>
 						<span class="nav-label">{item.label}</span>
 					</button>
 					{#if item.createKind || count != null}
@@ -651,6 +707,7 @@
 					style="--chrome-scroll-fade: {listFade}"
 				>
 					{#if isMobileViewport}
+						{@const pillPng = navPngUrl(activeItem.icon)}
 						<button
 							type="button"
 							class="mobile-title-pill"
@@ -659,9 +716,23 @@
 							aria-controls="alpha-shell-sidebar"
 							onclick={toggleMobileNav}
 						>
-							<span class="pill-ico" aria-hidden="true">
-								<NavIcon name={activeItem.icon || 'dot'} size={18} />
+							<span class="pill-chev" aria-hidden="true">
+								<!-- Back chevron (points to the menu / previous) -->
+								<svg width="12" height="18" viewBox="0 0 12 18" fill="none">
+									<path
+										d="M8.5 2.5 3 9l5.5 6.5"
+										stroke="currentColor"
+										stroke-width="1.7"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									/>
+								</svg>
 							</span>
+							{#if pillPng}
+								<span class="pill-ico png" aria-hidden="true">
+									<img class="nav-png" src={pillPng} alt="" width="22" height="22" />
+								</span>
+							{/if}
 							<span class="pill-label">{resolvedTitle}</span>
 						</button>
 					{/if}
@@ -855,6 +926,18 @@
 		opacity: 0.85;
 	}
 
+	.account-name {
+		min-width: 0;
+		max-width: 9rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--fg-66);
+	}
+
 	.search {
 		flex: 1;
 		min-width: 0;
@@ -901,6 +984,7 @@
 	}
 
 	/* Match desktop list-top chrome-btn (rounded square) */
+	.top-search,
 	.top-plus {
 		width: 28px;
 		height: 28px;
@@ -915,14 +999,34 @@
 		cursor: pointer;
 		padding: 0;
 		box-sizing: border-box;
+		flex-shrink: 0;
 		backdrop-filter: blur(var(--glass-blur));
 		-webkit-backdrop-filter: blur(var(--glass-blur));
 		transition: transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 	}
 
+	.top-search:hover,
 	.top-plus:hover {
 		color: var(--fg);
 		transform: scale(1.06);
+	}
+
+	.icon-wrap.png {
+		width: 22px;
+		height: 22px;
+	}
+
+	.icon-wrap.empty {
+		width: 18px;
+		height: 18px;
+	}
+
+	.nav-png {
+		display: block;
+		width: 22px;
+		height: 22px;
+		object-fit: contain;
+		border-radius: 5px;
 	}
 
 	.menu-scrim {
@@ -1523,7 +1627,11 @@
 			border-radius: calc(20px * var(--menu-progress));
 			margin-block: calc(12px * var(--menu-progress));
 			height: calc(100% - (24px * var(--menu-progress)));
-			box-shadow: 0 0 0 0 transparent;
+			/* Subtle stroke so scaled/rounded page edge reads clearly */
+			box-shadow:
+				0 0 0 calc(1px * var(--menu-progress))
+					color-mix(in srgb, var(--fg) calc(14% * var(--menu-progress)), transparent),
+				-8px 0 28px color-mix(in srgb, var(--fg-raw, #000) calc(18% * var(--menu-progress)), transparent);
 			transition:
 				transform 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
 				border-radius 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
@@ -1533,13 +1641,22 @@
 			will-change: transform;
 		}
 
-		.shell.nav-dragging .workspace-wrap {
-			transition: none;
+		/* Scrim on the slid page: lightens in dark mode, darkens in light (--fg flips) */
+		.workspace-wrap::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: 60;
+			border-radius: inherit;
+			background: color-mix(in srgb, var(--fg) 22%, transparent);
+			opacity: calc(0.55 * var(--menu-progress));
+			pointer-events: none;
+			transition: opacity 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 		}
 
-		.shell.nav-open .workspace-wrap,
-		.shell.nav-dragging .workspace-wrap {
-			box-shadow: -8px 0 28px color-mix(in srgb, var(--fg-raw, #000) 22%, transparent);
+		.shell.nav-dragging .workspace-wrap,
+		.shell.nav-dragging .workspace-wrap::after {
+			transition: none;
 		}
 
 		/* Tap the slid page to dismiss the menu */
@@ -1632,11 +1749,11 @@
 		.mobile-title-pill {
 			display: inline-flex;
 			align-items: center;
-			gap: 8px;
-			max-width: min(52vw, 220px);
+			gap: 6px;
+			max-width: min(58vw, 240px);
 			height: 44px;
 			margin: 0;
-			padding: 0 14px 0 12px;
+			padding: 0 14px 0 10px;
 			border: 1px solid transparent;
 			border-radius: 9999px;
 			background:
@@ -1661,13 +1778,27 @@
 			transform: scale(0.97);
 		}
 
+		.pill-chev {
+			display: grid;
+			place-items: center;
+			flex-shrink: 0;
+			width: 12px;
+			height: 18px;
+			color: var(--fg-33);
+		}
+
 		.pill-ico {
 			display: grid;
 			place-items: center;
 			flex-shrink: 0;
-			width: 18px;
-			height: 18px;
+			width: 22px;
+			height: 22px;
 			color: inherit;
+		}
+
+		.pill-ico.png {
+			width: 22px;
+			height: 22px;
 		}
 
 		.pill-label {

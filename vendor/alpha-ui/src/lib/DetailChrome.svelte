@@ -219,14 +219,24 @@
 			z-index: 55;
 			width: 100%;
 			background: var(--shell);
-			transform: translate3d(100%, 0, 0);
-			transition: transform 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+			transform: translate3d(calc((1 - var(--detail-progress, 0)) * 100%), 0, 0)
+				scale(calc(1.02 - 0.02 * var(--detail-progress, 0)));
+			transform-origin: right center;
+			transition:
+				transform 0.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				box-shadow 0.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 			pointer-events: none;
+			box-shadow: -12px 0 40px
+				color-mix(in srgb, var(--fg-raw, #000) calc(22% * var(--detail-progress, 0)), transparent);
+			will-change: transform;
 		}
 
 		.detail.open {
-			transform: translate3d(0, 0, 0);
 			pointer-events: auto;
+		}
+
+		.detail.dragging {
+			transition: none;
 		}
 
 		.detail.empty {

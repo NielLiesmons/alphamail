@@ -127,8 +127,13 @@
 	--shadow-strong: color-mix(in srgb, var(--fg-raw) 32%, transparent);
 
 	--font: 'Inter', system-ui, -apple-system, sans-serif;
-	--side: 260px;
-	--list: calc(var(--side) * 1.618);
+	/* Desktop columns — φ cascade from viewport (side → list → detail) */
+	--phi: 1.618;
+	--shell-col-sum: calc(1 + var(--phi) + var(--phi) * var(--phi));
+	--side: clamp(210px, calc(100vw / var(--shell-col-sum)), 280px);
+	--list: calc(var(--side) * var(--phi));
+	/* Chat list column sits a step toward φ² so the feed breathes */
+	--list-chat: calc(var(--side) * var(--phi) * 1.2);
 	--radius-16: 16px;
 	--radius-hero: 32px;
 	--ease: cubic-bezier(0.22, 1, 0.36, 1);

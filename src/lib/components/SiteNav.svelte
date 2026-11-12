@@ -9,7 +9,7 @@
 	import { site } from '$lib/site';
 	import AlphaLogo from '$lib/components/AlphaLogo.svelte';
 	import { ChevronDown } from '$lib/components/icons';
-	import Menu from '@alpha/ui/icons/Menu.svelte';
+	import MenuToggle from '@alpha/ui/icons/MenuToggle.svelte';
 
 	let open = $state(false);
 	let settingsOpen = $state(false);
@@ -210,11 +210,7 @@
 				aria-label={open ? 'Close menu' : 'Open menu'}
 				onclick={toggle}
 			>
-				{#if open}
-					<span class="burger-lines x"></span>
-				{:else}
-					<Menu size={18} mirror />
-				{/if}
+				<MenuToggle open={open} align="right" size={18} />
 			</button>
 		</div>
 

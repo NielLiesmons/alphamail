@@ -155,11 +155,12 @@
 		margin: 0;
 		min-width: 0;
 		font-family: 'Inter', var(--font), system-ui, sans-serif;
-		font-size: 22px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		line-height: 1.1;
-		color: var(--fg);
+		font-size: 17px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		line-height: 1.15;
+		color: var(--fg-66);
+		text-align: center;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -182,9 +183,15 @@
 			display: flex;
 			align-items: center;
 			align-self: center;
+			justify-content: center;
 			min-width: 0;
 			flex: 1;
 			height: 44px;
+		}
+
+		.mobile-page-title:not(.nested) .mobile-title-stack {
+			align-items: center;
+			justify-content: center;
 		}
 
 		.mobile-page-title.nested {

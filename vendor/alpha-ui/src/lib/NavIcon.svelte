@@ -246,10 +246,10 @@
 			/>
 		</svg>
 	{:else if name === 'menu'}
-		<!-- alpha-ui/icons/menu.svg — short bar on the left; mirror in CSS for the right-edge sites -->
-		<svg viewBox="0 0 9 9" fill="none" aria-hidden="true">
+		<!-- alpha-ui/icons/menu.svg in a 16 slot so chrome-ico matches filter/plus optical size -->
+		<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
 			<path
-				d="M0.5 0.5H8.5M0.5 4.5H8.5M0.5 8.5H5.5"
+				d="M3.5 4H12.5M3.5 8H12.5M3.5 12H9.5"
 				stroke="currentColor"
 				stroke-linecap="round"
 			/>

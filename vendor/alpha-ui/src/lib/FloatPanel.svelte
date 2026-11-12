@@ -122,7 +122,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			bind:this={panelEl}
-			class="panel"
+			class="panel alpha-popover"
 			role="dialog"
 			style:top="{pos.top}px"
 			style:left="{pos.left}px"
@@ -160,13 +160,6 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 0;
-		/* Canonical float glass — same as TaskCreate project/assignee panels */
-		background: var(--float-panel-bg);
-		border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
-		border-radius: 14px;
-		box-shadow: 0 10px 36px color-mix(in srgb, var(--fg-raw) 22%, transparent);
-		backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
-		-webkit-backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
 		overflow: hidden;
 		box-sizing: border-box;
 	}

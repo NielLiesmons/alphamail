@@ -524,125 +524,116 @@
 		></button>
 	{/if}
 
-	<aside class="sidebar" id="alpha-shell-sidebar">
-		{#if isMobileViewport}
-			<button
-				type="button"
-				class="mobile-nav-toggle"
-				aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
-				aria-expanded={mobileNavOpen}
-				aria-controls="alpha-shell-sidebar"
-				onclick={toggleMobileNav}
-			>
-				<MenuToggle open={menuProgress > 0.5} align="left" size={16} className="chrome-ico" />
-			</button>
-		{/if}
-		<div
-			class="sidebar-inner"
-			aria-hidden={isMobileViewport && menuProgress < 0.02 ? true : undefined}
-		>
-			<header class="side-top">
-				{#if sidebarLead}
-					{@render sidebarLead()}
-				{/if}
-				{#if searchEnabled}
-					<label class="search">
-						<span class="sr-only">Search</span>
-						<svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-							<path
-								d="M7 12.5A5.5 5.5 0 1 0 7 1.5a5.5 5.5 0 0 0 0 11Zm0 0L14 14.5"
-								stroke="currentColor"
-								stroke-width="1.5"
-								stroke-linecap="round"
-							/>
-						</svg>
-						<input type="search" placeholder="Search" bind:value={search} autocomplete="off" />
-					</label>
-				{:else}
-					<span class="side-spacer"></span>
-				{/if}
-				{#if createMenuItems.length}
-					<div class="create-wrap">
-						<button
-							type="button"
-							class="top-plus"
-							aria-label="Create"
-							aria-expanded={createMenuOpen}
-							onclick={() => (createMenuOpen = !createMenuOpen)}
-						>
-							<svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-								<path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-							</svg>
-						</button>
-						{#if createMenuOpen}
-							<button
-								type="button"
-								class="menu-scrim"
-								aria-label="Close"
-								onclick={() => (createMenuOpen = false)}
-							></button>
-							<div class="create-menu" role="menu">
-								{#each createMenuItems as item (item.kind)}
-									<button type="button" role="menuitem" onclick={() => create(item.kind)}>{item.label}</button>
-								{/each}
-							</div>
-						{/if}
-					</div>
-				{/if}
-			</header>
-
-			<nav class="sidebar-nav" aria-label="Sections">
-				{#each filteredNav as item (item.href)}
-					{@const count = item.countKey ? counts[item.countKey] : null}
-					{@const rowActive = active(item.href)}
-					<div
-						class="nav-row"
-						class:active={rowActive}
-						class:creatable={Boolean(item.createKind)}
+	{#snippet sidebarBody()}
+		<header class="side-top">
+			{#if sidebarLead}
+				{@render sidebarLead()}
+			{/if}
+			{#if searchEnabled}
+				<label class="search">
+					<span class="sr-only">Search</span>
+					<svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+						<path
+							d="M7 12.5A5.5 5.5 0 1 0 7 1.5a5.5 5.5 0 0 0 0 11Zm0 0L14 14.5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+						/>
+					</svg>
+					<input type="search" placeholder="Search" bind:value={search} autocomplete="off" />
+				</label>
+			{:else}
+				<span class="side-spacer"></span>
+			{/if}
+			{#if createMenuItems.length}
+				<div class="create-wrap">
+					<button
+						type="button"
+						class="top-plus"
+						aria-label="Create"
+						aria-expanded={createMenuOpen}
+						onclick={() => (createMenuOpen = !createMenuOpen)}
 					>
+						<svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+							<path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+						</svg>
+					</button>
+					{#if createMenuOpen}
 						<button
 							type="button"
-							class="nav-item"
-							class:active={rowActive}
-							onclick={() => go(item.href)}
-						>
-							<span class="icon-wrap"><NavIcon name={item.icon} size={18} /></span>
-							<span class="nav-label">{item.label}</span>
-						</button>
-						{#if item.createKind || count != null}
-							<span class="row-end">
-								{#if count != null}
-									<span class="count">{count}</span>
-								{/if}
-								{#if item.createKind}
-									<button
-										type="button"
-										class="row-plus"
-										aria-label={`New ${item.createKind}`}
-										onclick={() => onNavPlus(item.createKind)}
-									>
-										<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-											<path
-												d="M6 1.5v9M1.5 6h9"
-												stroke="currentColor"
-												stroke-width="1.6"
-												stroke-linecap="round"
-											/>
-										</svg>
-									</button>
-								{/if}
-							</span>
-						{/if}
-					</div>
-				{/each}
-			</nav>
-			{#if sidebarTrail}
-				<div class="sidebar-trail">
-					{@render sidebarTrail()}
+							class="menu-scrim"
+							aria-label="Close"
+							onclick={() => (createMenuOpen = false)}
+						></button>
+						<div class="create-menu" role="menu">
+							{#each createMenuItems as item (item.kind)}
+								<button type="button" role="menuitem" onclick={() => create(item.kind)}>{item.label}</button>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			{/if}
-		</div>
-	</aside>
+		</header>
+
+		<nav class="sidebar-nav" aria-label="Sections">
+			{#each filteredNav as item (item.href)}
+				{@const count = item.countKey ? counts[item.countKey] : null}
+				{@const rowActive = active(item.href)}
+				<div
+					class="nav-row"
+					class:active={rowActive}
+					class:creatable={Boolean(item.createKind)}
+				>
+					<button
+						type="button"
+						class="nav-item"
+						class:active={rowActive}
+						onclick={() => go(item.href)}
+					>
+						<span class="icon-wrap"><NavIcon name={item.icon} size={18} /></span>
+						<span class="nav-label">{item.label}</span>
+					</button>
+					{#if item.createKind || count != null}
+						<span class="row-end">
+							{#if count != null}
+								<span class="count">{count}</span>
+							{/if}
+							{#if item.createKind}
+								<button
+									type="button"
+									class="row-plus"
+									aria-label={`New ${item.createKind}`}
+									onclick={() => onNavPlus(item.createKind)}
+								>
+									<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+										<path
+											d="M6 1.5v9M1.5 6h9"
+											stroke="currentColor"
+											stroke-width="1.6"
+											stroke-linecap="round"
+										/>
+									</svg>
+								</button>
+							{/if}
+						</span>
+					{/if}
+				</div>
+			{/each}
+		</nav>
+		{#if sidebarTrail}
+			<div class="sidebar-trail">
+				{@render sidebarTrail()}
+			</div>
+		{/if}
+	{/snippet}
+
+	{#if !isMobileViewport}
+		<aside class="sidebar" id="alpha-shell-sidebar">
+			<div class="sidebar-inner">
+				{@render sidebarBody()}
+			</div>
+		</aside>
+	{/if}
 
 	<div class="workspace-wrap">
 		<div class="workspace">
@@ -657,6 +648,38 @@
 					class="list-top"
 					style="--chrome-scroll-fade: {listFade}"
 				>
+					{#if isMobileViewport}
+						<!-- In-flow slot so the menu sits on the same chrome row as filter/plus -->
+						<div class="mobile-nav-slot">
+							<aside
+								class="sidebar sidebar-mobile"
+								class:as-popover={menuProgress > 0.12}
+								id="alpha-shell-sidebar"
+							>
+								<button
+									type="button"
+									class="mobile-nav-toggle"
+									aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
+									aria-expanded={mobileNavOpen}
+									aria-controls="alpha-shell-sidebar"
+									onclick={toggleMobileNav}
+								>
+									<MenuToggle
+										open={menuProgress > 0.5}
+										align="left"
+										size={16}
+										className="chrome-ico"
+									/>
+								</button>
+								<div
+									class="sidebar-inner"
+									aria-hidden={menuProgress < 0.02 ? true : undefined}
+								>
+									{@render sidebarBody()}
+								</div>
+							</aside>
+						</div>
+					{/if}
 					{#if listTitleSlot}
 						{@render listTitleSlot()}
 					{:else}
@@ -1468,64 +1491,75 @@
 			transition: none;
 		}
 
-		/*
-		 * Expanding menu: circle chrome button → rounded rectangle panel.
-		 * Stays fixed in the top-left chrome slot (does not slide the page).
-		 */
-		.sidebar {
-			position: fixed;
-			z-index: 90;
-			top: calc(6px + env(safe-area-inset-top, 0px));
-			left: 14px;
+		/* Same chrome row as filter/plus — in-flow 44×44 spacer; panel is fixed over it */
+		.mobile-nav-slot {
 			width: 44px;
 			height: 44px;
+			flex-shrink: 0;
+		}
+
+		/*
+		 * Expanding menu: same chrome-btn as filter when closed.
+		 * Radius stays 22px (circle at 44×44). Open = only width/height + popover surface.
+		 * Fixed so the open panel isn’t clipped by workspace overflow.
+		 */
+		.sidebar.sidebar-mobile {
+			position: fixed;
+			top: calc(6px + env(safe-area-inset-top, 0px));
+			left: 14px;
+			z-index: 90;
+			display: flex;
+			flex-direction: column;
+			width: 44px;
+			height: auto;
+			max-height: 44px;
 			padding: 0;
 			gap: 0;
-			border-radius: 9999px;
+			/* 22px = circle while 44×44; stays put on expand (rounded rect) */
+			border-radius: 22px;
 			border: 1px solid transparent;
 			background:
 				linear-gradient(var(--glass), var(--glass)) padding-box,
 				var(--glass-shine) border-box;
 			color: var(--fg-66);
 			overflow: hidden;
-			box-shadow: 0 8px 28px color-mix(in srgb, var(--fg-raw, #000) calc(18% * var(--menu-progress)), transparent);
+			box-shadow: none;
 			backdrop-filter: blur(var(--glass-blur));
 			-webkit-backdrop-filter: blur(var(--glass-blur));
-			transform: scale(calc(0.96 + 0.04 * var(--menu-progress)));
-			transform-origin: top left;
-			transition:
-				width 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				height 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				max-height 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				border-radius 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				padding 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				background 0.28s ease,
-				box-shadow 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-				transform 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+			box-sizing: border-box;
 			pointer-events: auto;
+			transition:
+				width 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				max-height 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				background 0.2s ease,
+				border-color 0.2s ease,
+				box-shadow 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 		}
 
-		.shell.nav-open .sidebar,
-		.shell.nav-dragging .sidebar {
+		.shell.nav-open .sidebar.sidebar-mobile,
+		.shell.nav-dragging .sidebar.sidebar-mobile {
 			width: min(300px, calc(100vw - 28px));
-			height: auto;
-			max-height: calc(100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-			padding: 10px 12px 12px;
-			border-radius: 22px;
-			background: var(--glass-panel);
+			max-height: calc(
+				100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+			);
+		}
+
+		/* Popover panel surface (matches FloatPanel / .alpha-popover) */
+		.sidebar.sidebar-mobile.as-popover {
+			background: var(--float-panel-bg);
+			border-color: color-mix(in srgb, var(--fg) 10%, transparent);
+			box-shadow: 0 10px 36px color-mix(in srgb, var(--fg-raw, #000) 22%, transparent);
+			backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
+			-webkit-backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
 			color: var(--fg);
 		}
 
-		.shell.nav-dragging .sidebar {
-			/* Live drag: circle → panel (width + max-height so height doesn't jump) */
+		.shell.nav-dragging .sidebar.sidebar-mobile {
 			width: calc(44px + (min(300px, 100vw - 28px) - 44px) * var(--menu-progress));
-			height: auto;
 			max-height: calc(
 				44px + (100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 44px) *
 					var(--menu-progress)
 			);
-			padding: calc(10px * var(--menu-progress)) calc(12px * var(--menu-progress));
-			border-radius: calc(9999px - (9999px - 22px) * var(--menu-progress));
 			transition: none;
 		}
 
@@ -1541,35 +1575,34 @@
 			margin: 0;
 			padding: 0;
 			border: 0;
-			border-radius: 9999px;
+			border-radius: 22px;
 			background: transparent;
 			color: inherit;
 			cursor: pointer;
 			-webkit-tap-highlight-color: transparent;
 		}
 
-		.shell.nav-open .mobile-nav-toggle {
-			color: var(--fg-66);
+		.mobile-nav-toggle :global(.chrome-ico) {
+			width: 22px;
+			height: 22px;
 		}
 
-		.sidebar-inner {
+		.sidebar.sidebar-mobile .sidebar-inner {
 			opacity: var(--menu-progress);
 			pointer-events: none;
-			transform: translate3d(0, calc(6px * (1 - var(--menu-progress))), 0);
-			transition:
-				opacity 0.22s ease,
-				transform 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
-			padding-top: 44px;
+			padding: 44px 12px 12px;
 			min-height: 0;
 			flex: 1;
-			overflow: hidden;
+			overflow: auto;
+			-webkit-overflow-scrolling: touch;
+			transition: opacity 0.2s ease;
 		}
 
-		.shell.nav-open .sidebar-inner {
+		.shell.nav-open .sidebar.sidebar-mobile .sidebar-inner {
 			pointer-events: auto;
 		}
 
-		.shell.nav-dragging .sidebar-inner {
+		.shell.nav-dragging .sidebar.sidebar-mobile .sidebar-inner {
 			transition: none;
 		}
 
@@ -1656,8 +1689,9 @@
 			margin-left: auto;
 		}
 
-		/* Fixed menu chrome sits above the list; hide it while a detail covers the list */
-		.shell.detail-covering .sidebar,
+		/* Hide menu chrome while a detail covers the list (back button owns the slot) */
+		.shell.detail-covering .mobile-nav-slot,
+		.shell.detail-covering .sidebar-mobile,
 		.shell.detail-covering .nav-menu-scrim {
 			opacity: 0;
 			visibility: hidden;

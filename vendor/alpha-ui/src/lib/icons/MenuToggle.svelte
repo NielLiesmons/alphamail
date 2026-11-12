@@ -3,6 +3,7 @@
 	 * Animated menu glyph matched to the list filter chrome icon
 	 * (16×16 viewBox, stroke 1.5, y=4/8/12) — two full bars + one shorter,
 	 * left- or right-aligned, morphing to a cross when open.
+	 * Display size should match filter via `.chrome-ico` (22×22 on mobile).
 	 * @type {{
 	 *   open?: boolean,
 	 *   align?: 'left' | 'right',
@@ -14,7 +15,7 @@
 </script>
 
 <svg
-	class="menu-toggle {className}"
+	class="menu-toggle chrome-ico {className}"
 	class:open
 	class:align-right={align === 'right'}
 	width={size}
@@ -23,17 +24,17 @@
 	fill="none"
 	aria-hidden="true"
 >
-	<!-- Mirror filter icon: inset 2.5, stroke 1.5, 4px vertical rhythm -->
-	<path class="bar top" d="M2.5 4h11" pathLength="11" />
-	<path class="bar mid" d="M2.5 8h11" pathLength="11" />
-	<!-- Short bar: 7 units (same as filter mid), left or right -->
-	<path
-		class="bar bot"
-		d="M2.5 12h11"
-		pathLength="11"
-		stroke-dasharray={open ? '11 0' : '7 4'}
-		stroke-dashoffset={align === 'right' && !open ? -4 : 0}
-	/>
+	<!-- Same stroke/inset language as filter: M2.5… stroke 1.5, y=4/8/12 -->
+	<path class="bar top" d="M2.5 4h11" />
+	<path class="bar mid" d="M2.5 8h11" />
+	{#if align === 'right'}
+		<path class="bar bot short" d="M6.5 12h7" />
+	{:else}
+		<path class="bar bot short" d="M2.5 12h7" />
+	{/if}
+	<!-- Full-length cross arms (shown when open) -->
+	<path class="bar cross-a" d="M2.5 8h11" />
+	<path class="bar cross-b" d="M2.5 8h11" />
 </svg>
 
 <style>
@@ -48,24 +49,30 @@
 		stroke: currentColor;
 		stroke-width: 1.5;
 		stroke-linecap: round;
-		transform-box: fill-box;
-		transform-origin: center;
+		transform-origin: 8px 8px;
 		transition:
 			transform 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-			opacity 0.2s ease,
-			stroke-dasharray 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
-			stroke-dashoffset 0.28s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+			opacity 0.18s ease;
 	}
 
-	.open .top {
-		transform: translateY(4px) rotate(45deg);
-	}
-
-	.open .mid {
+	.cross-a,
+	.cross-b {
 		opacity: 0;
 	}
 
+	.open .top,
+	.open .mid,
 	.open .bot {
-		transform: translateY(-4px) rotate(-45deg);
+		opacity: 0;
+	}
+
+	.open .cross-a {
+		opacity: 1;
+		transform: rotate(45deg);
+	}
+
+	.open .cross-b {
+		opacity: 1;
+		transform: rotate(-45deg);
 	}
 </style>

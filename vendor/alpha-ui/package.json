@@ -8,6 +8,7 @@
 		"./package.json": "./package.json",
 		"./tokens.css": "./tokens/tokens.css",
 		"./tokens/tokens.css": "./tokens/tokens.css",
+		"./popover.css": "./tokens/popover.css",
 		"./icons/*": "./icons/*",
 		"./chrome-scroll-fade.js": "./src/lib/chrome-scroll-fade.js",
 		"./drag-dismiss.js": "./src/lib/drag-dismiss.js",

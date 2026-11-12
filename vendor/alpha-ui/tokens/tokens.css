@@ -9,7 +9,10 @@
  * component CSS keeps working while call sites migrate.
  *
  * Import: `@import '@alpha/ui/tokens.css';`
+ * Popover surface (also imported below): `@import '@alpha/ui/popover.css';`
  */
+
+@import './popover.css';
 
 :root {
 	/*

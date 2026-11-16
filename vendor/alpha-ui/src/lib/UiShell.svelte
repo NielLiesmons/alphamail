@@ -647,10 +647,13 @@
 				{@const kids = item.children || []}
 				{@const expanded = rowActive && kids.length > 0}
 				{@const png = rowActive ? navPngUrl(item.icon) : null}
-				<div class="nav-block">
+				<div
+					class="nav-block"
+					class:active={rowActive}
+					class:expanded={expanded}
+				>
 					<div
 						class="nav-row"
-						class:active={rowActive}
 						class:creatable={Boolean(item.createKind)}
 					>
 						<button
@@ -662,7 +665,7 @@
 							<span class="icon-wrap" class:png={Boolean(png)} class:empty={rowActive && !png}>
 								{#if rowActive}
 									{#if png}
-										<img class="nav-png" src={png} alt="" width="22" height="22" />
+										<img class="nav-png" src={png} alt="" width="18" height="18" />
 									{/if}
 								{:else}
 									<NavIcon name={item.icon} size={18} />
@@ -975,25 +978,27 @@
 		align-items: center;
 		gap: 10px;
 		flex-shrink: 0;
-		padding: 2px 0 4px;
+		min-height: 44px;
+		padding: 0;
 	}
 
 	/* Pfp + name — glass pill when Settings is selected; chrome invisible otherwise */
 	.account-pill {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
+		gap: 10px;
+		flex: 1 1 auto;
 		min-width: 0;
-		max-width: calc(100% - 76px);
+		height: 44px;
 		margin: 0;
-		padding: 0;
+		/* 5px around 34px pfp → 44px outer, same as round chrome */
+		padding: 5px 12px 5px 5px;
 		border: 1px solid transparent;
 		border-radius: 9999px;
 		background: transparent;
 		color: var(--fg-66);
 		cursor: pointer;
 		box-sizing: border-box;
-		flex-shrink: 1;
 		-webkit-tap-highlight-color: transparent;
 		transition:
 			background 0.18s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
@@ -1017,8 +1022,8 @@
 	}
 
 	.account-name {
+		flex: 1 1 auto;
 		min-width: 0;
-		max-width: 9rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -1026,7 +1031,7 @@
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: inherit;
-		padding-right: 4px;
+		text-align: left;
 	}
 
 	.search {
@@ -1102,11 +1107,7 @@
 		transform: scale(1.06);
 	}
 
-	.icon-wrap.png {
-		width: 22px;
-		height: 22px;
-	}
-
+	.icon-wrap.png,
 	.icon-wrap.empty {
 		width: 18px;
 		height: 18px;
@@ -1114,10 +1115,10 @@
 
 	.nav-png {
 		display: block;
-		width: 22px;
-		height: 22px;
+		width: 18px;
+		height: 18px;
 		object-fit: contain;
-		border-radius: 5px;
+		border-radius: 4px;
 	}
 
 	.menu-scrim {
@@ -1194,6 +1195,31 @@
 		padding-top: 8px;
 	}
 
+	/*
+	 * Selected glass lives on the block so Mail can expand the same pill into a
+	 * panel that contains subitems. Always-on 1px transparent border + fixed
+	 * icon box keep row height stable when switching sections.
+	 */
+	.nav-block {
+		border: 1px solid transparent;
+		border-radius: 999px;
+		box-sizing: border-box;
+		overflow: hidden;
+	}
+
+	.nav-block.active {
+		background:
+			linear-gradient(var(--glass), var(--glass)) padding-box,
+			var(--glass-shine) border-box;
+		backdrop-filter: blur(var(--glass-blur));
+		-webkit-backdrop-filter: blur(var(--glass-blur));
+	}
+
+	.nav-block.expanded {
+		border-radius: 22px;
+		padding-bottom: 6px;
+	}
+
 	.nav-row {
 		position: relative;
 		display: flex;
@@ -1202,20 +1228,11 @@
 		overflow: hidden;
 	}
 
-	.nav-row:hover {
+	.nav-block:not(.active) .nav-row:hover {
 		background: var(--white4);
 	}
 
-	.nav-row.active {
-		border: 1px solid transparent;
-		background:
-			linear-gradient(var(--glass), var(--glass)) padding-box,
-			var(--glass-shine) border-box;
-		backdrop-filter: blur(var(--glass-blur));
-		-webkit-backdrop-filter: blur(var(--glass-blur));
-	}
-
-	.nav-row.active .nav-item {
+	.nav-block.active .nav-item {
 		color: var(--white);
 	}
 
@@ -1244,14 +1261,14 @@
 	.nav-sub {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
-		padding: 2px 8px 8px 36px;
+		gap: 1px;
+		padding: 0 6px 2px;
 	}
 
 	.nav-sub-item {
 		display: block;
 		width: 100%;
-		padding: 6px 10px;
+		padding: 7px 10px 7px 36px;
 		border: 0;
 		border-radius: 999px;
 		background: transparent;
@@ -1261,6 +1278,7 @@
 		font-weight: 500;
 		text-align: left;
 		cursor: pointer;
+		box-sizing: border-box;
 	}
 
 	.nav-sub-item:hover {
@@ -1715,17 +1733,8 @@
 			gap: 8px;
 		}
 
-		.account-pill {
-			height: 44px;
-			/* 4px around the 36px pfp → same outer size as the round chrome buttons */
-			padding: 4px 12px 4px 4px;
-			gap: 8px;
-		}
-
 		.account-name {
 			font-size: 14px;
-			max-width: 7.5rem;
-			padding-right: 2px;
 		}
 
 		.top-search,

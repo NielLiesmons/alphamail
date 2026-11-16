@@ -1680,7 +1680,8 @@
 			position: relative;
 			flex-direction: row;
 			padding-bottom: 0;
-			background: var(--shell);
+			/* Gutters above/below the scaled page match the nav column */
+			background: var(--bg);
 		}
 
 		.shell.tasks-pad {
@@ -1689,8 +1690,7 @@
 
 		/*
 		 * Drawer under the sliding page.
-		 * Lighter nav surface (--bg) vs page (--shell); glass tokens follow the nav.
-		 * Top pad matches list-top so the pfp row lines up with the compact chevron.
+		 * Nav + shell gutters share --bg; the page keeps --shell (no surface swap).
 		 */
 		.sidebar {
 			display: flex;
@@ -1700,10 +1700,10 @@
 			bottom: 0;
 			width: var(--mobile-drawer);
 			z-index: 1;
-			padding: calc(6px + env(safe-area-inset-top, 0px)) 14px
+			padding: calc(36px + env(safe-area-inset-top, 0px)) 14px
 				calc(12px + env(safe-area-inset-bottom, 0px));
 			background: var(--bg);
-			/* Glass chrome relative to this lighter nav surface */
+			/* Glass chrome relative to this nav surface */
 			--glass-fill: color-mix(in srgb, var(--fg) 6%, var(--bg));
 			--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
 			pointer-events: none;
@@ -1754,21 +1754,21 @@
 			padding: 0;
 			display: flex;
 			overflow: hidden;
-			/* Keep the page on its normal mobile surface — no swap when the menu opens */
+			/* Same surface closed or open — never lighten/darken when slid */
 			background: var(--shell);
 			/* Allow horizontal menu swipe + vertical scroll; claim in JS after intent. */
 			touch-action: manipulation;
 			transform: translate3d(calc(var(--mobile-drawer) * var(--menu-progress)), 0, 0)
 				scale(calc(1 - 0.045 * var(--menu-progress)));
 			transform-origin: left center;
-			border-radius: calc(20px * var(--menu-progress));
+			border-radius: calc(32px * var(--menu-progress));
 			margin-block: calc(12px * var(--menu-progress));
 			height: calc(100% - (24px * var(--menu-progress)));
-			/* Subtle stroke so scaled/rounded page edge reads clearly */
+			/* Quiet edge only — no fill/scrim that changes the page look */
 			box-shadow:
 				0 0 0 calc(1px * var(--menu-progress))
-					color-mix(in srgb, var(--fg) calc(10% * var(--menu-progress)), transparent),
-				-6px 0 22px color-mix(in srgb, var(--fg-raw, #000) calc(12% * var(--menu-progress)), transparent);
+					color-mix(in srgb, var(--fg) calc(8% * var(--menu-progress)), transparent),
+				-6px 0 22px color-mix(in srgb, var(--fg-raw, #000) calc(10% * var(--menu-progress)), transparent);
 			transition:
 				transform 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
 				border-radius 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
@@ -1778,21 +1778,7 @@
 			will-change: transform;
 		}
 
-		/* Quiet veil on the slid page — soft in both light and dark */
-		.workspace-wrap::after {
-			content: '';
-			position: absolute;
-			inset: 0;
-			z-index: 60;
-			border-radius: inherit;
-			background: color-mix(in srgb, var(--fg) 9%, transparent);
-			opacity: calc(0.32 * var(--menu-progress));
-			pointer-events: none;
-			transition: opacity 0.38s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
-		}
-
-		.shell.nav-dragging .workspace-wrap,
-		.shell.nav-dragging .workspace-wrap::after {
+		.shell.nav-dragging .workspace-wrap {
 			transition: none;
 		}
 

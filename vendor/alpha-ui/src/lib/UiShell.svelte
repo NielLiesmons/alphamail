@@ -569,11 +569,22 @@
 					/>
 				</label>
 			{:else}
-				{#if sidebarLead}
-					{@render sidebarLead()}
-				{/if}
-				{#if accountLabel}
-					<span class="account-name">{accountLabel}</span>
+				{#if sidebarLead || accountLabel}
+					<button
+						type="button"
+						class="account-pill"
+						class:on={active('/settings')}
+						aria-label="Settings"
+						aria-current={active('/settings') ? 'page' : undefined}
+						onclick={() => go('/settings')}
+					>
+						{#if sidebarLead}
+							<span class="account-pic">{@render sidebarLead()}</span>
+						{/if}
+						{#if accountLabel}
+							<span class="account-name">{accountLabel}</span>
+						{/if}
+					</button>
 				{:else}
 					<span class="side-spacer"></span>
 				{/if}
@@ -588,7 +599,7 @@
 							queueMicrotask(() => searchInputEl?.focus());
 						}}
 					>
-						<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 							<path
 								d="M7 12.5A5.5 5.5 0 1 0 7 1.5a5.5 5.5 0 0 0 0 11Zm0 0L14 14.5"
 								stroke="currentColor"
@@ -607,7 +618,7 @@
 							aria-expanded={createMenuOpen}
 							onclick={() => (createMenuOpen = !createMenuOpen)}
 						>
-							<svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+							<svg width="16" height="16" viewBox="0 0 12 12" fill="none" aria-hidden="true">
 								<path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
 							</svg>
 						</button>
@@ -967,20 +978,42 @@
 		padding: 2px 0 4px;
 	}
 
-	.pfp-btn {
-		border: 0;
+	/* Pfp + name — glass pill when Settings is selected; chrome invisible otherwise */
+	.account-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-width: 0;
+		max-width: calc(100% - 76px);
+		margin: 0;
 		padding: 0;
+		border: 1px solid transparent;
+		border-radius: 9999px;
 		background: transparent;
-		border-radius: 999px;
+		color: var(--fg-66);
 		cursor: pointer;
+		box-sizing: border-box;
+		flex-shrink: 1;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			background 0.18s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+			color 0.18s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+	}
+
+	.account-pill.on {
+		background:
+			linear-gradient(var(--glass), var(--glass)) padding-box,
+			var(--glass-shine) border-box;
+		backdrop-filter: blur(var(--glass-blur));
+		-webkit-backdrop-filter: blur(var(--glass-blur));
+		color: var(--fg);
+	}
+
+	.account-pic {
 		display: grid;
 		place-items: center;
 		flex-shrink: 0;
-		transition: opacity 0.15s ease;
-	}
-
-	.pfp-btn:hover {
-		opacity: 0.85;
+		line-height: 0;
 	}
 
 	.account-name {
@@ -992,7 +1025,8 @@
 		font-size: 13px;
 		font-weight: 600;
 		letter-spacing: -0.01em;
-		color: var(--fg-66);
+		color: inherit;
+		padding-right: 4px;
 	}
 
 	.search {
@@ -1635,7 +1669,11 @@
 			--feed-pad-top: calc(56px + env(safe-area-inset-top, 0px));
 		}
 
-		/* Drawer sits under the sliding page */
+		/*
+		 * Drawer under the sliding page.
+		 * Lighter nav surface (--bg) vs page (--shell); glass tokens follow the nav.
+		 * Top pad matches list-top so the pfp row lines up with the compact chevron.
+		 */
 		.sidebar {
 			display: flex;
 			position: absolute;
@@ -1644,9 +1682,12 @@
 			bottom: 0;
 			width: var(--mobile-drawer);
 			z-index: 1;
-			padding: calc(10px + env(safe-area-inset-top, 0px)) 14px
+			padding: calc(6px + env(safe-area-inset-top, 0px)) 14px
 				calc(12px + env(safe-area-inset-bottom, 0px));
-			background: var(--shell);
+			background: var(--bg);
+			/* Glass chrome relative to this lighter nav surface */
+			--glass-fill: color-mix(in srgb, var(--fg) 6%, var(--bg));
+			--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
 			pointer-events: none;
 		}
 
@@ -1667,6 +1708,33 @@
 			transition: none;
 		}
 
+		/* Align account / search / plus with the 44px compact title chevron */
+		.side-top {
+			height: 44px;
+			padding: 0;
+			gap: 8px;
+		}
+
+		.account-pill {
+			height: 44px;
+			/* 4px around the 36px pfp → same outer size as the round chrome buttons */
+			padding: 4px 12px 4px 4px;
+			gap: 8px;
+		}
+
+		.account-name {
+			font-size: 14px;
+			max-width: 7.5rem;
+			padding-right: 2px;
+		}
+
+		.top-search,
+		.top-plus {
+			width: 44px;
+			height: 44px;
+			border-radius: 9999px;
+		}
+
 		.workspace-wrap {
 			position: relative;
 			z-index: 2;
@@ -1677,6 +1745,7 @@
 			padding: 0;
 			display: flex;
 			overflow: hidden;
+			/* Keep the page on its normal mobile surface — no swap when the menu opens */
 			background: var(--shell);
 			/* Allow horizontal menu swipe + vertical scroll; claim in JS after intent. */
 			touch-action: manipulation;

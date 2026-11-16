@@ -6,17 +6,18 @@
 	/**
 	 * Create / edit overlay — mobile bottom sheet, desktop centered card.
 	 * Pass fullscreen for true edge-to-edge mobile (e.g. now-playing).
-	 * Mobile: drag the sheet down to dismiss (full surface; respects inner scroll).
+	 * Mobile: optional drag-down dismiss (full surface; respects inner scroll).
+	 * Never show a visual drag handle — Alpha design system forbids grabbers on modals/sheets.
 	 * Pickers (emoji, labels, assignees) use FloatPanel popovers — never nested sheets.
 	 */
 	let {
 		open = false,
 		label = 'Create',
 		fullscreen = false,
-		/** Enable drag-down dismiss on mobile */
+		/** Enable drag-down dismiss on mobile (gesture only — no handle UI) */
 		dragDismiss = true,
-		/** Subtle top handle hint (hidden in fullscreen — now-playing is full-page draggable) */
-		showHandle = true,
+		/** @deprecated Ignored — drag handles are banned in the design system */
+		showHandle: _showHandle = false,
 		onclose = () => {},
 		children
 	} = $props();
@@ -71,9 +72,6 @@
 				scrollSelector: '.sheet-inner'
 			}}
 		>
-			{#if showHandle && !fullscreen}
-				<div class="handle" aria-hidden="true"><span class="handle-pill"></span></div>
-			{/if}
 			<div class="sheet-inner">
 				{@render children?.()}
 			</div>
@@ -126,25 +124,10 @@
 		backdrop-filter: blur(var(--glass-blur));
 		-webkit-backdrop-filter: blur(var(--glass-blur));
 		overflow: visible;
+		/* No top pad — content rows own their inset; never a drag handle */
 		padding: 0 0 calc(14px + env(safe-area-inset-bottom, 0px));
 		box-sizing: border-box;
 		will-change: transform;
-	}
-
-	.handle {
-		flex-shrink: 0;
-		display: grid;
-		place-items: center;
-		height: 22px;
-		pointer-events: none;
-	}
-
-	.handle-pill {
-		display: block;
-		width: 36px;
-		height: 4px;
-		border-radius: 999px;
-		background: color-mix(in srgb, var(--fg) 28%, transparent);
 	}
 
 	.wrap.fullscreen {
@@ -202,10 +185,6 @@
 			border-bottom: 1px solid var(--glass-border);
 			padding: 0 0 14px;
 			overflow: hidden;
-		}
-
-		.handle {
-			display: none;
 		}
 
 		.sheet-inner {

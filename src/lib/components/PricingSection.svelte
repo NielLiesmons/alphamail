@@ -189,7 +189,8 @@
 	}
 
 	.foot :global(.btn),
-	.foot :global(.btn-glass) {
+	.foot :global(.btn-glass),
+	.foot :global(.alpha-btn) {
 		width: 100%;
 		justify-content: center;
 	}

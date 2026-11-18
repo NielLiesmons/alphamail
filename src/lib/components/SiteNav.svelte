@@ -519,13 +519,15 @@
 		font-family: var(--font-sans);
 		font-size: 13px;
 		font-weight: 600;
-		color: var(--ink66);
-		/* Same stroked glass as landing GlassButton */
-		border: 1.4px solid color-mix(in srgb, var(--ink) 16%, transparent);
+		color: var(--fg-66, var(--ink66));
+		/* Admin glass chrome (same as ChromeActionButton) */
+		border: 1px solid transparent;
 		border-radius: var(--radius-pill);
-		background: color-mix(in srgb, var(--ink) 6%, transparent);
-		backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
+		background:
+			linear-gradient(var(--glass), var(--glass)) padding-box,
+			var(--glass-shine) border-box;
+		backdrop-filter: blur(var(--glass-blur, 22px));
+		-webkit-backdrop-filter: blur(var(--glass-blur, 22px));
 		padding: 0.35rem 0.7rem 0.35rem 0.85rem;
 		cursor: pointer;
 		transition: color 0.2s var(--ease);
@@ -555,12 +557,8 @@
 		width: 280px;
 		min-width: 14rem;
 		padding: 0;
-		/* Exception: page bg (not elevated popover fill) on desktop settings. */
-		--float-panel-bg: var(--bg);
-		background: var(--bg);
-		border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-		border-radius: 14px;
-		box-shadow: 0 10px 36px var(--shadow);
+		/* alpha-popover + elevated popover fill */
+		--float-panel-bg: var(--popover);
 		--field-bg: var(--field-on-elevated);
 		z-index: 60;
 		overflow: hidden;

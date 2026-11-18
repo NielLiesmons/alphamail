@@ -337,6 +337,18 @@ body {
 	--ink33: color-mix(in srgb, var(--bg-raw) 33%, transparent);
 	--hairline: color-mix(in srgb, var(--bg-raw) 16%, transparent);
 	--surface: color-mix(in srgb, white 6%, var(--ink-raw));
+	/* Glass chrome (chevrons / chips) must track flipped poles, not page --fg. */
+	--fg: var(--ink);
+	--fg-66: var(--ink66);
+	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--glass: color-mix(in srgb, var(--bg) 72%, transparent);
+	--glass-shine: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--fg) 42%, transparent) 0%,
+		color-mix(in srgb, var(--fg) 12%, transparent) 38%,
+		color-mix(in srgb, var(--fg) 8%, transparent) 55%,
+		color-mix(in srgb, var(--fg) 28%, transparent) 100%
+	);
 	/* Fields stay on --theme-* via .site-fields — not remapped here */
 }
 

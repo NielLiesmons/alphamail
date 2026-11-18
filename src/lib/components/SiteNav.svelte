@@ -520,13 +520,12 @@
 		font-size: 13px;
 		font-weight: 600;
 		color: var(--ink66);
-		border: 1px solid transparent;
+		/* Same stroked glass as landing GlassButton */
+		border: 1.4px solid color-mix(in srgb, var(--ink) 16%, transparent);
 		border-radius: var(--radius-pill);
-		background:
-			color-mix(in srgb, var(--ink) 8%, transparent) padding-box,
-			var(--glass-shine) border-box;
-		backdrop-filter: blur(var(--nav-glass-blur, var(--glass-blur, 14px)));
-		-webkit-backdrop-filter: blur(var(--nav-glass-blur, var(--glass-blur, 14px)));
+		background: color-mix(in srgb, var(--ink) 6%, transparent);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
 		padding: 0.35rem 0.7rem 0.35rem 0.85rem;
 		cursor: pointer;
 		transition: color 0.2s var(--ease);
@@ -556,8 +555,12 @@
 		width: 280px;
 		min-width: 14rem;
 		padding: 0;
-		/* alpha-popover supplies stroke / fill / shadow / blur */
-		--float-panel-bg: var(--popover);
+		/* Exception: page bg (not elevated popover fill) on desktop settings. */
+		--float-panel-bg: var(--bg);
+		background: var(--bg);
+		border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+		border-radius: 14px;
+		box-shadow: 0 10px 36px var(--shadow);
 		--field-bg: var(--field-on-elevated);
 		z-index: 60;
 		overflow: hidden;

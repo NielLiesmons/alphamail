@@ -188,7 +188,8 @@
 		margin-top: auto;
 	}
 
-	.foot :global(.alpha-btn) {
+	.foot :global(.btn),
+	.foot :global(.btn-glass) {
 		width: 100%;
 		justify-content: center;
 	}

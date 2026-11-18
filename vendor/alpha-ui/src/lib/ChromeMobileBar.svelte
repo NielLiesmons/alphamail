@@ -123,7 +123,10 @@
 			display: flex;
 			align-items: center;
 			justify-content: flex-end;
-			width: 44px;
+			gap: 6px;
+			width: auto;
+			min-width: 44px;
+			max-width: min(58vw, 220px);
 			flex-shrink: 0;
 		}
 

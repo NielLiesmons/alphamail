@@ -27,11 +27,14 @@
 		"./Button.svelte": "./src/lib/Button.svelte",
 		"./PrimaryButton.svelte": "./src/lib/PrimaryButton.svelte",
 		"./GlassButton.svelte": "./src/lib/GlassButton.svelte",
+		"./SegmentedControl.svelte": "./src/lib/SegmentedControl.svelte",
 		"./ChatBubble.svelte": "./src/lib/ChatBubble.svelte",
 		"./ChatComposer.svelte": "./src/lib/ChatComposer.svelte",
 		"./FeedEntityPanel.svelte": "./src/lib/FeedEntityPanel.svelte",
 		"./ListTitleChrome.svelte": "./src/lib/ListTitleChrome.svelte",
+		"./UnreadMark.svelte": "./src/lib/UnreadMark.svelte",
 		"./NavIcon.svelte": "./src/lib/NavIcon.svelte",
+		"./nav-png.js": "./src/lib/nav-png.js",
 		"./icons/BaseIcon.svelte": "./src/lib/icons/BaseIcon.svelte",
 		"./icons/Pen.svelte": "./src/lib/icons/Pen.svelte",
 		"./icons/Trash.svelte": "./src/lib/icons/Trash.svelte",
@@ -43,7 +46,9 @@
 		"./icons/Play.svelte": "./src/lib/icons/Play.svelte",
 		"./icons/Pause.svelte": "./src/lib/icons/Pause.svelte",
 		"./icons/Menu.svelte": "./src/lib/icons/Menu.svelte",
-		"./icons/MenuToggle.svelte": "./src/lib/icons/MenuToggle.svelte"
+		"./icons/MenuToggle.svelte": "./src/lib/icons/MenuToggle.svelte",
+		"./icons/Folder.svelte": "./src/lib/icons/Folder.svelte",
+		"./icons/Search.svelte": "./src/lib/icons/Search.svelte"
 	},
 	"files": [
 		"icons",

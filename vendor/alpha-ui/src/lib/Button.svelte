@@ -129,8 +129,9 @@
 	}
 
 	.alpha-btn.glass {
+		/* Fill must read on photo heroes; shine stroke stays the Admin glass edge. */
 		background:
-			color-mix(in srgb, var(--fg, var(--ink)) 6%, transparent) padding-box,
+			color-mix(in srgb, var(--fg, var(--ink)) 10%, transparent) padding-box,
 			var(--glass-shine) border-box;
 		background-color: transparent;
 		color: var(--fg, var(--ink));

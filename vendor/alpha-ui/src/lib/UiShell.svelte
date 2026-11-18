@@ -6,6 +6,8 @@
 	import { attachChromeScrollFade } from './chrome-scroll-fade.js';
 	import { navPngUrl } from './nav-png.js';
 	import NavIcon from './NavIcon.svelte';
+	import UnreadMark from './UnreadMark.svelte';
+	import Search from './icons/Search.svelte';
 	import PullToRefresh from './PullToRefresh.svelte';
 
 	/**
@@ -20,7 +22,8 @@
 	 * @typedef {{
 	 *   href: string,
 	 *   label: string,
-	 *   icon: string,
+	 *   icon?: string,
+	 *   faviconUrl?: string,
 	 *   id?: string,
 	 *   countKey?: string,
 	 *   createKind?: string,
@@ -30,14 +33,28 @@
 	 */
 
 	/**
+	 * @typedef {{
+	 *   type: 'group',
+	 *   id: string,
+	 *   label: string,
+	 *   creatable?: boolean,
+	 *   createKind?: string,
+	 *   items: ShellSection[]
+	 * }} ShellNavGroup
+	 */
+
+	/**
 	 * @type {{
-	 *   sections?: ShellSection[],
-	 *   mobileSections?: ShellSection[] | null,
+	 *   sections?: (ShellSection | ShellNavGroup)[],
+	 *   mobileSections?: (ShellSection | ShellNavGroup)[] | null,
 	 *   activeHref?: string,
 	 *   title?: string,
 	 *   counts?: Record<string, number>,
+	 *   unreadCounts?: Record<string, number>,
 	 *   wideList?: boolean,
 	 *   listSize?: 'default' | 'chat',
+	 *   listCompact?: boolean,
+	 *   commsFeed?: boolean,
 	 *   syncing?: boolean,
 	 *   searchEnabled?: boolean,
 	 *   feedPadClass?: string,
@@ -49,6 +66,7 @@
 	 *   onNavChild?: (parentHref: string, childId: string) => void,
 	 *   onCreate?: (kind: string) => void,
 	 *   onNavPlus?: (kind: string | undefined) => void,
+	 *   onGroupPlus?: ((groupId: string) => void) | null,
 	 *   onFilterChange?: (id: string) => void,
 	 *   onRefresh?: (() => Promise<void> | void) | null,
 	 *   isSectionActive?: ((href: string) => boolean) | null,
@@ -71,9 +89,15 @@
 		activeHref = '',
 		title = '',
 		counts = {},
+		/** Targeted-at-you unread (accent UnreadMark). Inventory stays in `counts`. */
+		unreadCounts = {},
 		wideList = false,
 		/** Wider list column (Chat feed on desktop). */
 		listSize = 'default',
+		/** Chat: shrink feed to φ `--list` when a deeper detail page is open. */
+		listCompact = false,
+		/** Chat/mail: slightly recessed feed canvas in light mode. */
+		commsFeed = false,
 		syncing = false,
 		searchEnabled = true,
 		feedPadClass = '',
@@ -87,6 +111,7 @@
 		onNavChild = () => {},
 		onCreate = () => {},
 		onNavPlus = () => {},
+		onGroupPlus = null,
 		onFilterChange = () => {},
 		onRefresh = null,
 		isSectionActive = null,
@@ -130,6 +155,19 @@
 	let lastNavHref = '';
 	/** Detail pane covering the list — hide the menu chrome so back stays usable. */
 	let detailCovering = $state(false);
+	/**
+	 * Chat width morph only after a compact↔wide toggle on Chat —
+	 * never when first landing on the section (wide is the default).
+	 */
+	let chatWasCompact = $state(false);
+
+	$effect(() => {
+		if (listSize !== 'chat') {
+			chatWasCompact = false;
+			return;
+		}
+		if (listCompact) chatWasCompact = true;
+	});
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
@@ -174,10 +212,28 @@
 		return activeHref === href || activeHref.startsWith(`${href}/`);
 	}
 
+	/** @param {ShellSection | ShellNavGroup} entry */
+	function isNavGroup(entry) {
+		return Boolean(entry && /** @type {ShellNavGroup} */ (entry).type === 'group');
+	}
+
 	const activeItem = $derived.by(() => {
-		const hit = sections.find((item) => active(item.href));
-		if (hit) return hit;
-		return sections[0] ?? { href: '', label: title || 'Alpha', icon: 'dot' };
+		for (const entry of sections) {
+			if (isNavGroup(entry)) {
+				const group = /** @type {ShellNavGroup} */ (entry);
+				const hit = group.items.find((item) => active(item.href));
+				if (hit) return hit;
+				continue;
+			}
+			const item = /** @type {ShellSection} */ (entry);
+			if (active(item.href)) return item;
+		}
+		const first = sections[0];
+		if (first && isNavGroup(first)) {
+			const g = /** @type {ShellNavGroup} */ (first);
+			return g.items[0] ?? { href: '', label: title || 'Alpha', icon: 'dot' };
+		}
+		return /** @type {ShellSection} */ (first) ?? { href: '', label: title || 'Alpha', icon: 'dot' };
 	});
 
 	const resolvedTitle = $derived(title || activeItem.label);
@@ -193,7 +249,22 @@
 	const filteredNav = $derived.by(() => {
 		const q = search.trim().toLowerCase();
 		if (!q) return sections;
-		return sections.filter((item) => item.label.toLowerCase().includes(q));
+		/** @type {(ShellSection | ShellNavGroup)[]} */
+		const out = [];
+		for (const entry of sections) {
+			if (isNavGroup(entry)) {
+				const group = /** @type {ShellNavGroup} */ (entry);
+				const items = group.items.filter(
+					(item) =>
+						item.label.toLowerCase().includes(q) || group.label.toLowerCase().includes(q)
+				);
+				if (items.length) out.push({ ...group, items });
+				continue;
+			}
+			const item = /** @type {ShellSection} */ (entry);
+			if (item.label.toLowerCase().includes(q)) out.push(item);
+		}
+		return out;
 	});
 
 	function isMobileShell() {
@@ -306,6 +377,28 @@
 		lastNavHref = href;
 	});
 
+	/** Re-push alphaNavTrap so the next Android back opens nav instead of exiting. */
+	function rearmNavTrap() {
+		if (typeof window === 'undefined' || typeof history === 'undefined') return;
+		if (!isMobileShell()) return;
+		if (detailOpen()) return;
+		if (history.state?.alphaNav || history.state?.alphaNavTrap) return;
+		const path = window.location.pathname;
+		ignoreNavPop = true;
+		const base = {
+			...(history.state || {}),
+			alphaShell: true,
+			alphaPath: path
+		};
+		if (!(history.state?.alphaShell && history.state?.alphaPath === path)) {
+			history.replaceState(base, '');
+		}
+		history.pushState({ ...base, alphaNavTrap: true }, '');
+		queueMicrotask(() => {
+			ignoreNavPop = false;
+		});
+	}
+
 	/* Arm one same-URL history entry so Android back can open the nav. */
 	$effect(() => {
 		if (typeof window === 'undefined') return;
@@ -313,7 +406,9 @@
 		activeHref;
 		const path = window.location.pathname;
 		navArmedPath = path;
-		if (history.state?.alphaPath === path && history.state?.alphaShell) return;
+		/* Already have an open-nav or trap entry on this path — don't stack more. */
+		if (history.state?.alphaNav) return;
+		if (history.state?.alphaNavTrap && history.state?.alphaPath === path) return;
 		ignoreNavPop = true;
 		const base = {
 			...(history.state || {}),
@@ -338,6 +433,7 @@
 				navClosePending = false;
 				mobileNavOpen = false;
 				menuDrag = null;
+				rearmNavTrap();
 				return;
 			}
 			if (ignoreNavPop) return;
@@ -367,6 +463,8 @@
 			if (mobileNavOpen) {
 				mobileNavOpen = false;
 				menuDrag = null;
+				/* Trap was consumed — re-arm so the next back opens nav again. */
+				rearmNavTrap();
 				return;
 			}
 			/* Same-URL back on a main list page opens the nav instead of leaving. */
@@ -531,6 +629,9 @@
 	class:nav-dragging={menuDrag != null}
 	class:detail-covering={detailCovering}
 	class:list-chat={listSize === 'chat'}
+	class:chat-compact={listSize === 'chat' && listCompact}
+	class:chat-was-compact={listSize === 'chat' && chatWasCompact}
+	class:comms-feed={commsFeed}
 	bind:this={shellEl}
 	style="--menu-progress: {menuProgress}"
 >
@@ -543,14 +644,7 @@
 			{#if searchOpen && searchEnabled}
 				<label class="search search-expanded">
 					<span class="sr-only">Search</span>
-					<svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-						<path
-							d="M7 12.5A5.5 5.5 0 1 0 7 1.5a5.5 5.5 0 0 0 0 11Zm0 0L14 14.5"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-						/>
-					</svg>
+					<span class="search-icon" aria-hidden="true"><Search size={16} /></span>
 					<input
 						bind:this={searchInputEl}
 						type="search"
@@ -599,14 +693,7 @@
 							queueMicrotask(() => searchInputEl?.focus());
 						}}
 					>
-						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-							<path
-								d="M7 12.5A5.5 5.5 0 1 0 7 1.5a5.5 5.5 0 0 0 0 11Zm0 0L14 14.5"
-								stroke="currentColor"
-								stroke-width="1.5"
-								stroke-linecap="round"
-							/>
-						</svg>
+						<Search size={16} />
 					</button>
 				{/if}
 				{#if createMenuItems.length}
@@ -618,8 +705,13 @@
 							aria-expanded={createMenuOpen}
 							onclick={() => (createMenuOpen = !createMenuOpen)}
 						>
-							<svg width="16" height="16" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-								<path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+							<svg class="chrome-ico" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+								<path
+									d="M8 3.25v9.5M3.25 8h9.5"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+								/>
 							</svg>
 						</button>
 						{#if createMenuOpen}
@@ -641,81 +733,152 @@
 		</header>
 
 		<nav class="sidebar-nav" aria-label="Sections">
-			{#each filteredNav as item (item.href)}
-				{@const count = item.countKey ? counts[item.countKey] : null}
-				{@const rowActive = active(item.href)}
-				{@const kids = item.children || []}
-				{@const expanded = rowActive && kids.length > 0}
-				{@const png = rowActive ? navPngUrl(item.icon) : null}
-				<div
-					class="nav-block"
-					class:active={rowActive}
-					class:expanded={expanded}
-				>
-					<div
-						class="nav-row"
-						class:creatable={Boolean(item.createKind)}
-					>
-						<button
-							type="button"
-							class="nav-item"
-							class:active={rowActive}
-							onclick={() => go(item.href)}
-						>
-							<span class="icon-wrap" class:png={Boolean(png)} class:empty={rowActive && !png}>
-								{#if rowActive}
-									{#if png}
-										<img class="nav-png" src={png} alt="" width="18" height="18" />
-									{/if}
-								{:else}
-									<NavIcon name={item.icon} size={18} />
-								{/if}
-							</span>
-							<span class="nav-label">{item.label}</span>
-						</button>
-						{#if item.createKind || count != null}
-							<span class="row-end">
-								{#if count != null}
-									<span class="count">{count}</span>
-								{/if}
-								{#if item.createKind}
-									<button
-										type="button"
-										class="row-plus"
-										aria-label={`New ${item.createKind}`}
-										onclick={() => onNavPlus(item.createKind)}
-									>
-										<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-											<path
-												d="M6 1.5v9M1.5 6h9"
-												stroke="currentColor"
-												stroke-width="1.6"
-												stroke-linecap="round"
-											/>
-										</svg>
-									</button>
-								{/if}
-							</span>
-						{/if}
-					</div>
-					{#if expanded}
-						<div class="nav-sub" role="group" aria-label={item.label}>
-							{#each kids as child (child.id)}
+			{#each filteredNav as entry (isNavGroup(entry) ? `g:${/** @type {ShellNavGroup} */ (entry).id}` : /** @type {ShellSection} */ (entry).href)}
+				{#if isNavGroup(entry)}
+					{@const group = /** @type {ShellNavGroup} */ (entry)}
+					<div class="nav-group" role="group" aria-label={group.label}>
+						<div class="nav-group-head">
+							<span class="nav-group-eyebrow eyebrow-label-xs">{group.label}</span>
+							{#if group.creatable}
 								<button
 									type="button"
-									class="nav-sub-item"
-									class:active={Boolean(child.active)}
+									class="row-plus"
+									aria-label={`Add ${group.label}`}
+									title={`Add ${group.label}`}
 									onclick={() => {
-										onNavChild(item.href, child.id);
-										closeMobileNav({ history: false });
+										if (onGroupPlus) onGroupPlus(group.id);
+										else if (group.createKind) onNavPlus(group.createKind);
 									}}
 								>
-									{child.label}
+									<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+										<path
+											d="M6 1.5v9M1.5 6h9"
+											stroke="currentColor"
+											stroke-width="1.6"
+											stroke-linecap="round"
+										/>
+									</svg>
 								</button>
-							{/each}
+							{/if}
 						</div>
-					{/if}
-				</div>
+						{#each group.items as item (item.id || item.href)}
+							{@const rowActive = active(item.href)}
+							{@const fav = String(item.faviconUrl || '').trim()}
+							<div class="nav-block" class:active={rowActive}>
+								<div class="nav-row">
+									<button
+										type="button"
+										class="nav-item"
+										class:active={rowActive}
+										onclick={() => go(item.href)}
+									>
+										<span class="icon-wrap" class:favicon={Boolean(fav)} class:empty={rowActive && !fav}>
+											{#if fav}
+												<img
+													class="nav-favicon"
+													src={fav}
+													alt=""
+													width="18"
+													height="18"
+													loading="lazy"
+													onerror={(e) => {
+														const el = /** @type {HTMLImageElement} */ (e.currentTarget);
+														el.style.display = 'none';
+													}}
+												/>
+											{:else if item.icon}
+												<NavIcon name={item.icon} size={18} />
+											{/if}
+										</span>
+										<span class="nav-label">{item.label}</span>
+									</button>
+								</div>
+							</div>
+						{/each}
+					</div>
+				{:else}
+					{@const item = /** @type {ShellSection} */ (entry)}
+					{@const count = item.countKey ? counts[item.countKey] : null}
+					{@const unread =
+						item.countKey && unreadCounts[item.countKey] != null
+							? Number(unreadCounts[item.countKey]) || 0
+							: 0}
+					{@const rowActive = active(item.href)}
+					{@const kids = item.children || []}
+					{@const expanded = rowActive && kids.length > 0}
+					{@const png = rowActive && item.icon ? navPngUrl(item.icon) : null}
+					<div
+						class="nav-block"
+						class:active={rowActive}
+						class:expanded={expanded}
+					>
+						<div
+							class="nav-row"
+							class:creatable={Boolean(item.createKind)}
+						>
+							<button
+								type="button"
+								class="nav-item"
+								class:active={rowActive}
+								onclick={() => go(item.href)}
+							>
+								<span class="icon-wrap" class:png={Boolean(png)} class:empty={rowActive && !png}>
+									{#if rowActive}
+										{#if png}
+											<img class="nav-png" src={png} alt="" width="18" height="18" />
+										{/if}
+									{:else if item.icon}
+										<NavIcon name={item.icon} size={18} />
+									{/if}
+								</span>
+								<span class="nav-label">{item.label}</span>
+							</button>
+							{#if item.createKind || count != null || unread > 0}
+								<span class="row-end">
+									{#if unread > 0}
+										<UnreadMark count={unread} />
+									{:else if count != null}
+										<span class="count">{count}</span>
+									{/if}
+									{#if item.createKind}
+										<button
+											type="button"
+											class="row-plus"
+											aria-label={`New ${item.createKind}`}
+											onclick={() => onNavPlus(item.createKind)}
+										>
+											<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+												<path
+													d="M6 1.5v9M1.5 6h9"
+													stroke="currentColor"
+													stroke-width="1.6"
+													stroke-linecap="round"
+												/>
+											</svg>
+										</button>
+									{/if}
+								</span>
+							{/if}
+						</div>
+						{#if expanded}
+							<div class="nav-sub" role="group" aria-label={item.label}>
+								{#each kids as child (child.id)}
+									<button
+										type="button"
+										class="nav-sub-item"
+										class:active={Boolean(child.active)}
+										onclick={() => {
+											onNavChild(item.href, child.id);
+											closeMobileNav({ history: false });
+										}}
+									>
+										{child.label}
+									</button>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/if}
 			{/each}
 		</nav>
 		{#if sidebarTrail}
@@ -926,6 +1089,7 @@
 	.shell {
 		/* Pad ≈ control row; fade is short/soft so content stays readable until the bar */
 		/* Clears the solid control row; fade veil is scroll-driven */
+		/* Default = Chat / reverse-scroll; `.feed-pad` aligns Tasks / Mail / … */
 		--feed-pad-top: 44px;
 		--feed-pad-bottom: 36px;
 		--chrome-fade: var(--bg);
@@ -1007,7 +1171,8 @@
 
 	.account-pill.on {
 		background:
-			linear-gradient(var(--glass), var(--glass)) padding-box,
+			linear-gradient(var(--nav-selected, var(--glass)), var(--nav-selected, var(--glass)))
+				padding-box,
 			var(--glass-shine) border-box;
 		backdrop-filter: blur(var(--glass-blur));
 		-webkit-backdrop-filter: blur(var(--glass-blur));
@@ -1142,7 +1307,7 @@
 		border-radius: 12px;
 		background: var(--glass);
 		overflow: hidden;
-		box-shadow: 0 8px 28px color-mix(in srgb, var(--fg-raw) 18%, transparent);
+		box-shadow: 0 8px 28px var(--shadow);
 		backdrop-filter: blur(var(--glass-blur));
 		-webkit-backdrop-filter: blur(var(--glass-blur));
 	}
@@ -1209,7 +1374,8 @@
 
 	.nav-block.active {
 		background:
-			linear-gradient(var(--glass), var(--glass)) padding-box,
+			linear-gradient(var(--nav-selected, var(--glass)), var(--nav-selected, var(--glass)))
+				padding-box,
 			var(--glass-shine) border-box;
 		backdrop-filter: blur(var(--glass-blur));
 		-webkit-backdrop-filter: blur(var(--glass-blur));
@@ -1256,6 +1422,45 @@
 
 	.nav-item.active {
 		color: var(--white);
+	}
+
+	.nav-group {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		margin-top: 10px;
+		padding-top: 4px;
+	}
+
+	.nav-group-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		padding: 4px 12px 6px;
+		min-height: 28px;
+		box-sizing: border-box;
+	}
+
+	.nav-group-eyebrow {
+		font-size: 10px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: var(--white33, var(--fg-33));
+	}
+
+	.nav-favicon {
+		display: block;
+		width: 18px;
+		height: 18px;
+		border-radius: 4px;
+		object-fit: cover;
+	}
+
+	.icon-wrap.favicon {
+		overflow: hidden;
+		border-radius: 4px;
 	}
 
 	.nav-sub {
@@ -1377,7 +1582,9 @@
 	}
 
 	.nav-row.creatable:hover .count,
-	.nav-row.creatable:focus-within .count {
+	.nav-row.creatable:focus-within .count,
+	.nav-row.creatable:hover :global(.unread-mark),
+	.nav-row.creatable:focus-within :global(.unread-mark) {
 		opacity: 0;
 	}
 
@@ -1411,10 +1618,14 @@
 		align-items: stretch;
 		overflow: hidden;
 		border-radius: 20px;
-		/* Follows theme page bg (#121212-ish dark / soft light) */
+		/* Follows theme page bg; comms feeds use --feed-bg in light */
 		background: var(--bg);
 		border: 1px solid var(--hairline);
 		color: var(--white);
+	}
+
+	.shell.comms-feed .workspace {
+		background: var(--feed-bg, var(--bg));
 	}
 
 	.list-col {
@@ -1429,10 +1640,43 @@
 		overflow: hidden;
 	}
 
-	/* Chat uses the same 2nd-column width as Notes / Mail / Tasks / … */
+	/* Chat: wide is the default; morph only after a compact toggle (not on section enter). */
 	.list-col.chat {
-		flex-basis: var(--list);
-		width: var(--list);
+		flex-basis: var(--list-chat, var(--list));
+		width: var(--list-chat, var(--list));
+	}
+
+	@media (min-width: 768px) {
+		.shell.list-chat:not(.chat-compact) .list-col.chat {
+			flex: 0 0 var(--list-chat, clamp(480px, 52vw, 780px));
+			width: var(--list-chat, clamp(480px, 52vw, 780px));
+			min-width: 360px;
+		}
+
+		.shell.list-chat.chat-compact .list-col.chat {
+			flex: 0 0 var(--list);
+			width: var(--list);
+			min-width: 280px;
+		}
+
+		.shell.list-chat.chat-compact .list-col.chat,
+		.shell.list-chat.chat-was-compact:not(.chat-compact) .list-col.chat {
+			transition:
+				flex-basis 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				width 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)),
+				min-width 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+		}
+
+		.shell.list-chat :global(.detail) {
+			flex: 1 1 0;
+			width: auto;
+			min-width: 0;
+		}
+
+		.shell.list-chat.chat-compact :global(.detail),
+		.shell.list-chat.chat-was-compact:not(.chat-compact) :global(.detail) {
+			transition: flex-basis 0.34s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+		}
 	}
 
 	.list-col.wide {
@@ -1546,8 +1790,11 @@
 		display: none;
 	}
 
-	/* Tasks keep prior feed offset; other feeds sit ~4px higher */
-	.shell.tasks-pad {
+	/*
+	 * Shared list start for Tasks / Mail / Files / Notes / … (not Chat).
+	 * Desktop matches Tasks “In Progress” group header; mobile sits +4px lower.
+	 */
+	.shell.feed-pad {
 		--feed-pad-top: 48px;
 	}
 
@@ -1684,8 +1931,8 @@
 			background: var(--bg);
 		}
 
-		.shell.tasks-pad {
-			--feed-pad-top: calc(56px + env(safe-area-inset-top, 0px));
+		.shell.feed-pad {
+			--feed-pad-top: calc(60px + env(safe-area-inset-top, 0px));
 		}
 
 		/*
@@ -1703,9 +1950,7 @@
 			padding: calc(36px + env(safe-area-inset-top, 0px)) 14px
 				calc(12px + env(safe-area-inset-bottom, 0px));
 			background: var(--bg);
-			/* Glass chrome relative to this nav surface */
-			--glass-fill: color-mix(in srgb, var(--fg) 6%, var(--bg));
-			--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
+			/* Glass/lift come from theme tokens — do not re-mix ink into bg here */
 			pointer-events: none;
 		}
 

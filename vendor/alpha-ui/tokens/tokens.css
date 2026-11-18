@@ -16,25 +16,26 @@
 
 :root {
 	/*
-	 * Two accents: 1 = primary / closed / CTA · 2 = progress / urgency / destructive
+	 * Three accents (Zapstore lineage):
+	 * 1 = primary / success / closed · 2 = gold / progress · 3 = rouge / destructive / urgency
+	 * Customer sites may still derive companion accents from a single brand --accent.
 	 */
 	--accent-1: #5a58fe;
 	--accent-1-66: color-mix(in srgb, var(--accent-1) 66%, transparent);
 	--accent-1-33: color-mix(in srgb, var(--accent-1) 33%, transparent);
-	--accent-2: #ed5e44;
+	--accent-2: #ffb338;
 	--accent-2-66: color-mix(in srgb, var(--accent-2) 66%, transparent);
 	--accent-2-33: color-mix(in srgb, var(--accent-2) 33%, transparent);
-	/* Second accent doubles as urgent / destructive */
-	--accent-3: var(--accent-2);
-	--accent-3-66: var(--accent-2-66);
-	--accent-3-33: var(--accent-2-33);
-	--accent-3-16: color-mix(in srgb, var(--accent-2) 16%, transparent);
+	--accent-3: #ff4778;
+	--accent-3-66: color-mix(in srgb, var(--accent-3) 66%, transparent);
+	--accent-3-33: color-mix(in srgb, var(--accent-3) 33%, transparent);
+	--accent-3-16: color-mix(in srgb, var(--accent-3) 16%, transparent);
 
 	--gradient-accent-1: radial-gradient(circle at top left, #5c5fff 0%, #4542ff 100%);
 	--gradient-accent-1-hover: radial-gradient(circle at top left, #4245ff 0%, #2c29ff 100%);
-	--gradient-accent-2: radial-gradient(circle at top left, #f37450 0%, #e74939 100%);
-	--gradient-accent-3: var(--gradient-accent-2);
-	--gradient-accent-3-16: radial-gradient(circle at top left, #f3745029 0%, #e7493929 100%);
+	--gradient-accent-2: radial-gradient(circle at top left, #ffc736 0%, #ffa037 100%);
+	--gradient-accent-3: radial-gradient(circle at top left, #ff4778 0%, #ff005e 100%);
+	--gradient-accent-3-16: radial-gradient(circle at top left, #ff477829 0%, #ff005e29 100%);
 
 	/* CTA — ~8% white base + very light accent tint for contrast on dark panels */
 	--button-primary-bg: linear-gradient(
@@ -97,9 +98,13 @@
 	--selection: color-mix(in srgb, var(--fg) 4%, transparent);
 
 	--surface: #161616;
-	/* Small chrome (buttons): slight lift + shine border */
-	--glass-fill: color-mix(in srgb, var(--fg) 6%, var(--bg));
-	--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
+	/*
+	 * Surface stack: shell (nav) → bg (columns) → lift/glass (elevated chrome).
+	 * Dark: lift = slight brighten of bg. Light: lift = white (set in light block).
+	 */
+	--lift: color-mix(in srgb, var(--fg) 6%, var(--bg));
+	--glass-fill: var(--lift);
+	--glass: color-mix(in srgb, var(--glass-fill) 66%, transparent);
 	/* Large surfaces (modals / sheets): quiet dark lift — not bright */
 	--glass-panel: color-mix(
 		in srgb,
@@ -116,6 +121,16 @@
 		color-mix(in srgb, var(--fg) 8%, transparent) 55%,
 		color-mix(in srgb, var(--fg) 28%, transparent) 100%
 	);
+	/* Chat / comment bottom bars — same glass@72% + blur; fill a touch lighter than --lift (6%→9%) */
+	--composer-bg: color-mix(
+		in srgb,
+		color-mix(in srgb, color-mix(in srgb, var(--fg) 9%, var(--bg)) 66%, transparent) 72%,
+		transparent
+	);
+	--nav-selected: var(--glass);
+	--feed-bg: var(--bg);
+	--bubble-bg: color-mix(in srgb, var(--fg) 12%, transparent);
+	--mail-panel-bg: color-mix(in srgb, var(--fg) 4.5%, transparent);
 	--popover: var(--glass-panel);
 	--modal-bg: var(--glass-panel);
 	--hairline: var(--fg-11);
@@ -126,8 +141,8 @@
 	--box-plate: var(--bg);
 
 	--scrim: color-mix(in srgb, var(--bg) 72%, transparent);
-	--shadow: color-mix(in srgb, var(--fg-raw) 22%, transparent);
-	--shadow-strong: color-mix(in srgb, var(--fg-raw) 32%, transparent);
+	--shadow: color-mix(in srgb, var(--fg-raw) 28%, transparent);
+	--shadow-strong: color-mix(in srgb, var(--fg-raw) 40%, transparent);
 
 	--font: 'Inter', system-ui, -apple-system, sans-serif;
 	/* Desktop columns — φ cascade from viewport (side → list → detail) */
@@ -135,7 +150,7 @@
 	--shell-col-sum: calc(1 + var(--phi) + var(--phi) * var(--phi));
 	--side: clamp(210px, calc(100vw / var(--shell-col-sum)), 280px);
 	--list: calc(var(--side) * var(--phi));
-	/* Chat list column sits a step toward φ² so the feed breathes */
+	/* Chat equalizes 2nd/3rd columns in UiShell (.list-chat); token kept for callers */
 	--list-chat: var(--list);
 	--radius-16: 16px;
 	--radius-hero: 32px;
@@ -178,8 +193,9 @@
 	--fg-4: color-mix(in srgb, var(--fg) 4%, transparent);
 	--selection: color-mix(in srgb, var(--fg) 4%, transparent);
 	--surface: #161616;
-	--glass-fill: color-mix(in srgb, var(--fg) 6%, var(--bg));
-	--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
+	--lift: color-mix(in srgb, var(--fg) 6%, var(--bg));
+	--glass-fill: var(--lift);
+	--glass: color-mix(in srgb, var(--glass-fill) 66%, transparent);
 	--glass-panel: color-mix(
 		in srgb,
 		color-mix(in srgb, var(--fg) 5%, var(--bg)) 92%,
@@ -187,6 +203,15 @@
 	);
 	--glass-blur: 22px;
 	--glass-border: color-mix(in srgb, var(--fg) 12%, transparent);
+	--composer-bg: color-mix(
+		in srgb,
+		color-mix(in srgb, color-mix(in srgb, var(--fg) 9%, var(--bg)) 66%, transparent) 72%,
+		transparent
+	);
+	--nav-selected: var(--glass);
+	--feed-bg: var(--bg);
+	--bubble-bg: color-mix(in srgb, var(--fg) 12%, transparent);
+	--mail-panel-bg: color-mix(in srgb, var(--fg) 4.5%, transparent);
 	--popover: var(--glass-panel);
 	--modal-bg: var(--glass-panel);
 	--hairline: var(--fg-11);
@@ -194,6 +219,8 @@
 	--shell-border: var(--hairline);
 	--box-plate: var(--bg);
 	--scrim: color-mix(in srgb, var(--bg) 72%, transparent);
+	--shadow: color-mix(in srgb, var(--fg-raw) 28%, transparent);
+	--shadow-strong: color-mix(in srgb, var(--fg-raw) 40%, transparent);
 	--ink: var(--fg);
 	--ink83: var(--fg-83);
 	--ink66: var(--fg-66);
@@ -213,7 +240,8 @@
 }
 
 :root[data-theme='light'] {
-	--bg: var(--bg-raw);
+	/* Recessed canvas; keep --bg-raw as dark-mode fg pole (#f8f8f8) */
+	--bg: #ffffff;
 	--fg: var(--fg-raw);
 	--fg-83: color-mix(in srgb, var(--fg) 83%, transparent);
 	--fg-66: color-mix(in srgb, var(--fg) 66%, transparent);
@@ -225,12 +253,14 @@
 	--selection: color-mix(in srgb, var(--fg) 4%, transparent);
 	--link: color-mix(in srgb, var(--accent) 78%, #000000);
 	--link-hover: color-mix(in srgb, var(--accent) 62%, #000000);
-	--float-panel-bg: color-mix(in srgb, #000000 8%, transparent);
-	--float-trigger-on: color-mix(in srgb, #000000 8%, transparent);
-	--surface: color-mix(in srgb, var(--fg) 4%, var(--bg));
-	--glass-fill: color-mix(in srgb, var(--fg) 4%, var(--bg));
-	--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
-	--glass-panel: color-mix(in srgb, var(--bg) 66%, transparent);
+	--float-panel-bg: color-mix(in srgb, #ffffff 78%, transparent);
+	--float-trigger-on: color-mix(in srgb, #ffffff 78%, transparent);
+	--surface: #f6f6f6;
+	/* Elevated chrome = white (not ink-into-bg) */
+	--lift: #ffffff;
+	--glass-fill: var(--lift);
+	--glass: color-mix(in srgb, var(--lift) 66%, transparent);
+	--glass-panel: color-mix(in srgb, var(--lift) 88%, transparent);
 	--glass-blur: 22px;
 	--glass-border: color-mix(in srgb, var(--fg) 10%, transparent);
 	--glass-shine: linear-gradient(
@@ -240,15 +270,30 @@
 		color-mix(in srgb, var(--fg) 8%, transparent) 55%,
 		color-mix(in srgb, var(--fg) 22%, transparent) 100%
 	);
+	--composer-bg: #ffffff;
+	--nav-selected: color-mix(in srgb, var(--fg) 10%, transparent);
+	--feed-bg: #ececec;
+	--bubble-bg: #ffffff;
+	--mail-panel-bg: #ffffff;
 	--popover: var(--glass-panel);
 	--modal-bg: var(--glass-panel);
 	--hairline: var(--fg-11);
-	--shell: #f4f4f4;
+	--shell: #e2e2e2;
 	--shell-border: var(--hairline);
 	--box-plate: var(--bg);
 	--scrim: color-mix(in srgb, var(--fg) 42%, transparent);
-	--shadow: color-mix(in srgb, var(--fg-raw) 22%, transparent);
-	--shadow-strong: color-mix(in srgb, var(--fg-raw) 32%, transparent);
+	--shadow: color-mix(in srgb, var(--fg-raw) 14%, transparent);
+	--shadow-strong: color-mix(in srgb, var(--fg-raw) 22%, transparent);
+	--button-primary-bg: linear-gradient(
+		180deg,
+		#ffffff 0%,
+		color-mix(in srgb, var(--accent-1) 6%, #ffffff) 100%
+	);
+	--button-primary-bg-hover: linear-gradient(
+		180deg,
+		#ffffff 0%,
+		color-mix(in srgb, var(--accent-1) 10%, #ffffff) 100%
+	);
 	--ink: var(--fg);
 	--ink83: var(--fg-83);
 	--ink66: var(--fg-66);
@@ -271,11 +316,17 @@
 @media (max-width: 767px) {
 	:root,
 	:root[data-theme='dark'] {
-		--glass-fill: color-mix(in srgb, var(--fg) 6%, var(--shell));
-		--glass: color-mix(in srgb, var(--glass-fill) 86%, transparent);
+		--lift: color-mix(in srgb, var(--fg) 6%, var(--shell));
+		--glass-fill: var(--lift);
+		--glass: color-mix(in srgb, var(--glass-fill) 66%, transparent);
 		--glass-panel: color-mix(
 			in srgb,
 			color-mix(in srgb, var(--fg) 5.5%, var(--shell)) 92%,
+			transparent
+		);
+		--composer-bg: color-mix(
+			in srgb,
+			color-mix(in srgb, color-mix(in srgb, var(--fg) 9%, var(--bg)) 66%, transparent) 72%,
 			transparent
 		);
 		/* Float panels sit on shell — slightly stronger frost than desktop workspace */
@@ -286,11 +337,13 @@
 	}
 
 	:root[data-theme='light'] {
-		--glass-fill: color-mix(in srgb, var(--fg) 5%, var(--shell));
-		--glass: color-mix(in srgb, var(--glass-fill) 88%, transparent);
-		--glass-panel: color-mix(in srgb, var(--shell) 66%, transparent);
-		--float-panel-bg: color-mix(in srgb, #000000 7%, transparent);
-		--float-trigger-on: color-mix(in srgb, #000000 7%, transparent);
+		--lift: #ffffff;
+		--glass-fill: var(--lift);
+		--glass: color-mix(in srgb, var(--lift) 66%, transparent);
+		--glass-panel: color-mix(in srgb, var(--lift) 88%, transparent);
+		--composer-bg: #ffffff;
+		--float-panel-bg: color-mix(in srgb, #ffffff 82%, transparent);
+		--float-trigger-on: color-mix(in srgb, #ffffff 82%, transparent);
 		--scrim: color-mix(in srgb, var(--fg) 42%, transparent);
 	}
 }

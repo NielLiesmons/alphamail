@@ -10,6 +10,7 @@
 	import AlphaLogo from '$lib/components/AlphaLogo.svelte';
 	import { ChevronDown } from '$lib/components/icons';
 	import MenuToggle from '@alpha/ui/icons/MenuToggle.svelte';
+	import SegmentedControl from '@alpha/ui/SegmentedControl.svelte';
 
 	let open = $state(false);
 	let settingsOpen = $state(false);
@@ -145,57 +146,34 @@
 					</button>
 
 					{#if settingsOpen}
-						<div class="menu" role="dialog" aria-label={$t.navSettings}>
+						<div class="menu alpha-popover" role="dialog" aria-label={$t.navSettings}>
 							<section class="menu-section">
 								<p class="menu-label">{$t.settingsLang}</p>
-								<div class="seg" role="tablist" aria-label={$t.settingsLang}>
-									<button
-										type="button"
-										class="seg-btn"
-										class:on={$locale === 'fr'}
-										onclick={() => switchLang('fr')}
-									>
-										FR
-									</button>
-									<button
-										type="button"
-										class="seg-btn"
-										class:on={$locale === 'en'}
-										onclick={() => switchLang('en')}
-									>
-										EN
-									</button>
-								</div>
+								<SegmentedControl
+									label={$t.settingsLang}
+									value={$locale}
+									options={[
+										{ value: 'fr', label: 'FR' },
+										{ value: 'en', label: 'EN' }
+									]}
+									onchange={(next) => switchLang(/** @type {'fr' | 'en'} */ (next))}
+								/>
 							</section>
 
 							<section class="menu-section">
 								<p class="menu-label">{$t.settingsTheme}</p>
-								<div class="seg" role="tablist" aria-label={$t.settingsTheme}>
-									<button
-										type="button"
-										class="seg-btn"
-										class:on={$theme === 'light'}
-										onclick={() => setTheme('light')}
-									>
-										{$t.themeLight}
-									</button>
-									<button
-										type="button"
-										class="seg-btn"
-										class:on={$theme === 'dark'}
-										onclick={() => setTheme('dark')}
-									>
-										{$t.themeDark}
-									</button>
-									<button
-										type="button"
-										class="seg-btn"
-										class:on={$theme === 'system'}
-										onclick={() => setTheme('system')}
-									>
-										{$t.themeSystem}
-									</button>
-								</div>
+								<SegmentedControl
+									label={$t.settingsTheme}
+									value={$theme}
+									options={[
+										{ value: 'light', label: $t.themeLight },
+										{ value: 'dark', label: $t.themeDark },
+										{ value: 'system', label: $t.themeSystem }
+									]}
+									onchange={(next) =>
+										setTheme(/** @type {'light' | 'dark' | 'system'} */ (next))
+									}
+								/>
 							</section>
 						</div>
 					{/if}
@@ -234,38 +212,28 @@
 				<div class="mobile-settings">
 					<section class="menu-section">
 						<p class="menu-label">{$t.settingsLang}</p>
-						<div class="seg" role="tablist" aria-label={$t.settingsLang}>
-							<button type="button" class="seg-btn" class:on={$locale === 'fr'} onclick={() => switchLang('fr')}>
-								FR
-							</button>
-							<button type="button" class="seg-btn" class:on={$locale === 'en'} onclick={() => switchLang('en')}>
-								EN
-							</button>
-						</div>
+						<SegmentedControl
+							label={$t.settingsLang}
+							value={$locale}
+							options={[
+								{ value: 'fr', label: 'FR' },
+								{ value: 'en', label: 'EN' }
+							]}
+							onchange={(next) => switchLang(/** @type {'fr' | 'en'} */ (next))}
+						/>
 					</section>
 					<section class="menu-section">
 						<p class="menu-label">{$t.settingsTheme}</p>
-						<div class="seg" role="tablist" aria-label={$t.settingsTheme}>
-							<button
-								type="button"
-								class="seg-btn"
-								class:on={$theme === 'light'}
-								onclick={() => setTheme('light')}
-							>
-								{$t.themeLight}
-							</button>
-							<button type="button" class="seg-btn" class:on={$theme === 'dark'} onclick={() => setTheme('dark')}>
-								{$t.themeDark}
-							</button>
-							<button
-								type="button"
-								class="seg-btn"
-								class:on={$theme === 'system'}
-								onclick={() => setTheme('system')}
-							>
-								{$t.themeSystem}
-							</button>
-						</div>
+						<SegmentedControl
+							label={$t.settingsTheme}
+							value={$theme}
+							options={[
+								{ value: 'light', label: $t.themeLight },
+								{ value: 'dark', label: $t.themeDark },
+								{ value: 'system', label: $t.themeSystem }
+							]}
+							onchange={(next) => setTheme(/** @type {'light' | 'dark' | 'system'} */ (next))}
+						/>
 					</section>
 				</div>
 			</nav>
@@ -552,12 +520,17 @@
 		font-size: 13px;
 		font-weight: 600;
 		color: var(--ink66);
-		background: color-mix(in srgb, var(--ink) 5%, transparent);
-		border: 1px solid var(--hairline);
+		border: 1px solid transparent;
 		border-radius: var(--radius-pill);
+		background:
+			color-mix(in srgb, var(--ink) 8%, transparent) padding-box,
+			var(--glass-shine) border-box;
+		backdrop-filter: blur(var(--nav-glass-blur, var(--glass-blur, 14px)));
+		-webkit-backdrop-filter: blur(var(--nav-glass-blur, var(--glass-blur, 14px)));
 		padding: 0.35rem 0.7rem 0.35rem 0.85rem;
 		cursor: pointer;
 		transition: color 0.2s var(--ease);
+		box-sizing: border-box;
 	}
 
 	.settings-btn:hover,
@@ -583,12 +556,9 @@
 		width: 280px;
 		min-width: 14rem;
 		padding: 0;
-		border-radius: 16px;
-		border: 1px solid var(--hairline);
-		background: var(--popover);
-		/* Seg tracks / fields recess against this panel */
+		/* alpha-popover supplies stroke / fill / shadow / blur */
+		--float-panel-bg: var(--popover);
 		--field-bg: var(--field-on-elevated);
-		box-shadow: 0 12px 40px var(--shadow);
 		z-index: 60;
 		overflow: hidden;
 	}
@@ -608,47 +578,6 @@
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		color: var(--ink33);
-	}
-
-	.seg {
-		display: grid;
-		grid-auto-flow: column;
-		grid-auto-columns: 1fr;
-		align-items: center;
-		gap: 0.15rem;
-		padding: calc(0.15rem + 2px);
-		border-radius: 999px;
-		border: 1px solid var(--hairline);
-		/* Same recessed well as inputs; selected chip lifts to --popover */
-		background: var(--field-bg);
-	}
-
-	.seg-btn {
-		appearance: none;
-		border: none;
-		background: transparent;
-		color: var(--ink66);
-		font-family: var(--font-sans);
-		font-size: 12px;
-		font-weight: 600;
-		height: 30px;
-		padding: 0 0.55rem;
-		border-radius: 999px;
-		cursor: pointer;
-		white-space: nowrap;
-		transition:
-			background 0.15s ease,
-			color 0.15s ease;
-	}
-
-	.seg-btn:hover {
-		color: var(--ink);
-	}
-
-	.seg-btn.on {
-		background: var(--popover);
-		color: var(--ink);
-		box-shadow: 0 1px 2px var(--shadow);
 	}
 
 	@media (min-width: 768px) {

@@ -3,6 +3,7 @@
 
 /* Variable Inter so display weight 650 matches Zapstore (discrete 700 was too heavy) */
 @import url('https://rsms.me/inter/inter.css');
+@import '@alpha/ui/popover.css';
 
 :root {
 	/* Breakpoints (document in DS; use in @media) */
@@ -33,10 +34,10 @@
 	--gradient-blurple-light: radial-gradient(circle at top left, #8b88ff 0%, #5c5fff 100%);
 
 	/*
-	 * Poles — Admin recipe (low saturation), light default for the public site.
+	 * Poles — match Alpha Admin / Niel near-grayscale recipe.
 	 */
-	--ink-raw: hsl(from var(--accent) h 8% 8%);
-	--bg-raw: hsl(from var(--accent) h 4% 97%);
+	--ink-raw: #121212;
+	--bg-raw: #f8f8f8;
 
 	/* Active theme pair (light default) — dark flips poles only */
 	--bg: var(--bg-raw);
@@ -57,6 +58,7 @@
 	/* fg aliases so shared @alpha/ui Button tokens resolve on the site */
 	--fg: var(--ink);
 	--fg-8: color-mix(in srgb, var(--ink) 8%, transparent);
+	--fg-66: var(--ink66);
 	--button-primary-bg: linear-gradient(
 		180deg,
 		color-mix(in srgb, var(--accent-1) 8%, var(--fg-8)) 0%,

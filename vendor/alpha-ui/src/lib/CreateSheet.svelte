@@ -125,7 +125,7 @@
 		-webkit-backdrop-filter: blur(var(--glass-blur));
 		overflow: visible;
 		/* No top pad — content rows own their inset; never a drag handle */
-		padding: 0 0 calc(14px + env(safe-area-inset-bottom, 0px));
+		padding: 0 0 calc(8px + env(safe-area-inset-bottom, 0px));
 		box-sizing: border-box;
 		will-change: transform;
 	}
@@ -183,7 +183,7 @@
 			max-height: min(720px, 90svh);
 			border-radius: calc(var(--radius-hero) - 2px);
 			border-bottom: 1px solid var(--glass-border);
-			padding: 0 0 14px;
+			padding: 0 0 8px;
 			overflow: hidden;
 		}
 

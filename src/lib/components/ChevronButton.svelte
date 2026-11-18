@@ -1,4 +1,7 @@
 <script>
+	/**
+	 * Carousel / edge control — Admin glass chrome (shine stroke + frosted fill).
+	 */
 	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
 
 	let { direction = 'prev', label = 'Previous', muted = false, onclick } = $props();
@@ -23,19 +26,22 @@
 	.chevron {
 		width: 46px;
 		height: 46px;
-		border-radius: var(--radius-pill);
-		border: 1.4px solid color-mix(in srgb, var(--ink) 16%, transparent);
-		background: color-mix(in srgb, var(--bg) 72%, transparent);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		color: var(--ink);
+		border-radius: var(--radius-pill, 999px);
+		border: 1px solid transparent;
+		background:
+			color-mix(in srgb, var(--fg, var(--ink)) 10%, transparent) padding-box,
+			var(--glass-shine) border-box;
+		backdrop-filter: blur(var(--glass-blur, 22px));
+		-webkit-backdrop-filter: blur(var(--glass-blur, 22px));
+		color: var(--fg, var(--ink));
 		cursor: pointer;
 		display: grid;
 		place-items: center;
 		padding: 0;
 		padding-right: 2px;
-		transition: transform 0.2s var(--ease);
+		transition: transform 0.2s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 		flex-shrink: 0;
+		box-sizing: border-box;
 	}
 
 	.chevron.next {
@@ -43,15 +49,15 @@
 		padding-left: 2px;
 	}
 
-	/* Soft ink/white depending on theme — not full foreground */
 	.chevron.muted {
-		border-color: color-mix(in srgb, var(--ink) 10%, transparent);
-		background: color-mix(in srgb, var(--bg) 55%, transparent);
-		color: color-mix(in srgb, var(--ink) 42%, transparent);
+		background:
+			color-mix(in srgb, var(--fg, var(--ink)) 6%, transparent) padding-box,
+			var(--glass-shine) border-box;
+		color: color-mix(in srgb, var(--fg, var(--ink)) 42%, transparent);
 	}
 
 	.chevron.muted:hover {
-		color: color-mix(in srgb, var(--ink) 66%, transparent);
+		color: color-mix(in srgb, var(--fg, var(--ink)) 66%, transparent);
 	}
 
 	.chevron:hover {

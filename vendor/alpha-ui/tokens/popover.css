@@ -6,10 +6,10 @@
  */
 
 .alpha-popover {
-	background: var(--float-panel-bg);
-	border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+	background: var(--float-panel-bg, var(--popover, var(--glass-panel, transparent)));
+	border: 1px solid color-mix(in srgb, var(--fg, var(--ink)) 10%, transparent);
 	border-radius: 14px;
-	box-shadow: 0 10px 36px color-mix(in srgb, var(--fg-raw) 22%, transparent);
+	box-shadow: 0 10px 36px var(--shadow);
 	backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
 	-webkit-backdrop-filter: blur(var(--glass-blur, 22px)) saturate(1.2);
 	box-sizing: border-box;

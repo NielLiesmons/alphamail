@@ -104,7 +104,7 @@
 		position: relative;
 		isolation: isolate;
 		border: 0;
-		background: color-mix(in srgb, var(--glass) 72%, transparent);
+		background: var(--composer-bg, color-mix(in srgb, var(--glass) 72%, transparent));
 		backdrop-filter: blur(var(--glass-blur, 22px));
 		-webkit-backdrop-filter: blur(var(--glass-blur, 22px));
 		overflow: hidden;

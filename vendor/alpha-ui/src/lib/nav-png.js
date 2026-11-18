@@ -21,9 +21,9 @@ for (const [path, url] of Object.entries(modules)) {
 /** Aliases → file basename without extension */
 const ALIAS = {
 	task: 'tasks',
-	file: 'drive',
-	files: 'drive',
-	folder: 'drive',
+	file: 'folder',
+	files: 'folder',
+	drive: 'folder',
 	note: 'notes',
 	inbox: 'mail',
 	message: 'mail',

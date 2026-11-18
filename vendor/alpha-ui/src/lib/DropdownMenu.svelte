@@ -111,12 +111,12 @@
 	}
 
 	.dropdown-item.danger {
-		color: var(--fg-66);
+		color: var(--destructive, var(--accent-3, var(--fg-66)));
 	}
 
 	.dropdown-item.danger:hover:not(:disabled) {
 		background: var(--fg-8);
-		color: var(--fg);
+		color: var(--destructive, var(--accent-3, var(--fg)));
 	}
 
 	/* Expose list/item classes for custom children snippets */

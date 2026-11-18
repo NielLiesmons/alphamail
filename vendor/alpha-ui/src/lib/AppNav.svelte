@@ -133,7 +133,8 @@
 	.nav-row.active {
 		border: 1px solid transparent;
 		background:
-			linear-gradient(var(--glass), var(--glass)) padding-box,
+			linear-gradient(var(--nav-selected, var(--glass)), var(--nav-selected, var(--glass)))
+				padding-box,
 			var(--glass-shine) border-box;
 		backdrop-filter: blur(var(--glass-blur));
 		-webkit-backdrop-filter: blur(var(--glass-blur));

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Primary glass CTA — Admin publish / marketing main actions.
+	 * Primary glass CTA — Team publish / marketing main actions.
 	 * @typedef {'md' | 'sm' | 'sheet'} BtnSize
 	 */
 	import Button from './Button.svelte';

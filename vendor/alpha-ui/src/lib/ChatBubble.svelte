@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Presentational chat bubble — Admin ChatFeedCard chrome (no domain logic).
+	 * Presentational chat bubble — Team ChatFeedCard chrome (no domain logic).
 	 * @typedef {{
 	 *   mine?: boolean,
 	 *   name?: string,

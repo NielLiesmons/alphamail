@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Shared Alpha CTA button — glass stroke (--glass-shine) + pointer highlight + scale.
-	 * Variants: primary (Admin publish / site main CTA), glass (secondary outline).
+	 * Variants: primary (Team publish / site main CTA), glass (secondary outline).
 	 *
 	 * @typedef {'primary' | 'glass'} BtnVariant
 	 * @typedef {'md' | 'sm' | 'sheet'} BtnSize
@@ -109,7 +109,7 @@
 		font-weight: 600;
 	}
 
-	/* Admin create-sheet / publish row */
+	/* Team create-sheet / publish row */
 	.alpha-btn.sheet {
 		height: var(--ctrl-h, 44px);
 		min-height: var(--ctrl-h, 44px);
@@ -129,7 +129,7 @@
 	}
 
 	.alpha-btn.glass {
-		/* Fill must read on photo heroes; shine stroke stays the Admin glass edge. */
+		/* Fill must read on photo heroes; shine stroke stays the Team glass edge. */
 		background:
 			color-mix(in srgb, var(--fg, var(--ink)) 10%, transparent) padding-box,
 			var(--glass-shine) border-box;

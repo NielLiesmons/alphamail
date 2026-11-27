@@ -57,7 +57,7 @@ Stroke weight from CSS `--icon-stroke` with `vector-effect: non-scaling-stroke`.
 | `DetailChrome.svelte` | Detail column frame (desktop pane + mobile slide-over) |
 | `ChromeMobileBar.svelte` | Round back + centered muted title (Admin/Player mobile detail) |
 | `Button.svelte` | Shared CTA (`primary` / `glass`) — glass-shine stroke, pointer highlight, scale |
-| `PrimaryButton.svelte` | Primary glass CTA (Admin publish + marketing) |
+| `PrimaryButton.svelte` | Primary glass CTA (Team publish + marketing) |
 | `GlassButton.svelte` | Secondary glass CTA |
 | `ChatBubble.svelte` | Presentational chat bubble (Admin feed + marketing) |
 | `ChatComposer.svelte` | Presentational composer pill chrome |

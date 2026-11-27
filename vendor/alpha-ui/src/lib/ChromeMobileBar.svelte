@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Shared mobile detail top bar: round glass back, centered muted title, trailing slot.
-	 * Matches Admin DetailColumn mobile chrome — use from DetailChrome / nested list titles.
+	 * Matches Team DetailColumn mobile chrome — use from DetailChrome / nested list titles.
 	 * @type {{
 	 *   title?: string,
 	 *   onBack?: () => void,

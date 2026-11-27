@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Shared top-bar glass action button (Admin + Player).
+	 * Shared top-bar glass action button (Team + Player).
 	 * Desktop 28×28 radius 10px; mobile 44 round. Glass + --glass-shine.
 	 * @type {{
 	 *   variant?: 'more' | 'icon',

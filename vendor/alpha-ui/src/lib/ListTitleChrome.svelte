@@ -1,9 +1,9 @@
 <script>
 	/**
-	 * Shared list-column title chrome (Admin + Player).
+	 * Shared list-column title chrome (Team + Player).
 	 * Root pages: desktop muted label + mobile large page name.
 	 * Nested (canBack): desktop back + muted label; mobile round back + centered muted title
-	 * (same language as ChromeMobileBar / Admin detail).
+	 * (same language as ChromeMobileBar / Team detail).
 	 * @type {{
 	 *   title?: string,
 	 *   canBack?: boolean,
@@ -75,7 +75,7 @@
 	.list-title-row {
 		display: flex;
 		align-items: center;
-		/* Match Admin DetailColumn detail-top-start (back ↔ title) */
+		/* Match Team DetailColumn detail-top-start (back ↔ title) */
 		gap: 12px;
 		min-width: 0;
 	}
@@ -99,7 +99,7 @@
 		white-space: nowrap;
 	}
 
-	/* Admin Planning list — fixed label column width */
+	/* Team Planning list — fixed label column width */
 	.list-title:global(.planning-title) {
 		width: 200px;
 		max-width: 200px;
@@ -107,7 +107,7 @@
 		padding-right: 8px;
 	}
 
-	/* Match DetailChrome / Admin desktop glass icon-hit */
+	/* Match DetailChrome / Team desktop glass icon-hit */
 	.title-back {
 		flex-shrink: 0;
 		width: 28px;

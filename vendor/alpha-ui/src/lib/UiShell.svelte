@@ -105,7 +105,7 @@
 		filterValue = 'all',
 		createMenuItems = [],
 		createKind = undefined,
-		/** When false, only listActionsSlot is shown (Admin mail/planning chrome). */
+		/** When false, only listActionsSlot is shown (Team mail/planning chrome). */
 		defaultListActions = true,
 		onNavigate = () => {},
 		onNavChild = () => {},

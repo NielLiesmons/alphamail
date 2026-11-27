@@ -13,9 +13,9 @@
 	--bp-xl: 1600px;
 
 	/*
-	 * Brand knobs (Admin → Space → inject on <html>).
+	 * Brand knobs (Team → Space → inject on <html>).
 	 * Same low-S pole model as Admin; accent hue whispers through.
-	 * Primary CTAs use Admin glass fill + --glass-shine stroke (see @alpha/ui Button).
+	 * Primary CTAs use Team glass fill + --glass-shine stroke (see @alpha/ui Button).
 	 */
 	--accent: #5B56FF;
 	--accent-1: var(--accent);

@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Presentational entity panel in a chat feed (mail / task / note / file).
-	 * Matches Admin MailThreadFeed `.mail-panel` chrome.
+	 * Matches Team MailThreadFeed `.mail-panel` chrome.
 	 * @typedef {{
 	 *   name?: string,
 	 *   meta?: string,

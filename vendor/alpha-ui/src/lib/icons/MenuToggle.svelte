@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Animated bars ↔ cross.
-	 * - `short="bot"` (default): two full + shorter bottom (Admin legacy).
+	 * - `short="bot"` (default): two full + shorter bottom (Team legacy).
 	 * - `short="mid"`: shorter top/bottom, longer middle — left-aligned for site nav pills.
 	 * `align` hugs the short bar(s) left or right when short !== mid ends.
 	 * @type {{

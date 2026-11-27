@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Presentational chat composer pill — Admin ChatChannelPanel chrome.
+	 * Presentational chat composer pill — Team ChatChannelPanel chrome.
 	 * Pass interactive controls via slots; `demo` renders a static bar.
 	 * @typedef {{
 	 *   placeholder?: string,

@@ -520,7 +520,7 @@
 		font-size: 13px;
 		font-weight: 600;
 		color: var(--fg-66, var(--ink66));
-		/* Admin glass chrome (same as ChromeActionButton) */
+		/* Team glass chrome (same as ChromeActionButton) */
 		border: 1px solid transparent;
 		border-radius: var(--radius-pill);
 		background:

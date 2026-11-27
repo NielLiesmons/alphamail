@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
 # Static deploy for alphamail.xyz → /var/www/alphamail
+#
+# Required: DEPLOY_HOST (hostname or IP of the deploy target).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-HOST="${DEPLOY_HOST:-37.27.152.36}"
+HOST="${DEPLOY_HOST:?Set DEPLOY_HOST to the deploy target hostname or IP}"
 USER="${DEPLOY_USER:-deploy}"
 PATH_REMOTE="${DEPLOY_PATH:-/var/www/alphamail}"
-KEY="${DEPLOY_SSH_KEY:-$HOME/.ssh/bley-deploy}"
+
+if [[ -n "${DEPLOY_SSH_KEY:-}" ]]; then
+	KEY="$DEPLOY_SSH_KEY"
+elif [[ -f "$HOME/.ssh/alpha-deploy" ]]; then
+	KEY="$HOME/.ssh/alpha-deploy"
+elif [[ -f "$HOME/.ssh/bley-deploy" ]]; then
+	# Legacy key name still accepted if present locally.
+	KEY="$HOME/.ssh/bley-deploy"
+else
+	KEY="$HOME/.ssh/alpha-deploy"
+fi
 
 cd "$ROOT"
 

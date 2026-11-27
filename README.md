@@ -1,46 +1,32 @@
-# Alpha Mail — alphamail.xyz
+# alphamail.xyz
 
-Marketing site for **Alpha**: Spaces for groups and small businesses (Mail, Drive, Chat, Projects + Community).
+Marketing site for **Alpha** — Spaces for groups and SMBs (Mail, Drive, Chat, Projects).
 
-Same SvelteKit stack as `niel` / `bley`: bilingual FR/EN, Zapstore-aligned tokens, static deploy.
+Alpha = private Drive + Mail + Chat on your domain — open protocols, self-hostable where it matters.
+
+## Stack
+
+| Layer | Tech |
+|-------|------|
+| App | SvelteKit static + Bun |
+| UI | `@alpha/ui` (vendored) — shared tokens / chrome with Admin |
+| i18n | FR / EN routes |
+| Deploy | Caddy + rsync / GitHub Actions |
+
+Product surfaces live in **alpha-admin** + **alpha-api** + **alpha-drive**; this repo is the public pitch site only.
 
 ## Local
 
 ```bash
 bun install
-bun run dev
-# → http://localhost:5173  (redirects to /en)
-```
-
-## Build
-
-```bash
+bun run dev    # → http://localhost:5173 → /en
 bun run build
-bun run preview
 ```
 
-## Deploy (same VPS as Admin / Bley)
-
-1. DNS at your registrar:
-   - `alphamail.xyz` A → VPS IP
-   - `www.alphamail.xyz` A → VPS IP (or CNAME → apex)
-2. On the VPS: merge `deploy/Caddyfile.alphamail.xyz` into Caddy, `mkdir -p /var/www/alphamail`
-3. From this repo:
+## Deploy
 
 ```bash
-./scripts/deploy.sh
-# or: DEPLOY_SSH_KEY=~/.ssh/bley-deploy ./scripts/deploy.sh
+DEPLOY_HOST=your.vps.example ./scripts/deploy.sh
 ```
 
-GitHub Actions: set secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH` (`/var/www/alphamail`), `DEPLOY_SSH_KEY`.
-
-## Pages
-
-| Path | Role |
-|------|------|
-| `/en`, `/fr` | Hero + 4 pillars + Community + close CTA |
-| `/…/product` | Mail · Drive · Chat · Projects |
-| `/…/community` | Public Community (placeholder for now) |
-| `/…/contact` | mailto Space request |
-
-Hero media: drop `/static/media/hero.webp` later (gradient placeholder today).
+`DEPLOY_HOST` required. SSH key defaults to `~/.ssh/alpha-deploy`. CI secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH`, `DEPLOY_SSH_KEY`.

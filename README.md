@@ -9,11 +9,11 @@ Alpha = private Drive + Mail + Chat on your domain — open protocols, self-host
 | Layer | Tech |
 |-------|------|
 | App | SvelteKit static + Bun |
-| UI | `@alpha/ui` (vendored) — shared tokens / chrome with Admin |
+| UI | `@alpha/ui` (vendored) — shared tokens / chrome with Team |
 | i18n | FR / EN routes |
 | Deploy | Caddy + rsync / GitHub Actions |
 
-Product surfaces live in **alpha-admin** + **alpha-api** + **alpha-drive**; this repo is the public pitch site only.
+Product surfaces live in **alpha-team** + **alpha-api** + **alpha-drive**; this repo is the public pitch site only.
 
 ## Local
 
